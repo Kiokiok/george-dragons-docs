@@ -1,0 +1,1427 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Le Grimoire de George Dragons — Documentation Technique</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=MedievalSharp&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ============================================
+   LE GRIMOIRE — Medieval Dark Theme
+   ============================================ */
+
+/* --- Reset & Base --- */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  /* Fonds */
+  --grimoire-bg: #0d0b08;
+  --page-bg: #1a1410;
+  --page-bg-light: #231c14;
+  --page-edge: #2a2118;
+  /* Texte */
+  --text-gold: #c9a84c;
+  --text-gold-bright: #e8d48b;
+  --text-cream: #d4c5a9;
+  --text-cream-muted: #9e9178;
+  /* Accents systèmes */
+  --accent-battle: #8b1a1a;
+  --accent-battle-light: #c41e3a;
+  --accent-core: #5b2d8e;
+  --accent-core-light: #9b59b6;
+  --accent-camp: #1a6b3c;
+  --accent-camp-light: #2ecc71;
+  --accent-ui: #1a3a6b;
+  --accent-ui-light: #3498db;
+  --accent-world: #0e5e6f;
+  --accent-world-light: #00b4d8;
+  --accent-helpers: #7a5c1e;
+  --accent-helpers-light: #d4a017;
+  /* Décorations */
+  --border-ornament: #4a3728;
+  --border-ornament-gold: #8b7340;
+  --glow-gold: rgba(201,168,76,0.3);
+  /* Code */
+  --code-bg: rgba(10,8,5,0.6);
+  --code-kw: #c586c0;
+  --code-type: #4ec9b0;
+  --code-str: #ce9178;
+  --code-num: #b5cea8;
+  --code-cmt: #6a9955;
+  --code-fn: #dcdcaa;
+}
+
+html, body {
+  background: var(--grimoire-bg);
+  color: var(--text-cream);
+  font-family: 'Crimson Text', Georgia, serif;
+  line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* --- Scrollbar --- */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-ornament-gold); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-gold); }
+
+/* ============================================
+   GRIMOIRE CONTAINER
+   ============================================ */
+#grimoire-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+  animation: grimoireOpen 1.2s ease-out both;
+}
+
+@keyframes grimoireOpen {
+  from { transform: scale(0.95) rotateY(-5deg); opacity: 0.6; }
+  to { transform: scale(1) rotateY(0); opacity: 1; }
+}
+
+/* ============================================
+   PAGE STYLES
+   ============================================ */
+.grimoire-page {
+  position: relative;
+  background:
+    repeating-radial-gradient(circle at 50% 50%, transparent 0, rgba(26,20,16,0.03) 1px, transparent 2px),
+    radial-gradient(ellipse at 30% 20%, rgba(42,33,24,0.4) 0%, transparent 70%),
+    radial-gradient(ellipse at 70% 80%, rgba(42,33,24,0.3) 0%, transparent 60%),
+    var(--page-bg);
+  color: var(--text-cream);
+  font-family: 'Crimson Text', Georgia, serif;
+  font-size: 0.85rem;
+  line-height: 1.55;
+  overflow: hidden;
+}
+
+.grimoire-page.hard-page {
+  background: radial-gradient(ellipse at 50% 50%, #1a1410 0%, #0d0b08 100%);
+}
+
+/* Inner wrapper with decorative corners */
+.page-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  padding: 40px 30px 35px;
+  overflow: hidden;
+  box-shadow: inset 0 0 0 1px var(--border-ornament), inset 0 0 0 3px rgba(74,55,40,0.3);
+}
+
+/* Corner ornaments via SVG */
+.page-inner::before,
+.page-inner::after {
+  content: '';
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  opacity: 0.4;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Cpath d='M2 2 C2 2 20 2 20 20 C20 2 38 2 38 2' stroke='%238b7340' fill='none' stroke-width='1.5'/%3E%3Cpath d='M2 2 C2 2 2 20 20 20 C2 20 2 38 2 38' stroke='%238b7340' fill='none' stroke-width='1.5'/%3E%3Ccircle cx='20' cy='20' r='3' fill='%238b7340' opacity='0.5'/%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+  pointer-events: none;
+}
+.page-inner::before { top: 5px; left: 5px; }
+.page-inner::after { bottom: 5px; right: 5px; transform: rotate(180deg); }
+
+/* Page header (chapter name) */
+.page-header {
+  text-align: center;
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--text-cream-muted);
+  opacity: 0.5;
+  margin-bottom: 12px;
+}
+
+/* Page footer (page number) */
+.page-footer {
+  position: absolute;
+  bottom: 10px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-family: 'MedievalSharp', cursive;
+  font-size: 0.75rem;
+  color: var(--text-cream-muted);
+  opacity: 0.6;
+}
+
+/* ============================================
+   COVER PAGE
+   ============================================ */
+.cover-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.cover-seal {
+  width: 80px;
+  height: 80px;
+  border: 2px solid var(--text-gold);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  margin-bottom: 20px;
+  box-shadow: 0 0 20px var(--glow-gold), inset 0 0 15px rgba(201,168,76,0.15);
+}
+
+.cover-title {
+  font-family: 'Cinzel', serif;
+  font-weight: 700;
+  font-size: 1.6rem;
+  color: var(--text-gold);
+  text-shadow: 0 0 20px var(--glow-gold);
+  margin-bottom: 8px;
+  letter-spacing: 2px;
+}
+
+.cover-subtitle {
+  font-family: 'MedievalSharp', cursive;
+  font-size: 1rem;
+  color: var(--text-gold-bright);
+  margin-bottom: 20px;
+}
+
+.cover-meta {
+  font-family: 'Crimson Text', serif;
+  font-size: 0.8rem;
+  color: var(--text-cream-muted);
+  font-style: italic;
+}
+
+.cover-ornament {
+  width: 60%;
+  height: 1px;
+  margin: 15px auto;
+  background: linear-gradient(90deg, transparent, var(--text-gold), transparent);
+}
+
+/* ============================================
+   SEPARATORS
+   ============================================ */
+.sep-simple {
+  height: 1px;
+  margin: 12px 0;
+  background: linear-gradient(90deg, transparent, var(--border-ornament-gold), transparent);
+  border: none;
+}
+
+.sep-ornate {
+  height: 1px;
+  margin: 14px auto;
+  width: 60%;
+  background: linear-gradient(90deg, transparent, var(--text-gold), var(--border-ornament-gold), var(--text-gold), transparent);
+  border: none;
+  position: relative;
+}
+.sep-ornate::after {
+  content: '\2756';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: var(--text-gold);
+  font-size: 0.7rem;
+  background: var(--page-bg);
+  padding: 0 8px;
+}
+
+.sep-chapter {
+  height: 2px;
+  margin: 16px auto;
+  width: 80%;
+  background: linear-gradient(90deg, transparent 5%, var(--text-gold) 20%, var(--border-ornament-gold) 50%, var(--text-gold) 80%, transparent 95%);
+  border: none;
+}
+
+/* ============================================
+   CHAPTER TITLE PAGE
+   ============================================ */
+.chapter-title-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.chapter-numeral {
+  font-family: 'MedievalSharp', cursive;
+  font-size: 2.5rem;
+  color: var(--text-gold);
+  text-shadow: 0 0 15px var(--glow-gold);
+  margin-bottom: 8px;
+}
+
+.chapter-name {
+  font-family: 'Cinzel', serif;
+  font-weight: 700;
+  font-size: 1.3rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.chapter-desc {
+  font-family: 'Crimson Text', serif;
+  font-size: 0.9rem;
+  color: var(--text-cream-muted);
+  font-style: italic;
+  max-width: 80%;
+  line-height: 1.5;
+}
+
+/* Lettrine */
+.chapter-desc::first-letter {
+  font-family: 'MedievalSharp', cursive;
+  font-size: 3.5rem;
+  float: left;
+  color: var(--text-gold);
+  text-shadow: 0 0 10px var(--glow-gold);
+  line-height: 0.7;
+  margin-right: 6px;
+  margin-top: 4px;
+}
+
+/* ============================================
+   TABLE OF CONTENTS
+   ============================================ */
+.toc-entry {
+  display: flex;
+  align-items: baseline;
+  padding: 4px 0;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.toc-entry:hover { color: var(--text-gold-bright); }
+.toc-entry:hover .toc-dots { border-color: var(--text-gold); }
+
+.toc-label {
+  font-family: 'Cinzel', serif;
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+.toc-dots {
+  flex: 1;
+  border-bottom: 1px dotted var(--border-ornament-gold);
+  margin: 0 6px;
+  min-width: 20px;
+}
+.toc-page-num {
+  font-family: 'MedievalSharp', cursive;
+  font-size: 0.85rem;
+  color: var(--text-gold);
+}
+
+.toc-chapter-header {
+  font-family: 'Cinzel', serif;
+  font-weight: 600;
+  font-size: 0.7rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-gold);
+  margin-top: 10px;
+  margin-bottom: 2px;
+}
+
+/* ============================================
+   STATS GRID
+   ============================================ */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin: 10px 0;
+}
+
+.stat-box {
+  background: rgba(26,20,16,0.6);
+  border: 1px solid var(--border-ornament);
+  border-radius: 6px;
+  padding: 10px 8px;
+  text-align: center;
+  transition: box-shadow 0.3s, transform 0.3s;
+}
+.stat-box:hover {
+  box-shadow: 0 0 15px var(--glow-gold);
+  transform: translateY(-2px);
+}
+
+.stat-value {
+  font-family: 'Cinzel', serif;
+  font-weight: 700;
+  font-size: 1.4rem;
+  color: var(--text-gold-bright);
+  display: block;
+}
+
+.stat-label {
+  font-family: 'Crimson Text', serif;
+  font-variant: small-caps;
+  font-size: 0.7rem;
+  color: var(--text-cream-muted);
+  letter-spacing: 1px;
+}
+
+/* ============================================
+   ACCORDION
+   ============================================ */
+.grimoire-accordion {
+  margin-bottom: 6px;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.accordion-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 7px 10px;
+  background: rgba(26,20,16,0.5);
+  border: 1px solid var(--border-ornament);
+  border-radius: 4px;
+  color: var(--text-cream);
+  font-family: 'Cinzel', serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+  text-align: left;
+}
+.accordion-header:hover {
+  background: rgba(201,168,76,0.08);
+  color: var(--text-gold-bright);
+  box-shadow: 0 0 8px rgba(201,168,76,0.15);
+}
+
+.accordion-icon {
+  font-size: 0.7rem;
+  transition: transform 0.3s ease;
+  color: var(--text-gold);
+  flex-shrink: 0;
+}
+.accordion-header[aria-expanded="true"] .accordion-icon {
+  transform: rotate(90deg);
+}
+
+.accordion-title { flex: 1; }
+
+.accordion-badge {
+  font-family: 'Crimson Text', serif;
+  font-size: 0.65rem;
+  padding: 1px 7px;
+  border-radius: 10px;
+  color: var(--text-cream-muted);
+  flex-shrink: 0;
+}
+
+/* Accent per system */
+[data-system="battle"] .accordion-badge { background: var(--accent-battle); color: #fca5a5; }
+[data-system="core"] .accordion-badge { background: var(--accent-core); color: #c4b5fd; }
+[data-system="camp"] .accordion-badge { background: var(--accent-camp); color: #86efac; }
+[data-system="ui"] .accordion-badge { background: var(--accent-ui); color: #93c5fd; }
+[data-system="world"] .accordion-badge { background: var(--accent-world); color: #67e8f9; }
+[data-system="helpers"] .accordion-badge { background: var(--accent-helpers); color: #fde68a; }
+
+[data-system="battle"] .accordion-header { border-left: 3px solid var(--accent-battle-light); }
+[data-system="core"] .accordion-header { border-left: 3px solid var(--accent-core-light); }
+[data-system="camp"] .accordion-header { border-left: 3px solid var(--accent-camp-light); }
+[data-system="ui"] .accordion-header { border-left: 3px solid var(--accent-ui-light); }
+[data-system="world"] .accordion-header { border-left: 3px solid var(--accent-world-light); }
+[data-system="helpers"] .accordion-header { border-left: 3px solid var(--accent-helpers-light); }
+
+.accordion-body {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.35s ease-out, opacity 0.25s ease-out;
+  padding: 0 10px;
+}
+.accordion-body.open {
+  max-height: 280px;
+  opacity: 1;
+  overflow-y: auto;
+  padding: 8px 10px;
+  border-left: 3px solid var(--border-ornament-gold);
+  margin-left: 3px;
+}
+
+.accordion-body h4 {
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  color: var(--text-gold);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin: 6px 0 3px;
+}
+
+.accordion-body ul {
+  list-style: none;
+  padding-left: 10px;
+}
+.accordion-body ul li {
+  position: relative;
+  padding: 1px 0;
+  font-size: 0.75rem;
+  color: var(--text-cream);
+}
+.accordion-body ul li::before {
+  content: '\2022';
+  position: absolute;
+  left: -10px;
+  color: var(--text-gold);
+}
+
+.accordion-body p {
+  font-size: 0.75rem;
+  color: var(--text-cream-muted);
+  font-style: italic;
+  margin-bottom: 4px;
+}
+
+/* ============================================
+   CODE BLOCKS
+   ============================================ */
+pre.code-block {
+  background: var(--code-bg);
+  border: 1px solid var(--border-ornament);
+  border-radius: 4px;
+  padding: 6px 8px;
+  overflow-x: auto;
+  font-family: 'JetBrains Mono', Consolas, monospace;
+  font-size: 0.68rem;
+  line-height: 1.5;
+  color: var(--text-cream);
+  margin: 4px 0;
+  position: relative;
+}
+pre.code-block::before {
+  content: '\2726';
+  position: absolute;
+  top: 2px;
+  left: 4px;
+  font-size: 0.5rem;
+  color: var(--text-gold);
+  opacity: 0.4;
+}
+pre.code-block .kw { color: var(--code-kw); }
+pre.code-block .type { color: var(--code-type); }
+pre.code-block .str { color: var(--code-str); }
+pre.code-block .num { color: var(--code-num); }
+pre.code-block .cmt { color: var(--code-cmt); font-style: italic; }
+pre.code-block .fn { color: var(--code-fn); }
+
+code {
+  background: rgba(10,8,5,0.4);
+  border: 1px solid var(--border-ornament);
+  padding: 0.1rem 0.35rem;
+  border-radius: 3px;
+  font-family: 'JetBrains Mono', Consolas, monospace;
+  font-size: 0.72em;
+  color: var(--text-cream);
+}
+
+/* ============================================
+   MERMAID CONTAINERS
+   ============================================ */
+.mermaid-container {
+  background: rgba(15,13,10,0.8);
+  border: 2px solid var(--border-ornament);
+  box-shadow: inset 0 0 0 1px var(--border-ornament-gold);
+  border-radius: 8px;
+  padding: 12px;
+  margin: 8px 0;
+  overflow-x: auto;
+  min-height: 80px;
+}
+
+.mermaid-pending {
+  min-height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-cream-muted);
+  font-style: italic;
+  font-size: 0.75rem;
+}
+
+/* ============================================
+   CHANGES LIST
+   ============================================ */
+.change-item {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 3px 0;
+  border-bottom: 1px solid rgba(74,55,40,0.3);
+  font-size: 0.78rem;
+}
+.change-item .hash {
+  font-family: 'JetBrains Mono', Consolas, monospace;
+  color: var(--text-gold);
+  font-size: 0.68rem;
+  flex-shrink: 0;
+}
+.change-item .msg { color: var(--text-cream); }
+
+/* ============================================
+   NAVIGATION ARROWS
+   ============================================ */
+.nav-arrow {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 100;
+  background: none;
+  border: none;
+  cursor: pointer;
+  opacity: 0.4;
+  transition: opacity 0.3s;
+  padding: 15px;
+}
+.nav-arrow:hover { opacity: 0.8; }
+.nav-arrow svg {
+  width: 30px;
+  height: 50px;
+  fill: none;
+  stroke: var(--text-gold);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.nav-arrow--prev { left: 10px; }
+.nav-arrow--next { right: 10px; }
+.nav-arrow.hidden { display: none; }
+
+/* ============================================
+   PAGE INDICATOR
+   ============================================ */
+#page-indicator {
+  position: fixed;
+  bottom: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  font-family: 'MedievalSharp', cursive;
+  font-size: 0.85rem;
+  color: var(--text-gold);
+  background: rgba(13,11,8,0.85);
+  padding: 5px 18px;
+  border-radius: 20px;
+  border: 1px solid var(--border-ornament-gold);
+}
+
+/* ============================================
+   FADE IN PER PAGE
+   ============================================ */
+.fade-in-page {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+}
+.fade-in-page.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ============================================
+   GUARD PAGE (page de garde)
+   ============================================ */
+.guard-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  text-align: center;
+}
+
+.guard-ornament {
+  width: 120px;
+  height: 120px;
+  border: 2px solid var(--border-ornament-gold);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 15px;
+  position: relative;
+}
+.guard-ornament::before {
+  content: '';
+  position: absolute;
+  width: 140px;
+  height: 140px;
+  border: 1px solid var(--border-ornament);
+  border-radius: 50%;
+}
+
+.guard-text {
+  font-family: 'MedievalSharp', cursive;
+  font-size: 0.9rem;
+  color: var(--text-cream-muted);
+  font-style: italic;
+}
+
+/* ============================================
+   COLOPHON
+   ============================================ */
+.colophon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  text-align: center;
+  gap: 8px;
+}
+.colophon-title {
+  font-family: 'Cinzel', serif;
+  font-size: 0.8rem;
+  color: var(--text-gold);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+.colophon-line {
+  font-size: 0.75rem;
+  color: var(--text-cream-muted);
+}
+
+/* ============================================
+   BACK COVER
+   ============================================ */
+.back-cover {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+.back-cover-ornament {
+  width: 100px;
+  height: 100px;
+  border: 2px solid var(--border-ornament-gold);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 30px rgba(139,115,64,0.2);
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 899px) {
+  .nav-arrow { padding: 10px; }
+  .nav-arrow svg { width: 22px; height: 38px; }
+  .nav-arrow--prev { left: 2px; }
+  .nav-arrow--next { right: 2px; }
+  #page-indicator { font-size: 0.75rem; padding: 4px 14px; }
+  .page-inner { padding: 30px 20px 30px; }
+  .cover-title { font-size: 1.3rem; }
+  .chapter-numeral { font-size: 2rem; }
+}
+
+</style>
+</head>
+<body>
+
+<!-- ====== NAVIGATION ARROWS ====== -->
+<button class="nav-arrow nav-arrow--prev hidden" id="nav-prev" aria-label="Page précédente">
+  <svg viewBox="0 0 30 50"><path d="M25 5 L5 25 L25 45"/><path d="M5 25 L25 25" opacity="0.3"/></svg>
+</button>
+<button class="nav-arrow nav-arrow--next" id="nav-next" aria-label="Page suivante">
+  <svg viewBox="0 0 30 50"><path d="M5 5 L25 25 L5 45"/><path d="M25 25 L5 25" opacity="0.3"/></svg>
+</button>
+
+<!-- ====== PAGE INDICATOR ====== -->
+<div id="page-indicator">&mdash; 0 / 38 &mdash;</div>
+
+<!-- ====== GRIMOIRE ====== -->
+<div id="grimoire-wrapper">
+<div id="grimoire">
+
+  <!-- PAGE 0 : COUVERTURE (HARD) -->
+  <div class="grimoire-page hard-page" data-density="hard">
+    <div class="cover-content">
+      <div class="cover-seal">&#9876;</div>
+      <div class="cover-ornament"></div>
+      <h1 class="cover-title">Le Grimoire de<br>George Dragons</h1>
+      <div class="cover-ornament"></div>
+      <p class="cover-subtitle">Documentation Technique</p>
+      <p class="cover-meta"><!-- {{STATS_FILES}} --> Parchemins &bull; ~<!-- {{STATS_LINES}} --> Runes</p>
+      <div class="cover-ornament"></div>
+      <p class="cover-meta" style="margin-top:10px;font-size:0.7rem"><!-- {{GENERATION_DATE}} --></p>
+    </div>
+  </div>
+
+  <!-- PAGE 1 : PAGE DE GARDE -->
+  <div class="grimoire-page">
+    <div class="page-inner">
+      <div class="guard-page">
+        <div class="guard-ornament">
+          <span style="font-size:2.5rem">&#128081;</span>
+        </div>
+        <div class="sep-chapter"></div>
+        <p class="guard-text">&laquo; Que ce grimoire guide tes pas<br>dans les m&eacute;andres du code &raquo;</p>
+        <div class="sep-ornate" style="margin-top:15px;width:40%"></div>
+        <p style="font-family:'Crimson Text';font-size:0.75rem;color:var(--text-cream-muted);margin-top:8px">tactics_game_proto</p>
+        <p style="font-family:'JetBrains Mono';font-size:0.65rem;color:var(--text-cream-muted);margin-top:4px">Commit : <!-- {{COMMIT_HASH}} --></p>
+      </div>
+      <div class="page-footer">&mdash; 1 &mdash;</div>
+    </div>
+  </div>
+
+  <!-- PAGE 2-3 : TABLE DES MATIÈRES -->
+  <div class="grimoire-page">
+    <div class="page-inner">
+      <div class="page-header">Table des Mati&egrave;res</div>
+      <h2 style="font-family:'Cinzel';font-size:1.1rem;color:var(--text-gold);text-align:center;margin-bottom:12px">Sommaire</h2>
+      <div class="sep-ornate" style="width:50%;margin-bottom:14px"></div>
+
+      <div class="toc-entry" data-goto="4"><span class="toc-label">Vue d'ensemble</span><span class="toc-dots"></span><span class="toc-page-num">4</span></div>
+      <div class="toc-entry" data-goto="6"><span class="toc-label">Changements R&eacute;cents</span><span class="toc-dots"></span><span class="toc-page-num">6</span></div>
+
+      <div class="sep-simple" style="margin:8px 0"></div>
+      <div class="toc-chapter-header" style="color:var(--accent-battle-light)">I &mdash; Battle</div>
+      <div class="toc-entry" data-goto="8"><span class="toc-label">&emsp;Chapitre I : Battle</span><span class="toc-dots"></span><span class="toc-page-num">8</span></div>
+
+      <div class="toc-chapter-header" style="color:var(--accent-core-light)">II &mdash; Core</div>
+      <div class="toc-entry" data-goto="16"><span class="toc-label">&emsp;Chapitre II : Core</span><span class="toc-dots"></span><span class="toc-page-num">16</span></div>
+
+      <div class="toc-chapter-header" style="color:var(--accent-camp-light)">III &mdash; Camp</div>
+      <div class="toc-entry" data-goto="20"><span class="toc-label">&emsp;Chapitre III : Camp</span><span class="toc-dots"></span><span class="toc-page-num">20</span></div>
+
+      <div class="page-footer">&mdash; 2 &mdash;</div>
+    </div>
+  </div>
+
+  <div class="grimoire-page">
+    <div class="page-inner">
+      <div class="page-header">Table des Mati&egrave;res</div>
+
+      <div class="toc-chapter-header" style="color:var(--accent-ui-light)">IV &mdash; UI</div>
+      <div class="toc-entry" data-goto="24"><span class="toc-label">&emsp;Chapitre IV : UI</span><span class="toc-dots"></span><span class="toc-page-num">24</span></div>
+
+      <div class="toc-chapter-header" style="color:var(--accent-world-light)">V &mdash; World</div>
+      <div class="toc-entry" data-goto="28"><span class="toc-label">&emsp;Chapitre V : World</span><span class="toc-dots"></span><span class="toc-page-num">28</span></div>
+
+      <div class="toc-chapter-header" style="color:var(--accent-helpers-light)">VI &mdash; Helpers</div>
+      <div class="toc-entry" data-goto="32"><span class="toc-label">&emsp;Chapitre VI : Helpers</span><span class="toc-dots"></span><span class="toc-page-num">32</span></div>
+
+      <div class="sep-simple" style="margin:10px 0"></div>
+      <div class="toc-entry" data-goto="36"><span class="toc-label">Colophon</span><span class="toc-dots"></span><span class="toc-page-num">36</span></div>
+
+      <div class="page-footer">&mdash; 3 &mdash;</div>
+    </div>
+  </div>
+
+  <!-- PAGE 4-5 : VUE D'ENSEMBLE -->
+  <div class="grimoire-page">
+    <div class="page-inner">
+      <div class="page-header">Vue d'ensemble</div>
+      <h2 style="font-family:'Cinzel';font-size:1rem;color:var(--text-gold);text-align:center;margin-bottom:10px">Statistiques du Projet</h2>
+      <div class="sep-ornate" style="width:40%;margin-bottom:10px"></div>
+      <!-- {{OVERVIEW_STATS}} -->
+      <div class="page-footer">&mdash; 4 &mdash;</div>
+    </div>
+  </div>
+
+  <div class="grimoire-page">
+    <div class="page-inner">
+      <div class="page-header">Vue d'ensemble</div>
+      <h3 style="font-family:'Cinzel';font-size:0.85rem;color:var(--text-gold);text-align:center;margin-bottom:8px">Architecture Globale</h3>
+      <div class="mermaid-container">
+        <div class="mermaid-pending" data-mermaid-source="<!-- {{DIAGRAM_ARCHITECTURE}} -->">
+          Chargement du diagramme...
+        </div>
+      </div>
+      <div class="page-footer">&mdash; 5 &mdash;</div>
+    </div>
+  </div>
+
+  <!-- PAGE 6-7 : CHANGEMENTS RÉCENTS -->
+  <div class="grimoire-page">
+    <div class="page-inner">
+      <div class="page-header">Changements R&eacute;cents</div>
+      <h2 style="font-family:'Cinzel';font-size:1rem;color:var(--text-gold);margin-bottom:10px">Derniers Commits</h2>
+      <div class="sep-simple"></div>
+      <!-- {{RECENT_CHANGES}} -->
+      <div class="page-footer">&mdash; 6 &mdash;</div>
+    </div>
+  </div>
+
+  <div class="grimoire-page">
+    <div class="page-inner">
+      <div class="page-header">Cr&eacute;dits</div>
+      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:80%;text-align:center">
+        <h3 style="font-family:'Cinzel';font-size:0.9rem;color:var(--text-gold);margin-bottom:15px">G&eacute;n&eacute;r&eacute; par DocTech</h3>
+        <div class="sep-ornate" style="width:40%"></div>
+        <p style="font-size:0.8rem;color:var(--text-cream-muted);margin-top:15px;font-style:italic">Claude Code Skill<br>Grimoire Edition</p>
+        <p style="font-family:'JetBrains Mono';font-size:0.65rem;color:var(--text-cream-muted);margin-top:10px"><!-- {{COMMIT_HASH}} --></p>
+      </div>
+      <div class="page-footer">&mdash; 7 &mdash;</div>
+    </div>
+  </div>
+
+  <!-- ============================================
+       CHAPITRE I : BATTLE (pages 8-15)
+       ============================================ -->
+  <!-- PAGE 8 : Titre + Diagramme Hiérarchie -->
+  <div class="grimoire-page">
+    <div class="page-inner">
+      <div class="chapter-title-page" style="height:auto;padding:15px 0">
+        <span class="chapter-numeral">I</span>
+        <h2 class="chapter-name" style="color:var(--accent-battle-light)">Battle</h2>
+        <div class="sep-chapter"></div>
+        <p class="chapter-desc">Combat tactique au tour par tour : abilities, dommages, statuts, IA, &eacute;quipement</p>
+      </div>
+      <h3 style="font-family:'Cinzel';font-size:0.75rem;color:var(--text-gold);text-align:center;margin:8px 0 4px">Hi&eacute;rarchie des Abilities</h3>
+      <div class="mermaid-container" style="padding:8px">
+        <div class="mermaid-pending" data-mermaid-source="<!-- {{DIAGRAM_ABILITIES}} -->">
+          Chargement...
+        </div>
+      </div>
+      <div class="page-footer">&mdash; 8 &mdash;</div>
+    </div>
+  </div>
+
+  <!-- PAGE 9 : Diagrammes State Machine + Pipeline -->
+  <div class="grimoire-page">
+    <div class="page-inner">
+      <div class="page-header">Battle</div>
+      <h3 style="font-family:'Cinzel';font-size:0.75rem;color:var(--text-gold);margin-bottom:6px">Machine &agrave; &eacute;tats</h3>
+      <div class="mermaid-container" style="padding:8px">
+        <div class="mermaid-pending" data-mermaid-source="<!-- {{DIAGRAM_STATEMACHINE}} -->">
+          Chargement...
+        </div>
+      </div>
+      <h3 style="font-family:'Cinzel';font-size:0.75rem;color:var(--text-gold);margin:8px 0 6px">Pipeline d'&eacute;v&eacute;nements</h3>
+      <div class="mermaid-container" style="padding:8px">
+        <div class="mermaid-pending" data-mermaid-source="<!-- {{DIAGRAM_PIPELINE}} -->">
+          Chargement...
+        </div>
+      </div>
+      <div class="page-footer">&mdash; 9 &mdash;</div>
+    </div>
+  </div>
+
+  <!-- PAGE 10-11 : BattleInstance, BattlePawn -->
+  <div class="grimoire-page">
+    <div class="page-inner">
+      <div class="page-header">Battle</div>
+      <!-- {{ACCORDION:BattleInstance}} -->
+      <div class="page-footer">&mdash; 10 &mdash;</div>
+    </div>
+  </div>
+
+  <div class="grimoire-page">
+    <div class="page-inner">
+      <div class="page-header">Battle</div>
+      <!-- {{ACCORDION:BattlePawn}} -->
+      <div class="page-footer">&mdash; 11 &mdash;</div>
+    </div>
+  </div>
+
+  <!-- PAGE 12-13 : BaseAbility, TurnsOrchestrator, Packets, Status -->
+  <div class="grimoire-page">
+    <div class="page-inner">
+      <div class="page-header">Battle</div>
+      <!-- {{ACCORDION:BaseAbility}} -->
+      <!-- {{ACCORDION:TurnsOrchestrator}} -->
+      <!-- {{ACCORDION:DamagePacket_HealPacket}} -->
+      <div class="page-footer">&mdash; 12 &mdash;</div>
+    </div>
+  </div>
+
+  <div class="grimoire-page">
+    <div class="page-inner">
+      <div class="page-header">Battle</div>
+      <!-- {{ACCORDION:StatusEffect_StatusController}} -->
+      <div class="page-footer">&mdash; 13 &mdash;</div>
+    </div>
+  </div>
+
+  <!-- PAGE 14-15 : Equipment, Pathfinder, Movement, AI, States -->
+  <div class="grimoire-page">
+    <div class="page-inner">
+      <div class="page-header">Battle</div>
+      <!-- {{ACCORDION:BaseEquipment_EquipmentController}} -->
+      <!-- {{ACCORDION:PathfinderOK}} -->
+      <!-- {{ACCORDION:MovementController}} -->
+      <div class="page-footer">&mdash; 14 &mdash;</div>
+    </div>
+  </div>
+
+  <div class="grimoire-page">
+    <div class="page-inner">
+      <div class="page-header">Battle</div>
+      <!-- {{ACCORDION:EnemyAISystem}} -->
+      <!-- {{ACCORDION:BattleStates}} -->
+      <div class="page-footer">&mdash; 15 &mdash;</div>
+    </div>
+  </div>
+
+  <!-- ============================================
+       CHAPITRE II : CORE (pages 16-19)
+       ============================================ -->
+  <div class="grimoire-page">
+    <div class="page-inner">
+      <div class="chapter-title-page">
+        <span class="chapter-numeral">II</span>
+        <h2 class="chapter-name" style="color:var(--accent-core-light)">Core</h2>
+        <div class="sep-chapter"></div>
+        <p class="chapter-desc">Game loop, machine &agrave; &eacute;tats, gestion d'&eacute;quipe et donn&eacute;es personnages</p>
+      </div>
+      <div class="page-footer">&mdash; 16 &mdash;</div>
+    </div>
+  </div>
+
+  <div class="grimoire-page">
+    <div class="page-inner">
+      <div class="page-header">Core</div>
+      <!-- {{ACCORDION:Game}} -->
+      <!-- {{ACCORDION:GameState}} -->
+      <!-- {{ACCORDION:Battle_Node}} -->
+      <div class="page-footer">&mdash; 17 &mdash;</div>
+    </div>
+  </div>
+
+  <div class="grimoire-page">
+    <div class="page-inner">
+      <div class="page-header">Core</div>
+      <!-- {{ACCORDION:TeamManager}} -->
+      <!-- {{ACCORDION:CharacterData}} -->
+      <!-- {{ACCORDION:WorldMap}} -->
+      <div class="page-footer">&mdash; 18 &mdash;</div>
+    </div>
+  </div>
+
+  <div class="grimoire-page">
+    <div class="page-inner">
+      <div class="page-header">Core</div>
+      <!-- {{ACCORDION:ArtifactData}} -->
+      <!-- {{ACCORDION:GameProgress}} -->
+      <div class="page-footer">&mdash; 19 &mdash;</div>
+    </div>
+  </div>
+
+  <!-- ============================================
+       CHAPITRE III : CAMP (pages 20-23)
+       ============================================ -->
+  <div class="grimoire-page">
+    <div class="page-inner">
+      <div class="chapter-title-page">
+        <span class="chapter-numeral">III</span>
+        <h2 class="chapter-name" style="color:var(--accent-camp-light)">Camp</h2>
+        <div class="sep-chapter"></div>
+        <p class="chapter-desc">Navigation 3D, interactions et interface de caserne</p>
+      </div>
+      <div class="page-footer">&mdash; 20 &mdash;</div>
+    </div>
+  </div>
+
+  <div class="grimoire-page">
+    <div class="page-inner">
+      <div class="page-header">Camp</div>
+      <!-- {{ACCORDION:CampController}} -->
+      <!-- {{ACCORDION:CampCharacter}} -->
+      <div class="page-footer">&mdash; 21 &mdash;</div>
+    </div>
+  </div>
+
+  <div class="grimoire-page">
+    <div class="page-inner">
+      <div class="page-header">Camp</div>
+      <!-- {{ACCORDION:CampInteractable}} -->
+      <div class="page-footer">&mdash; 22 &mdash;</div>
+    </div>
+  </div>
+
+  <div class="grimoire-page">
+    <div class="page-inner">
+      <div class="page-header">Camp</div>
+      <!-- {{ACCORDION:BarracksUI}} -->
+      <div class="page-footer">&mdash; 23 &mdash;</div>
+    </div>
+  </div>
+
+  <!-- ============================================
+       CHAPITRE IV : UI (pages 24-27)
+       ============================================ -->
+  <div class="grimoire-page">
+    <div class="page-inner">
+      <div class="chapter-title-page">
+        <span class="chapter-numeral">IV</span>
+        <h2 class="chapter-name" style="color:var(--accent-ui-light)">UI</h2>
+        <div class="sep-chapter"></div>
+        <p class="chapter-desc">Layers UI, HUD de bataille, textes flottants, menus</p>
+      </div>
+      <div class="page-footer">&mdash; 24 &mdash;</div>
+    </div>
+  </div>
+
+  <div class="grimoire-page">
+    <div class="page-inner">
+      <div class="page-header">UI</div>
+      <!-- {{ACCORDION:BattleUI}} -->
+      <!-- {{ACCORDION:PlayerTurnUI}} -->
+      <div class="page-footer">&mdash; 25 &mdash;</div>
+    </div>
+  </div>
+
+  <div class="grimoire-page">
+    <div class="page-inner">
+      <div class="page-header">UI</div>
+      <!-- {{ACCORDION:FloatingText}} -->
+      <!-- {{ACCORDION:EscapeMenu}} -->
+      <!-- {{ACCORDION:MainMenu}} -->
+      <div class="page-footer">&mdash; 26 &mdash;</div>
+    </div>
+  </div>
+
+  <div class="grimoire-page">
+    <div class="page-inner">
+      <div class="page-header">UI</div>
+      <!-- {{ACCORDION:BtnBattleStarter}} -->
+      <!-- {{ACCORDION:IBattleUILayer}} -->
+      <div class="page-footer">&mdash; 27 &mdash;</div>
+    </div>
+  </div>
+
+  <!-- ============================================
+       CHAPITRE V : WORLD (pages 28-31)
+       ============================================ -->
+  <div class="grimoire-page">
+    <div class="page-inner">
+      <div class="chapter-title-page">
+        <span class="chapter-numeral">V</span>
+        <h2 class="chapter-name" style="color:var(--accent-world-light)">World</h2>
+        <div class="sep-chapter"></div>
+        <p class="chapter-desc">G&eacute;n&eacute;ration proc&eacute;durale, heightmap, navigation, cam&eacute;ra</p>
+      </div>
+      <div class="page-footer">&mdash; 28 &mdash;</div>
+    </div>
+  </div>
+
+  <div class="grimoire-page">
+    <div class="page-inner">
+      <div class="page-header">World</div>
+      <!-- {{ACCORDION:Subworld}} -->
+      <!-- {{ACCORDION:SubworldChunk}} -->
+      <div class="page-footer">&mdash; 29 &mdash;</div>
+    </div>
+  </div>
+
+  <div class="grimoire-page">
+    <div class="page-inner">
+      <div class="page-header">World</div>
+      <!-- {{ACCORDION:SubworldGenerator}} -->
+      <!-- {{ACCORDION:CameraRig}} -->
+      <div class="page-footer">&mdash; 30 &mdash;</div>
+    </div>
+  </div>
+
+  <div class="grimoire-page">
+    <div class="page-inner">
+      <div class="page-header">World</div>
+      <!-- {{ACCORDION:TerrainColliderGenerator_TerrainMesher}} -->
+      <!-- {{ACCORDION:WorldGeneratorBasic}} -->
+      <div class="page-footer">&mdash; 31 &mdash;</div>
+    </div>
+  </div>
+
+  <!-- ============================================
+       CHAPITRE VI : HELPERS (pages 32-35)
+       ============================================ -->
+  <div class="grimoire-page">
+    <div class="page-inner">
+      <div class="chapter-title-page">
+        <span class="chapter-numeral">VI</span>
+        <h2 class="chapter-name" style="color:var(--accent-helpers-light)">Helpers &amp; Misc</h2>
+        <div class="sep-chapter"></div>
+        <p class="chapter-desc">Extensions, bases de donn&eacute;es, raycast, rendu imm&eacute;diat</p>
+      </div>
+      <div class="page-footer">&mdash; 32 &mdash;</div>
+    </div>
+  </div>
+
+  <div class="grimoire-page">
+    <div class="page-inner">
+      <div class="page-header">Helpers</div>
+      <!-- {{ACCORDION:ImmediateRenderer}} -->
+      <!-- {{ACCORDION:Raycaster}} -->
+      <!-- {{ACCORDION:AbilityDB}} -->
+      <!-- {{ACCORDION:MeshDB}} -->
+      <div class="page-footer">&mdash; 33 &mdash;</div>
+    </div>
+  </div>
+
+  <div class="grimoire-page">
+    <div class="page-inner">
+      <div class="page-header">Helpers</div>
+      <!-- {{ACCORDION:ShapeBuilder_AOEShape}} -->
+      <!-- {{ACCORDION:VectorHelpers}} -->
+      <div class="page-footer">&mdash; 34 &mdash;</div>
+    </div>
+  </div>
+
+  <div class="grimoire-page">
+    <div class="page-inner">
+      <div class="page-header">Helpers</div>
+      <!-- {{ACCORDION:CameraHelpers}} -->
+      <!-- {{ACCORDION:TransformHelpers_ListsHelpers}} -->
+      <!-- {{ACCORDION:Names}} -->
+      <div class="page-footer">&mdash; 35 &mdash;</div>
+    </div>
+  </div>
+
+  <!-- ============================================
+       FIN (pages 36-37)
+       ============================================ -->
+  <!-- PAGE 36 : Colophon -->
+  <div class="grimoire-page">
+    <div class="page-inner">
+      <div class="colophon">
+        <div class="colophon-title">Colophon</div>
+        <div class="sep-ornate" style="width:30%"></div>
+        <p class="colophon-line">G&eacute;n&eacute;r&eacute; le <!-- {{GENERATION_DATE}} --></p>
+        <p class="colophon-line">Commit : <code><!-- {{COMMIT_HASH}} --></code></p>
+        <p class="colophon-line" style="margin-top:8px">DocTech &mdash; Claude Code Skill</p>
+        <p class="colophon-line">Grimoire Edition</p>
+        <div class="sep-chapter" style="margin-top:15px;width:40%"></div>
+        <p class="colophon-line" style="font-style:italic;font-size:0.7rem;margin-top:10px">&laquo; Le code est po&eacute;sie, le grimoire en est la m&eacute;moire &raquo;</p>
+      </div>
+      <div class="page-footer">&mdash; 36 &mdash;</div>
+    </div>
+  </div>
+
+  <!-- PAGE 37 : 4e de couverture (HARD) -->
+  <div class="grimoire-page hard-page" data-density="hard">
+    <div class="back-cover">
+      <div class="back-cover-ornament">
+        <span style="font-size:2rem;color:var(--text-gold)">&#9876;</span>
+      </div>
+    </div>
+  </div>
+
+</div><!-- #grimoire -->
+</div><!-- #grimoire-wrapper -->
+
+<!-- ====== EXTERNAL SCRIPTS ====== -->
+<script src="https://cdn.jsdelivr.net/npm/page-flip@2/dist/js/page-flip.browser.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+
+<!-- ====== JAVASCRIPT ====== -->
+<script>
+(function() {
+  'use strict';
+
+  // --- Mermaid init (deferred) ---
+  mermaid.initialize({
+    startOnLoad: false,
+    theme: 'dark',
+    themeVariables: {
+      darkMode: true,
+      background: '#0f0d0a',
+      primaryColor: '#5b2d8e',
+      primaryTextColor: '#d4c5a9',
+      primaryBorderColor: '#8b7340',
+      lineColor: '#4a3728',
+      secondaryColor: '#1a1410',
+      tertiaryColor: '#231c14',
+      fontFamily: 'Crimson Text, serif',
+      fontSize: '12px'
+    },
+    flowchart: { curve: 'basis', padding: 15 },
+    stateDiagram: { padding: 15 }
+  });
+
+  var renderedPages = new Set();
+
+  function renderMermaidOnPage(pageEl) {
+    var pendings = pageEl.querySelectorAll('.mermaid-pending');
+    if (!pendings.length) return;
+    pendings.forEach(function(div) {
+      var src = div.getAttribute('data-mermaid-source');
+      if (!src || div.classList.contains('mermaid-rendered')) return;
+      div.classList.remove('mermaid-pending');
+      div.classList.add('mermaid');
+      div.textContent = src;
+      div.classList.add('mermaid-rendered');
+    });
+    try { mermaid.run({ nodes: pageEl.querySelectorAll('.mermaid') }); } catch(e) { console.warn('Mermaid render error:', e); }
+  }
+
+  // --- StPageFlip init ---
+  var grimoireEl = document.getElementById('grimoire');
+  var pages = grimoireEl.querySelectorAll('.grimoire-page');
+  var totalPages = pages.length;
+
+  var isPortrait = window.innerWidth < 900;
+  var pageFlip = new St.PageFlip(grimoireEl, {
+    width: 550,
+    height: 780,
+    size: 'stretch',
+    minWidth: 300,
+    minHeight: 420,
+    maxWidth: 550,
+    maxHeight: 780,
+    maxShadowOpacity: 0.5,
+    showCover: true,
+    mobileScrollSupport: false,
+    flippingTime: 800,
+    usePortrait: isPortrait,
+    drawShadow: true,
+    autoSize: true,
+    startPage: 0
+  });
+
+  pageFlip.loadFromHTML(pages);
+
+  // --- Page indicator ---
+  var indicator = document.getElementById('page-indicator');
+  var prevBtn = document.getElementById('nav-prev');
+  var nextBtn = document.getElementById('nav-next');
+
+  function updateUI() {
+    var current = pageFlip.getCurrentPageIndex();
+    indicator.textContent = '\u2014 Page ' + current + ' / ' + (totalPages - 1) + ' \u2014';
+    prevBtn.classList.toggle('hidden', current <= 0);
+    nextBtn.classList.toggle('hidden', current >= totalPages - 1);
+
+    // Render Mermaid on visible pages
+    var pagesToRender = [current];
+    if (!isPortrait && current + 1 < totalPages) pagesToRender.push(current + 1);
+
+    pagesToRender.forEach(function(idx) {
+      if (!renderedPages.has(idx)) {
+        renderedPages.add(idx);
+        var pageEl = pages[idx];
+        if (pageEl) renderMermaidOnPage(pageEl);
+      }
+    });
+
+    // Animate counters on page 4
+    if (pagesToRender.indexOf(4) !== -1 || pagesToRender.indexOf(5) !== -1) {
+      triggerCounters();
+    }
+
+    // Fade-in elements
+    pagesToRender.forEach(function(idx) {
+      var els = pages[idx] ? pages[idx].querySelectorAll('.fade-in-page') : [];
+      els.forEach(function(el, i) {
+        setTimeout(function() { el.classList.add('visible'); }, 100 + i * 80);
+      });
+    });
+  }
+
+  pageFlip.on('flip', function() { updateUI(); });
+  // Initial
+  updateUI();
+
+  // --- Navigation ---
+  prevBtn.addEventListener('click', function() { pageFlip.flipPrev(); });
+  nextBtn.addEventListener('click', function() { pageFlip.flipNext(); });
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowRight' || e.key === 'PageDown') { pageFlip.flipNext(); e.preventDefault(); }
+    if (e.key === 'ArrowLeft' || e.key === 'PageUp') { pageFlip.flipPrev(); e.preventDefault(); }
+    if (e.key === 'Home') { pageFlip.turnToPage(0); e.preventDefault(); }
+    if (e.key === 'End') { pageFlip.turnToPage(totalPages - 1); e.preventDefault(); }
+  });
+
+  // --- Table of contents links ---
+  document.querySelectorAll('.toc-entry[data-goto]').forEach(function(entry) {
+    entry.addEventListener('click', function() {
+      var pageNum = parseInt(this.getAttribute('data-goto'), 10);
+      if (!isNaN(pageNum)) pageFlip.turnToPage(pageNum);
+    });
+  });
+
+  // --- Accordion logic (exclusive per page) ---
+  document.querySelectorAll('.accordion-header').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var isOpen = this.getAttribute('aria-expanded') === 'true';
+      // Close all in same page
+      var page = this.closest('.grimoire-page');
+      if (page) {
+        page.querySelectorAll('.accordion-header[aria-expanded="true"]').forEach(function(other) {
+          other.setAttribute('aria-expanded', 'false');
+          var otherBody = other.nextElementSibling;
+          if (otherBody) otherBody.classList.remove('open');
+        });
+      }
+      if (!isOpen) {
+        this.setAttribute('aria-expanded', 'true');
+        var body = this.nextElementSibling;
+        if (body) body.classList.add('open');
+      }
+    });
+  });
+
+  // --- Animated counters ---
+  var countersAnimated = false;
+  function triggerCounters() {
+    if (countersAnimated) return;
+    countersAnimated = true;
+    document.querySelectorAll('.stat-value[data-target]').forEach(function(el) {
+      animateCounter(el);
+    });
+  }
+
+  function animateCounter(el) {
+    var target = parseInt(el.getAttribute('data-target'), 10);
+    if (isNaN(target)) return;
+    var duration = 1500;
+    var startTime = null;
+    function easeOutExpo(t) { return t === 1 ? 1 : 1 - Math.pow(2, -10 * t); }
+    function step(ts) {
+      if (!startTime) startTime = ts;
+      var p = Math.min((ts - startTime) / duration, 1);
+      var val = Math.round(easeOutExpo(p) * target);
+      el.textContent = target > 1000 ? '~' + val.toLocaleString('fr-FR') : val;
+      if (p < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+
+  // --- Responsive: handle resize ---
+  var resizeTimer;
+  window.addEventListener('resize', function() {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function() {
+      var newPortrait = window.innerWidth < 900;
+      if (newPortrait !== isPortrait) {
+        isPortrait = newPortrait;
+        // StPageFlip handles this with autoSize, but we update arrows
+        updateUI();
+      }
+    }, 250);
+  });
+
+})();
+</script>
+
+</body>
+</html>

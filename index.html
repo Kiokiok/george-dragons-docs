@@ -1,0 +1,1950 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Le Grimoire de George Dragons — Documentation Technique</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=MedievalSharp&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ============================================
+   LE GRIMOIRE — Medieval Dark Theme
+   ============================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --grimoire-bg: #0d0b08;
+  --page-bg: #1a1410;
+  --page-bg-light: #231c14;
+  --page-edge: #2a2118;
+  --text-gold: #c9a84c;
+  --text-gold-bright: #e8d48b;
+  --text-cream: #d4c5a9;
+  --text-cream-muted: #9e9178;
+  --accent-battle: #8b1a1a; --accent-battle-light: #c41e3a;
+  --accent-core: #5b2d8e; --accent-core-light: #9b59b6;
+  --accent-camp: #1a6b3c; --accent-camp-light: #2ecc71;
+  --accent-ui: #1a3a6b; --accent-ui-light: #3498db;
+  --accent-world: #0e5e6f; --accent-world-light: #00b4d8;
+  --accent-helpers: #7a5c1e; --accent-helpers-light: #d4a017;
+  --border-ornament: #4a3728;
+  --border-ornament-gold: #8b7340;
+  --glow-gold: rgba(201,168,76,0.3);
+  --code-bg: rgba(10,8,5,0.6);
+}
+html, body {
+  background: var(--grimoire-bg);
+  color: var(--text-cream);
+  font-family: 'Crimson Text', Georgia, serif;
+  line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-ornament-gold); border-radius: 3px; }
+
+#grimoire-wrapper {
+  display: flex; justify-content: center; align-items: center;
+  min-height: 100vh; padding: 10px 10px 52px;
+  animation: grimoireOpen 1.2s ease-out both;
+  transition: margin-left 0.5s ease;
+}
+#grimoire-wrapper.with-pitch {
+  margin-left: 38vw;
+}
+@media (max-width: 1100px) {
+  #grimoire-wrapper.with-pitch { margin-left: 0; }
+}
+@keyframes grimoireOpen {
+  from { transform: scale(0.95) rotateY(-5deg); opacity: 0.6; }
+  to { transform: scale(1) rotateY(0); opacity: 1; }
+}
+
+.grimoire-page {
+  position: relative;
+  background:
+    repeating-radial-gradient(circle at 50% 50%, transparent 0, rgba(26,20,16,0.03) 1px, transparent 2px),
+    radial-gradient(ellipse at 30% 20%, rgba(42,33,24,0.4) 0%, transparent 70%),
+    radial-gradient(ellipse at 70% 80%, rgba(42,33,24,0.3) 0%, transparent 60%),
+    var(--page-bg);
+  color: var(--text-cream);
+  font-family: 'Crimson Text', Georgia, serif;
+  font-size: 0.95rem; line-height: 1.6; overflow: hidden;
+}
+.grimoire-page.hard-page {
+  background: radial-gradient(ellipse at 50% 50%, #1a1410 0%, #0d0b08 100%);
+}
+.page-inner {
+  position: relative; width: 100%; height: 100%;
+  padding: 45px 35px 40px; overflow: hidden;
+  box-shadow: inset 0 0 0 1px var(--border-ornament), inset 0 0 0 3px rgba(74,55,40,0.3);
+}
+.page-inner::before, .page-inner::after {
+  content: ''; position: absolute; width: 40px; height: 40px; opacity: 0.4;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Cpath d='M2 2 C2 2 20 2 20 20 C20 2 38 2 38 2' stroke='%238b7340' fill='none' stroke-width='1.5'/%3E%3Cpath d='M2 2 C2 2 2 20 20 20 C2 20 2 38 2 38' stroke='%238b7340' fill='none' stroke-width='1.5'/%3E%3Ccircle cx='20' cy='20' r='3' fill='%238b7340' opacity='0.5'/%3E%3C/svg%3E");
+  background-size: contain; background-repeat: no-repeat; pointer-events: none;
+}
+.page-inner::before { top: 5px; left: 5px; }
+.page-inner::after { bottom: 5px; right: 5px; transform: rotate(180deg); }
+
+.page-header {
+  text-align: center; font-family: 'Cinzel', serif; font-size: 0.82rem;
+  letter-spacing: 3px; text-transform: uppercase; color: var(--text-cream-muted);
+  opacity: 0.5; margin-bottom: 14px;
+}
+.page-footer {
+  position: absolute; bottom: 12px; left: 0; right: 0; text-align: center;
+  font-family: 'MedievalSharp', cursive; font-size: 0.95rem;
+  color: var(--text-cream-muted); opacity: 0.6;
+}
+
+/* Cover */
+.cover-content {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  height: 100%; text-align: center; padding: 40px 20px; position: relative;
+}
+.cover-frame {
+  position: absolute; inset: 8px; border: 3px solid var(--text-gold); pointer-events: none;
+  box-shadow: inset 0 0 30px rgba(201,168,76,0.08), 0 0 15px rgba(201,168,76,0.1);
+}
+.cover-frame-corner {
+  position: absolute; width: 50px; height: 50px; pointer-events: none;
+}
+.cover-frame-corner.tl { top: -3px; left: -3px; }
+.cover-frame-corner.tr { top: -3px; right: -3px; transform: scaleX(-1); }
+.cover-frame-corner.bl { bottom: -3px; left: -3px; transform: scaleY(-1); }
+.cover-frame-corner.br { bottom: -3px; right: -3px; transform: scale(-1,-1); }
+.cover-seal {
+  width: 160px; height: 160px; display: flex; align-items: center; justify-content: center;
+  margin-bottom: 25px; filter: drop-shadow(0 0 20px rgba(201,168,76,0.4));
+}
+.cover-title {
+  font-family: 'Cinzel', serif; font-weight: 700; font-size: 2.6rem;
+  color: var(--text-gold);
+  text-shadow: 0 0 25px var(--glow-gold), 0 2px 4px rgba(0,0,0,0.6), 0 0 60px rgba(201,168,76,0.15);
+  margin-bottom: 10px; letter-spacing: 4px;
+}
+.cover-subtitle { font-family: 'MedievalSharp', cursive; font-size: 1.1rem; color: var(--text-gold-bright); margin-bottom: 20px; }
+.cover-meta { font-family: 'Crimson Text', serif; font-size: 0.85rem; color: var(--text-cream-muted); font-style: italic; }
+.cover-ornament-line {
+  width: 65%; height: 1px; margin: 15px auto; position: relative;
+  background: linear-gradient(90deg, transparent, var(--text-gold), transparent);
+}
+.cover-ornament-line::after {
+  content: '\2726'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  color: var(--text-gold); font-size: 0.75rem; background: transparent; padding: 0 8px;
+  text-shadow: 0 0 8px var(--glow-gold);
+}
+.cover-decoration-top, .cover-decoration-bottom {
+  position: absolute; left: 50%; transform: translateX(-50%); pointer-events: none; opacity: 0.4;
+}
+.cover-decoration-top { top: 25px; }
+.cover-decoration-bottom { bottom: 25px; }
+
+/* Separators */
+.sep-simple { height: 1px; margin: 12px 0; background: linear-gradient(90deg, transparent, var(--border-ornament-gold), transparent); border: none; }
+.sep-ornate {
+  height: 1px; margin: 14px auto; width: 60%;
+  background: linear-gradient(90deg, transparent, var(--text-gold), var(--border-ornament-gold), var(--text-gold), transparent);
+  border: none; position: relative;
+}
+.sep-ornate::after {
+  content: '\2756'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  color: var(--text-gold); font-size: 0.7rem; background: var(--page-bg); padding: 0 8px;
+}
+.sep-chapter { height: 2px; margin: 16px auto; width: 80%; background: linear-gradient(90deg, transparent 5%, var(--text-gold) 20%, var(--border-ornament-gold) 50%, var(--text-gold) 80%, transparent 95%); border: none; }
+
+/* Chapter title */
+.chapter-title-page { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center; padding: 40px 20px; }
+.chapter-numeral { font-family: 'MedievalSharp', cursive; font-size: 5.5rem; color: var(--text-gold); text-shadow: 0 0 20px var(--glow-gold), 0 0 40px rgba(201,168,76,0.15); margin-bottom: 14px; }
+.chapter-name { font-family: 'Cinzel', serif; font-weight: 700; font-size: 2.6rem; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 16px; }
+.chapter-desc { font-family: 'Crimson Text', serif; font-size: 1.5rem; color: var(--text-cream-muted); font-style: italic; max-width: 85%; line-height: 1.8; }
+.chapter-desc::first-letter { font-family: 'MedievalSharp', cursive; font-size: 5.5rem; float: left; color: var(--text-gold); text-shadow: 0 0 10px var(--glow-gold); line-height: 0.7; margin-right: 10px; margin-top: 5px; }
+
+/* ToC */
+.toc-entry { display: flex; align-items: baseline; padding: 4px 0; cursor: pointer; transition: color 0.2s; }
+.toc-entry:hover { color: var(--text-gold-bright); }
+.toc-label { font-family: 'Cinzel', serif; font-size: 1.05rem; white-space: nowrap; }
+.toc-dots { flex: 1; border-bottom: 1px dotted var(--border-ornament-gold); margin: 0 8px; min-width: 20px; }
+.toc-page-num { font-family: 'MedievalSharp', cursive; font-size: 1rem; color: var(--text-gold); }
+.toc-chapter-header { font-family: 'Cinzel', serif; font-weight: 600; font-size: 0.85rem; letter-spacing: 2px; text-transform: uppercase; color: var(--text-gold); margin-top: 12px; margin-bottom: 3px; }
+
+/* Page Index */
+.page-index-entry { display:flex; align-items:baseline; padding:2px 0; cursor:pointer; transition:color 0.2s; font-size:0.92rem; }
+.page-index-entry:hover { color:var(--text-gold-bright); }
+.page-index-num { font-family:'MedievalSharp'; font-size:0.88rem; color:var(--text-gold); min-width:28px; text-align:right; margin-right:8px; }
+.page-index-label { font-family:'Crimson Text'; font-size:0.95rem; color:var(--text-cream); }
+.page-index-section { font-family:'Cinzel'; font-weight:600; font-size:0.78rem; letter-spacing:1.5px; text-transform:uppercase; margin-top:8px; margin-bottom:2px; border-bottom:1px solid var(--border-ornament); }
+.back-to-index { display:inline-block; font-family:'MedievalSharp'; font-size:0.75rem; color:var(--text-cream-muted); cursor:pointer; opacity:0.5; transition:opacity 0.2s,color 0.2s; position:absolute; bottom:28px; right:35px; }
+.back-to-index:hover { opacity:0.9; color:var(--text-gold-bright); }
+
+/* Stats */
+.stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin: 10px 0; }
+.stat-box { background: rgba(26,20,16,0.6); border: 1px solid var(--border-ornament); border-radius: 6px; padding: 10px 8px; text-align: center; transition: box-shadow 0.3s, transform 0.3s; }
+.stat-box:hover { box-shadow: 0 0 15px var(--glow-gold); transform: translateY(-2px); }
+.stat-value { font-family: 'Cinzel', serif; font-weight: 700; font-size: 2rem; color: var(--text-gold-bright); display: block; }
+.stat-label { font-family: 'Crimson Text', serif; font-variant: small-caps; font-size: 0.95rem; color: var(--text-cream-muted); letter-spacing: 1px; }
+
+/* Accordion */
+.grimoire-accordion { margin-bottom: 10px; border-radius: 4px; overflow: hidden; }
+.accordion-header {
+  display: flex; align-items: center; gap: 10px; width: 100%; padding: 11px 14px;
+  background: rgba(26,20,16,0.5); border: 1px solid var(--border-ornament); border-radius: 4px;
+  color: var(--text-cream); font-family: 'Cinzel', serif; font-size: 1.05rem; font-weight: 600;
+  cursor: pointer; transition: background 0.2s, color 0.2s, box-shadow 0.2s; text-align: left;
+}
+.accordion-header:hover { background: rgba(201,168,76,0.08); color: var(--text-gold-bright); box-shadow: 0 0 8px rgba(201,168,76,0.15); }
+.accordion-icon { font-size: 0.85rem; transition: transform 0.3s ease; color: var(--text-gold); flex-shrink: 0; }
+.accordion-header[aria-expanded="true"] .accordion-icon { transform: rotate(90deg); }
+.accordion-title { flex: 1; }
+.accordion-badge { font-family: 'Crimson Text', serif; font-size: 0.8rem; padding: 2px 9px; border-radius: 10px; color: var(--text-cream-muted); flex-shrink: 0; }
+
+[data-system="battle"] .accordion-badge { background: var(--accent-battle); color: #fca5a5; }
+[data-system="core"] .accordion-badge { background: var(--accent-core); color: #c4b5fd; }
+[data-system="camp"] .accordion-badge { background: var(--accent-camp); color: #86efac; }
+[data-system="ui"] .accordion-badge { background: var(--accent-ui); color: #93c5fd; }
+[data-system="world"] .accordion-badge { background: var(--accent-world); color: #67e8f9; }
+[data-system="helpers"] .accordion-badge { background: var(--accent-helpers); color: #fde68a; }
+
+[data-system="battle"] .accordion-header { border-left: 3px solid var(--accent-battle-light); }
+[data-system="core"] .accordion-header { border-left: 3px solid var(--accent-core-light); }
+[data-system="camp"] .accordion-header { border-left: 3px solid var(--accent-camp-light); }
+[data-system="ui"] .accordion-header { border-left: 3px solid var(--accent-ui-light); }
+[data-system="world"] .accordion-header { border-left: 3px solid var(--accent-world-light); }
+[data-system="helpers"] .accordion-header { border-left: 3px solid var(--accent-helpers-light); }
+
+.accordion-body { max-height: 0; opacity: 0; overflow: hidden; transition: max-height 0.35s ease-out, opacity 0.25s ease-out; padding: 0 12px; }
+.accordion-body.open { max-height: 400px; opacity: 1; overflow-y: auto; padding: 12px 14px; border-left: 3px solid var(--border-ornament-gold); margin-left: 3px; }
+.accordion-body h4 { font-family: 'Cinzel', serif; font-size: 0.9rem; color: var(--text-gold); text-transform: uppercase; letter-spacing: 1.5px; margin: 10px 0 5px; }
+.accordion-body ul { list-style: none; padding-left: 14px; }
+.accordion-body ul li { position: relative; padding: 3px 0; font-size: 1rem; color: var(--text-cream); }
+.accordion-body ul li::before { content: '\2022'; position: absolute; left: -14px; color: var(--text-gold); }
+.accordion-body p { font-size: 1rem; color: var(--text-cream-muted); font-style: italic; margin-bottom: 8px; }
+
+/* Code */
+pre.code-block {
+  background: var(--code-bg); border: 1px solid var(--border-ornament); border-radius: 4px;
+  padding: 8px 10px; overflow-x: auto; font-family: 'JetBrains Mono', Consolas, monospace;
+  font-size: 0.9rem; line-height: 1.5; color: var(--text-cream); margin: 6px 0; position: relative;
+}
+pre.code-block::before { content: '\2726'; position: absolute; top: 2px; left: 4px; font-size: 0.5rem; color: var(--text-gold); opacity: 0.4; }
+pre.code-block .kw { color: #c586c0; }
+pre.code-block .type { color: #4ec9b0; }
+pre.code-block .str { color: #ce9178; }
+pre.code-block .num { color: #b5cea8; }
+pre.code-block .cmt { color: #6a9955; font-style: italic; }
+pre.code-block .fn { color: #dcdcaa; }
+code { background: rgba(10,8,5,0.4); border: 1px solid var(--border-ornament); padding: 0.1rem 0.35rem; border-radius: 3px; font-family: 'JetBrains Mono', Consolas, monospace; font-size: 0.72em; color: var(--text-cream); }
+
+/* Mermaid */
+.mermaid-container { background: rgba(15,13,10,0.8); border: 2px solid var(--border-ornament); box-shadow: inset 0 0 0 1px var(--border-ornament-gold); border-radius: 8px; padding: 12px; margin: 8px 0; overflow-x: auto; min-height: 80px; cursor: pointer; transition: box-shadow 0.2s; }
+.mermaid-container:hover { box-shadow: inset 0 0 0 1px var(--border-ornament-gold), 0 0 12px var(--glow-gold); }
+.mermaid-pending { min-height: 60px; display: flex; align-items: center; justify-content: center; color: var(--text-cream-muted); font-style: italic; font-size: 0.75rem; }
+.mermaid-zoom-hint { text-align:center; font-family:'Crimson Text'; font-size:0.7rem; color:var(--text-cream-muted); opacity:0.5; margin-top:4px; pointer-events:none; }
+
+/* Mermaid Zoom Modal */
+#mermaid-modal { display:none; position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,0.85); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); align-items:center; justify-content:center; cursor:pointer; }
+#mermaid-modal.open { display:flex; }
+#mermaid-modal-inner { background:var(--page-bg); border:2px solid var(--border-ornament-gold); border-radius:12px; padding:40px; width:88vw; min-height:70vh; max-height:92vh; overflow:auto; box-shadow:0 0 60px rgba(201,168,76,0.2); cursor:default; position:relative; display:flex; align-items:center; justify-content:center; }
+#mermaid-modal-inner .mermaid-modal-content { width:100%; min-height:60vh; display:flex; align-items:center; justify-content:center; }
+#mermaid-modal-inner .mermaid-modal-content svg { width:100% !important; height:auto !important; min-height:55vh; }
+#mermaid-modal-close { position:absolute; top:10px; right:14px; background:none; border:none; color:var(--text-gold); font-size:1.5rem; cursor:pointer; opacity:0.6; transition:opacity 0.2s; font-family:'MedievalSharp'; }
+#mermaid-modal-close:hover { opacity:1; }
+
+/* Changes */
+.change-item { display: flex; align-items: baseline; gap: 10px; padding: 5px 0; border-bottom: 1px solid rgba(74,55,40,0.3); font-size: 1.05rem; }
+.change-item .hash { font-family: 'JetBrains Mono', Consolas, monospace; color: var(--text-gold); font-size: 0.9rem; flex-shrink: 0; }
+.change-item .msg { color: var(--text-cream); }
+
+/* Nav arrows */
+.nav-arrow { position: fixed; top: 50%; transform: translateY(-50%); z-index: 100; background: none; border: none; cursor: pointer; opacity: 0.4; transition: opacity 0.3s; padding: 15px; }
+.nav-arrow:hover { opacity: 0.8; }
+.nav-arrow svg { width: 30px; height: 50px; fill: none; stroke: var(--text-gold); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.nav-arrow--prev { left: 10px; }
+.nav-arrow--next { right: 10px; }
+.nav-arrow.hidden { display: none; }
+
+/* Bottom navigation bar */
+#bottom-nav {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
+  background: rgba(13,11,8,0.95); border-top: 1px solid var(--border-ornament-gold);
+  display: flex; align-items: center; justify-content: center; gap: 0;
+  padding: 0; height: 42px;
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+}
+#bottom-nav .bnav-item {
+  display: flex; align-items: center; justify-content: center;
+  padding: 8px 14px; cursor: pointer;
+  font-family: 'Cinzel', serif; font-size: 0.85rem; font-weight: 600;
+  color: var(--text-cream-muted); text-decoration: none;
+  border: none; background: none;
+  transition: color 0.2s, background 0.2s;
+  white-space: nowrap; height: 100%;
+}
+#bottom-nav .bnav-item:hover { color: var(--text-gold-bright); background: rgba(201,168,76,0.1); }
+#bottom-nav .bnav-item.active { color: var(--text-gold); border-bottom: 2px solid var(--text-gold); }
+#bottom-nav .bnav-sep { width: 1px; height: 20px; background: var(--border-ornament); flex-shrink: 0; }
+#bottom-nav .bnav-page { font-family: 'MedievalSharp', cursive; font-size: 0.9rem; color: var(--text-gold); padding: 8px 12px; pointer-events: none; }
+/* Color accents for chapter nav items */
+#bottom-nav .bnav-item[data-chapter="battle"] { color: var(--accent-battle-light); }
+#bottom-nav .bnav-item[data-chapter="battle"]:hover { background: rgba(196,30,58,0.15); }
+#bottom-nav .bnav-item[data-chapter="core"] { color: var(--accent-core-light); }
+#bottom-nav .bnav-item[data-chapter="core"]:hover { background: rgba(155,89,182,0.15); }
+#bottom-nav .bnav-item[data-chapter="camp"] { color: var(--accent-camp-light); }
+#bottom-nav .bnav-item[data-chapter="camp"]:hover { background: rgba(46,204,113,0.15); }
+#bottom-nav .bnav-item[data-chapter="ui"] { color: var(--accent-ui-light); }
+#bottom-nav .bnav-item[data-chapter="ui"]:hover { background: rgba(52,152,219,0.15); }
+#bottom-nav .bnav-item[data-chapter="world"] { color: var(--accent-world-light); }
+#bottom-nav .bnav-item[data-chapter="world"]:hover { background: rgba(0,180,216,0.15); }
+#bottom-nav .bnav-item[data-chapter="helpers"] { color: var(--accent-helpers-light); }
+#bottom-nav .bnav-item[data-chapter="helpers"]:hover { background: rgba(212,160,23,0.15); }
+
+.fade-in-page { opacity: 0; transform: translateY(10px); transition: opacity 0.5s ease-out, transform 0.5s ease-out; }
+.fade-in-page.visible { opacity: 1; transform: translateY(0); }
+
+/* Colophon / Guard / Back */
+.guard-page { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center; }
+.guard-ornament { width: 120px; height: 120px; border: 2px solid var(--border-ornament-gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 15px; position: relative; }
+.guard-ornament::before { content: ''; position: absolute; width: 140px; height: 140px; border: 1px solid var(--border-ornament); border-radius: 50%; }
+.colophon { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center; gap: 8px; }
+.colophon-title { font-family: 'Cinzel', serif; font-size: 0.8rem; color: var(--text-gold); letter-spacing: 2px; text-transform: uppercase; }
+.colophon-line { font-size: 0.75rem; color: var(--text-cream-muted); }
+.back-cover { display: flex; align-items: center; justify-content: center; height: 100%; }
+.back-cover-ornament { width: 100px; height: 100px; border: 2px solid var(--border-ornament-gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 30px rgba(139,115,64,0.2); }
+
+/* Pitch panel — fixed left of the book, visible only on page 0 */
+#pitch-panel {
+  position: fixed; left: 0; top: 0; bottom: 42px;
+  width: 40vw;
+  display: flex; flex-direction: column; justify-content: center; align-items: center;
+  padding: 40px 5vw; text-align: center; z-index: 50;
+  pointer-events: none;
+  opacity: 1; transition: opacity 0.5s ease;
+}
+#pitch-panel.hidden { opacity: 0; pointer-events: none; }
+#pitch-panel .pitch-icon {
+  font-size: 3rem; margin-bottom: 16px; opacity: 0.7;
+  filter: drop-shadow(0 0 15px rgba(201,168,76,0.5));
+}
+#pitch-panel .pitch-title {
+  font-family: 'MedievalSharp', cursive; font-size: 1.6rem; color: var(--text-gold);
+  letter-spacing: 3px; margin-bottom: 18px;
+  text-shadow: 0 0 20px var(--glow-gold), 0 2px 4px rgba(0,0,0,0.5);
+}
+#pitch-panel .pitch-ornament {
+  width: 70%; height: 1px; margin: 0 auto 18px;
+  background: linear-gradient(90deg, transparent, var(--text-gold), transparent);
+  position: relative;
+}
+#pitch-panel .pitch-ornament::after {
+  content: '\2726'; position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%); color: var(--text-gold); font-size: 0.65rem;
+  background: var(--grimoire-bg); padding: 0 8px;
+}
+#pitch-panel .pitch-text {
+  font-family: 'Crimson Text', serif; font-size: 1.05rem; color: var(--text-cream);
+  line-height: 1.85; text-align: justify; hyphens: auto;
+  font-style: italic; max-width: 420px;
+}
+#pitch-panel .pitch-text::first-letter {
+  font-family: 'MedievalSharp', cursive; font-size: 3.2rem; float: left;
+  color: var(--text-gold); text-shadow: 0 0 10px var(--glow-gold);
+  line-height: 0.7; margin-right: 8px; margin-top: 6px;
+  font-style: normal;
+}
+#pitch-panel .pitch-meta {
+  margin-top: 22px; padding-top: 16px;
+  border-top: 1px solid rgba(139,115,64,0.3);
+  display: flex; flex-direction: column; gap: 6px; width: 100%; max-width: 300px;
+}
+#pitch-panel .pitch-meta-line {
+  font-family: 'Crimson Text', serif; font-size: 0.88rem; color: var(--text-cream-muted);
+  display: flex; justify-content: space-between;
+}
+#pitch-panel .pitch-meta-line strong {
+  font-family: 'Cinzel', serif; font-size: 0.72rem; color: var(--text-gold);
+  letter-spacing: 1px; text-transform: uppercase;
+}
+@media (max-width: 1100px) {
+  #pitch-panel { display: none; }
+}
+
+@media (max-width: 899px) {
+  .nav-arrow { padding: 10px; }
+  .nav-arrow svg { width: 22px; height: 38px; }
+  .nav-arrow--prev { left: 2px; }
+  .nav-arrow--next { right: 2px; }
+  .page-inner { padding: 30px 18px 30px; }
+  .cover-title { font-size: 1.4rem; }
+  .chapter-numeral { font-size: 3.5rem; }
+  #bottom-nav { overflow-x: auto; justify-content: flex-start; }
+  #bottom-nav .bnav-item { padding: 8px 10px; font-size: 0.62rem; }
+}
+</style>
+</head>
+<body>
+
+<button class="nav-arrow nav-arrow--prev hidden" id="nav-prev" aria-label="Page pr&eacute;c&eacute;dente">
+  <svg viewBox="0 0 30 50"><path d="M25 5 L5 25 L25 45"/><path d="M5 25 L25 25" opacity="0.3"/></svg>
+</button>
+<button class="nav-arrow nav-arrow--next" id="nav-next" aria-label="Page suivante">
+  <svg viewBox="0 0 30 50"><path d="M5 5 L25 25 L5 45"/><path d="M25 25 L5 25" opacity="0.3"/></svg>
+</button>
+<!-- Bottom navigation bar -->
+<nav id="bottom-nav">
+  <button class="bnav-item" data-goto="0">Couverture</button>
+  <div class="bnav-sep"></div>
+  <button class="bnav-item" data-goto="2">Index</button>
+  <div class="bnav-sep"></div>
+  <button class="bnav-item" data-goto="4">Vue d'ensemble</button>
+  <div class="bnav-sep"></div>
+  <button class="bnav-item" data-chapter="battle" data-goto="9">I. Battle</button>
+  <div class="bnav-sep"></div>
+  <button class="bnav-item" data-chapter="core" data-goto="17">II. Core</button>
+  <div class="bnav-sep"></div>
+  <button class="bnav-item" data-chapter="camp" data-goto="21">III. Camp</button>
+  <div class="bnav-sep"></div>
+  <button class="bnav-item" data-chapter="ui" data-goto="25">IV. UI</button>
+  <div class="bnav-sep"></div>
+  <button class="bnav-item" data-chapter="world" data-goto="29">V. World</button>
+  <div class="bnav-sep"></div>
+  <button class="bnav-item" data-chapter="helpers" data-goto="33">VI. Helpers</button>
+  <div class="bnav-sep"></div>
+  <span class="bnav-page" id="page-indicator">&mdash; 0 / 37 &mdash;</span>
+</nav>
+
+<!-- Pitch panel — outside the book, fixed left -->
+<div id="pitch-panel">
+  <div class="pitch-icon">&#9876;</div>
+  <div class="pitch-title">George &amp; Dragons</div>
+  <div class="pitch-ornament"></div>
+  <p class="pitch-text">George &amp; Dragons est un Tactical RPG vue isom&eacute;trique dans lequel vous explorez et d&eacute;couvrez les secrets des r&eacute;gions d&rsquo;une France m&eacute;di&eacute;vale fictive. Vous y combattez puis recrutez chaque cr&eacute;ature l&eacute;gendaire qui les peuple, et renforcez votre compagnie avec des recrues. Composez diff&eacute;rentes &eacute;quipes de monstres et humains, et essayez de nombreuses synergies avec les pouvoirs des cr&eacute;atures et artefacts.</p>
+  <div class="pitch-meta">
+    <div class="pitch-meta-line"><strong>Genre</strong><span>Tactical RPG</span></div>
+    <div class="pitch-meta-line"><strong>Plateforme</strong><span>PC</span></div>
+    <div class="pitch-meta-line"><strong>Moteur</strong><span>Godot 4 &mdash; C#</span></div>
+    <div class="pitch-meta-line"><strong>Dur&eacute;e</strong><span>12-16h / 22-30h</span></div>
+  </div>
+</div>
+
+<div id="grimoire-wrapper">
+<div id="grimoire">
+
+<!-- PAGE 0 : COUVERTURE -->
+<div class="grimoire-page hard-page" data-density="hard" style="background:radial-gradient(ellipse at 50% 30%, #2a1f12 0%, #1a1410 40%, #0d0b08 100%);">
+  <div class="cover-content">
+    <div class="cover-frame">
+      <svg class="cover-frame-corner tl" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M2 48 L2 2 L48 2" stroke="#c9a84c" stroke-width="2" fill="none"/>
+        <path d="M2 35 C2 20 10 10 25 8" stroke="#8b7340" stroke-width="1" fill="none" opacity="0.6"/>
+        <path d="M15 2 C13 13 8 18 2 20" stroke="#8b7340" stroke-width="1" fill="none" opacity="0.6"/>
+        <circle cx="8" cy="8" r="3" fill="none" stroke="#c9a84c" stroke-width="1" opacity="0.5"/>
+        <circle cx="8" cy="8" r="1.5" fill="#c9a84c" opacity="0.4"/>
+      </svg>
+      <svg class="cover-frame-corner tr" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M2 48 L2 2 L48 2" stroke="#c9a84c" stroke-width="2" fill="none"/>
+        <path d="M2 35 C2 20 10 10 25 8" stroke="#8b7340" stroke-width="1" fill="none" opacity="0.6"/>
+        <path d="M15 2 C13 13 8 18 2 20" stroke="#8b7340" stroke-width="1" fill="none" opacity="0.6"/>
+        <circle cx="8" cy="8" r="3" fill="none" stroke="#c9a84c" stroke-width="1" opacity="0.5"/>
+        <circle cx="8" cy="8" r="1.5" fill="#c9a84c" opacity="0.4"/>
+      </svg>
+      <svg class="cover-frame-corner bl" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M2 48 L2 2 L48 2" stroke="#c9a84c" stroke-width="2" fill="none"/>
+        <path d="M2 35 C2 20 10 10 25 8" stroke="#8b7340" stroke-width="1" fill="none" opacity="0.6"/>
+        <path d="M15 2 C13 13 8 18 2 20" stroke="#8b7340" stroke-width="1" fill="none" opacity="0.6"/>
+        <circle cx="8" cy="8" r="3" fill="none" stroke="#c9a84c" stroke-width="1" opacity="0.5"/>
+        <circle cx="8" cy="8" r="1.5" fill="#c9a84c" opacity="0.4"/>
+      </svg>
+      <svg class="cover-frame-corner br" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M2 48 L2 2 L48 2" stroke="#c9a84c" stroke-width="2" fill="none"/>
+        <path d="M2 35 C2 20 10 10 25 8" stroke="#8b7340" stroke-width="1" fill="none" opacity="0.6"/>
+        <path d="M15 2 C13 13 8 18 2 20" stroke="#8b7340" stroke-width="1" fill="none" opacity="0.6"/>
+        <circle cx="8" cy="8" r="3" fill="none" stroke="#c9a84c" stroke-width="1" opacity="0.5"/>
+        <circle cx="8" cy="8" r="1.5" fill="#c9a84c" opacity="0.4"/>
+      </svg>
+    </div>
+    <svg class="cover-decoration-top" width="200" height="20" viewBox="0 0 200 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0 10 Q50 0 100 10 Q150 20 200 10" stroke="#c9a84c" stroke-width="1" fill="none"/>
+      <path d="M20 10 Q50 3 100 10 Q150 17 180 10" stroke="#8b7340" stroke-width="0.5" fill="none"/>
+    </svg>
+    <div class="cover-seal">
+      <svg width="160" height="160" viewBox="0 0 160 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Epee gauche -->
+        <g transform="translate(80,80) rotate(-30) translate(-80,-80)">
+          <rect x="77" y="20" width="6" height="80" rx="2" fill="#8b7340" opacity="0.8"/>
+          <rect x="67" y="95" width="26" height="5" rx="2" fill="#c9a84c"/>
+          <rect x="78" y="100" width="4" height="18" rx="1" fill="#6b5a2e"/>
+          <circle cx="80" cy="122" r="4" fill="#c9a84c" opacity="0.6"/>
+        </g>
+        <!-- Epee droite -->
+        <g transform="translate(80,80) rotate(30) translate(-80,-80)">
+          <rect x="77" y="20" width="6" height="80" rx="2" fill="#8b7340" opacity="0.8"/>
+          <rect x="67" y="95" width="26" height="5" rx="2" fill="#c9a84c"/>
+          <rect x="78" y="100" width="4" height="18" rx="1" fill="#6b5a2e"/>
+          <circle cx="80" cy="122" r="4" fill="#c9a84c" opacity="0.6"/>
+        </g>
+        <!-- Bouclier -->
+        <path d="M80 35 L110 50 L110 90 Q110 120 80 140 Q50 120 50 90 L50 50 Z" fill="#1a1410" stroke="#c9a84c" stroke-width="2.5"/>
+        <path d="M80 42 L105 55 L105 88 Q105 115 80 133 Q55 115 55 88 L55 55 Z" fill="none" stroke="#8b7340" stroke-width="1" opacity="0.5"/>
+        <!-- Diamant central -->
+        <path d="M80 65 L92 85 L80 105 L68 85 Z" fill="none" stroke="#c9a84c" stroke-width="1.5"/>
+        <path d="M80 70 L88 85 L80 100 L72 85 Z" fill="#c9a84c" opacity="0.15"/>
+        <!-- Couronne au sommet -->
+        <path d="M68 48 L72 38 L76 45 L80 35 L84 45 L88 38 L92 48 Z" fill="#c9a84c" opacity="0.7"/>
+        <circle cx="80" cy="85" r="3" fill="#c9a84c" opacity="0.5"/>
+      </svg>
+    </div>
+    <div class="cover-ornament-line"></div>
+    <h1 class="cover-title">Le Grimoire de<br>George Dragons</h1>
+    <div class="cover-ornament-line"></div>
+    <p class="cover-subtitle">Documentation Technique</p>
+    <p class="cover-meta">78 Parchemins &bull; ~9 335 Runes</p>
+    <div class="cover-ornament-line"></div>
+    <p class="cover-meta" style="margin-top:8px;font-size:0.7rem">2 mars 2026</p>
+    <svg class="cover-decoration-bottom" width="200" height="20" viewBox="0 0 200 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0 10 Q50 20 100 10 Q150 0 200 10" stroke="#c9a84c" stroke-width="1" fill="none"/>
+      <path d="M20 10 Q50 17 100 10 Q150 3 180 10" stroke="#8b7340" stroke-width="0.5" fill="none"/>
+    </svg>
+  </div>
+</div>
+
+<!-- PAGE 1 : PAGE DE GARDE -->
+<div class="grimoire-page" style="background: radial-gradient(ellipse at 50% 40%, #2a2118 0%, #1a1410 60%, #0d0b08 100%);">
+  <div class="page-inner" style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center">
+    <div style="width:130px;height:130px;border:2px solid var(--text-gold);border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:20px;box-shadow:0 0 30px var(--glow-gold),inset 0 0 25px rgba(201,168,76,0.12);position:relative">
+      <span style="font-size:3rem">&#128081;</span>
+      <div style="position:absolute;width:155px;height:155px;border:1px solid var(--border-ornament-gold);border-radius:50%;opacity:0.5"></div>
+    </div>
+    <h2 style="font-family:'Cinzel';font-size:1.6rem;color:var(--text-gold);letter-spacing:3px;margin-bottom:8px">tactics_game_proto</h2>
+    <div class="sep-chapter" style="width:50%;margin:12px auto"></div>
+    <p style="font-family:'MedievalSharp';font-size:1.1rem;color:var(--text-gold-bright);line-height:1.7">&laquo; Que ce grimoire guide tes pas<br>dans les m&eacute;andres du code &raquo;</p>
+    <div class="sep-ornate" style="margin-top:20px;width:35%"></div>
+    <p style="font-family:'Crimson Text';font-size:0.95rem;color:var(--text-cream);margin-top:15px">Documentation Technique Compl&egrave;te</p>
+    <p style="font-family:'Crimson Text';font-size:1rem;color:var(--text-cream-muted);margin-top:5px">78 fichiers &bull; 6 syst&egrave;mes &bull; 51 classes</p>
+    <div style="margin-top:20px;padding:10px 20px;border:1px solid var(--border-ornament-gold);border-radius:6px;background:rgba(201,168,76,0.06)">
+      <p style="font-family:'JetBrains Mono';font-size:0.95rem;color:var(--text-gold)">Commit : 3bfaeec</p>
+      <p style="font-family:'Crimson Text';font-size:0.95rem;color:var(--text-cream-muted)">2 mars 2026</p>
+    </div>
+    <div class="page-footer">&mdash; 1 &mdash;</div>
+  </div>
+</div>
+
+<!-- PAGE 2 : INDEX (1/2) — remplace l'ancien sommaire -->
+<div class="grimoire-page">
+  <div class="page-inner">
+    <div class="page-header">Index</div>
+    <h2 style="font-family:'Cinzel';font-size:1.15rem;color:var(--text-gold);text-align:center;margin-bottom:8px">Sommaire</h2>
+    <div class="sep-ornate" style="width:50%;margin-bottom:10px"></div>
+
+    <div class="page-index-section" style="color:var(--text-cream-muted)">Vue d'ensemble</div>
+    <div class="page-index-entry" data-goto="4"><span class="page-index-num">4</span><span class="page-index-label">Statistiques du Projet</span></div>
+    <div class="page-index-entry" data-goto="5"><span class="page-index-num">5</span><span class="page-index-label">Architecture Globale &mdash; diagramme</span></div>
+    <div class="page-index-entry" data-goto="6"><span class="page-index-num">6</span><span class="page-index-label">Derniers Commits</span></div>
+    <div class="page-index-entry" data-goto="7"><span class="page-index-num">7</span><span class="page-index-label">Cr&eacute;dits &mdash; DocTech</span></div>
+
+    <div class="page-index-section" style="color:var(--accent-battle-light)">I &mdash; Battle</div>
+    <div class="page-index-entry" data-goto="8"><span class="page-index-num">8</span><span class="page-index-label">Hi&eacute;rarchie des Abilities</span></div>
+    <div class="page-index-entry" data-goto="9"><span class="page-index-num">9</span><span class="page-index-label">Machine &agrave; &eacute;tats &amp; Pipeline</span></div>
+    <div class="page-index-entry" data-goto="10"><span class="page-index-num">10</span><span class="page-index-label">BattleInstance</span></div>
+    <div class="page-index-entry" data-goto="11"><span class="page-index-num">11</span><span class="page-index-label">BattlePawn &mdash; stats, mouvement, events</span></div>
+    <div class="page-index-entry" data-goto="12"><span class="page-index-num">12</span><span class="page-index-label">BaseAbility, TurnsOrchestrator, Packets</span></div>
+    <div class="page-index-entry" data-goto="13"><span class="page-index-num">13</span><span class="page-index-label">StatusEffect / StatusController</span></div>
+    <div class="page-index-entry" data-goto="14"><span class="page-index-num">14</span><span class="page-index-label">Equipment, Pathfinder, Movement</span></div>
+    <div class="page-index-entry" data-goto="15"><span class="page-index-num">15</span><span class="page-index-label">EnemyAI, &Eacute;tats de Bataille</span></div>
+
+    <div class="page-index-section" style="color:var(--accent-core-light)">II &mdash; Core</div>
+    <div class="page-index-entry" data-goto="16"><span class="page-index-num">16</span><span class="page-index-label">Pr&eacute;sentation Core</span></div>
+    <div class="page-index-entry" data-goto="17"><span class="page-index-num">17</span><span class="page-index-label">Game, GameState, Battle node</span></div>
+    <div class="page-index-entry" data-goto="18"><span class="page-index-num">18</span><span class="page-index-label">TeamManager, CharacterData, WorldMap</span></div>
+    <div class="page-index-entry" data-goto="19"><span class="page-index-num">19</span><span class="page-index-label">ArtifactData, GameProgress</span></div>
+
+    <div class="page-footer">&mdash; 2 &mdash;</div>
+  </div>
+</div>
+
+<!-- PAGE 3 : INDEX (2/2) -->
+<div class="grimoire-page">
+  <div class="page-inner">
+    <div class="page-header">Index (suite)</div>
+
+    <div class="page-index-section" style="color:var(--accent-camp-light)">III &mdash; Camp</div>
+    <div class="page-index-entry" data-goto="20"><span class="page-index-num">20</span><span class="page-index-label">Pr&eacute;sentation Camp</span></div>
+    <div class="page-index-entry" data-goto="21"><span class="page-index-num">21</span><span class="page-index-label">CampController, CampCharacter</span></div>
+    <div class="page-index-entry" data-goto="22"><span class="page-index-num">22</span><span class="page-index-label">CampInteractable</span></div>
+    <div class="page-index-entry" data-goto="23"><span class="page-index-num">23</span><span class="page-index-label">BarracksUI</span></div>
+
+    <div class="page-index-section" style="color:var(--accent-ui-light)">IV &mdash; UI</div>
+    <div class="page-index-entry" data-goto="24"><span class="page-index-num">24</span><span class="page-index-label">Pr&eacute;sentation UI</span></div>
+    <div class="page-index-entry" data-goto="25"><span class="page-index-num">25</span><span class="page-index-label">BattleUI, PlayerTurnUI</span></div>
+    <div class="page-index-entry" data-goto="26"><span class="page-index-num">26</span><span class="page-index-label">FloatingText, EscapeMenu, MainMenu</span></div>
+    <div class="page-index-entry" data-goto="27"><span class="page-index-num">27</span><span class="page-index-label">BtnBattleStarter, IBattleUILayer</span></div>
+
+    <div class="page-index-section" style="color:var(--accent-world-light)">V &mdash; World</div>
+    <div class="page-index-entry" data-goto="28"><span class="page-index-num">28</span><span class="page-index-label">Pr&eacute;sentation World</span></div>
+    <div class="page-index-entry" data-goto="29"><span class="page-index-num">29</span><span class="page-index-label">Subworld, SubworldChunk</span></div>
+    <div class="page-index-entry" data-goto="30"><span class="page-index-num">30</span><span class="page-index-label">SubworldGenerator, CameraRig</span></div>
+    <div class="page-index-entry" data-goto="31"><span class="page-index-num">31</span><span class="page-index-label">TerrainCollider, TerrainMesher, WorldGen</span></div>
+
+    <div class="page-index-section" style="color:var(--accent-helpers-light)">VI &mdash; Helpers</div>
+    <div class="page-index-entry" data-goto="32"><span class="page-index-num">32</span><span class="page-index-label">Pr&eacute;sentation Helpers</span></div>
+    <div class="page-index-entry" data-goto="33"><span class="page-index-num">33</span><span class="page-index-label">ImmediateRenderer, Raycaster, AbilityDB, MeshDB</span></div>
+    <div class="page-index-entry" data-goto="34"><span class="page-index-num">34</span><span class="page-index-label">ShapeBuilder / AOEShape, VectorHelpers</span></div>
+    <div class="page-index-entry" data-goto="35"><span class="page-index-num">35</span><span class="page-index-label">CameraHelpers, TransformHelpers, Names</span></div>
+
+    <div class="page-footer">&mdash; 3 &mdash;</div>
+  </div>
+</div>
+
+<!-- PAGE 4 : STATS -->
+<div class="grimoire-page">
+  <div class="page-inner">
+    <div class="page-header">Vue d'ensemble</div>
+    <h2 style="font-family:'Cinzel';font-size:1rem;color:var(--text-gold);text-align:center;margin-bottom:10px">Statistiques du Projet</h2>
+    <div class="sep-ornate" style="width:40%;margin-bottom:10px"></div>
+    <div class="stats-grid">
+      <div class="stat-box"><span class="stat-value" data-target="78">0</span><span class="stat-label">Fichiers C#</span></div>
+      <div class="stat-box"><span class="stat-value" data-target="9335">0</span><span class="stat-label">Lignes de code</span></div>
+      <div class="stat-box"><span class="stat-value" data-target="39">0</span><span class="stat-label">&#9876; Battle</span></div>
+      <div class="stat-box"><span class="stat-value" data-target="8">0</span><span class="stat-label">&#128081; Core</span></div>
+      <div class="stat-box"><span class="stat-value" data-target="4">0</span><span class="stat-label">&#127984; Camp</span></div>
+      <div class="stat-box"><span class="stat-value" data-target="10">0</span><span class="stat-label">&#127917; UI</span></div>
+      <div class="stat-box"><span class="stat-value" data-target="6">0</span><span class="stat-label">&#127758; World</span></div>
+      <div class="stat-box"><span class="stat-value" data-target="11">0</span><span class="stat-label">&#128295; Helpers</span></div>
+    </div>
+    <span class="back-to-index" data-goto="2">◂ Index</span>
+    <div class="page-footer">&mdash; 4 &mdash;</div>
+  </div>
+</div>
+
+<!-- PAGE 5 : DIAGRAMME ARCHITECTURE -->
+<div class="grimoire-page">
+  <div class="page-inner">
+    <div class="page-header">Vue d'ensemble</div>
+    <h3 style="font-family:'Cinzel';font-size:1.1rem;color:var(--text-gold);text-align:center;margin-bottom:10px">Architecture Globale</h3>
+    <div class="mermaid-container">
+      <div class="mermaid-pending" data-mermaid-source="graph TD
+    Game[&quot;Game&quot;]
+    Battle[&quot;&#9876; Battle&quot;]
+    Camp[&quot;&#127984; Camp&quot;]
+    World[&quot;&#127758; World&quot;]
+    UI[&quot;&#127917; UI&quot;]
+    Core[&quot;&#128081; Core&quot;]
+    Game --> Battle
+    Game --> Camp
+    Game --> World
+    Game --> UI
+    Game --> Core
+    Battle --> Abilities
+    Battle --> AI[&quot;AI System&quot;]
+    Battle --> BStates[&quot;States&quot;]
+    Battle --> Equipment
+    Core --> TeamManager
+    Core --> WorldMap
+    World --> Subworld
+    World --> CameraRig
+    style Game fill:#1e1b4b,stroke:#9b59b6,stroke-width:2px,color:#d4c5a9
+    style Battle fill:#1c1917,stroke:#c41e3a,stroke-width:2px,color:#fca5a5
+    style Camp fill:#052e16,stroke:#2ecc71,stroke-width:2px,color:#86efac
+    style World fill:#083344,stroke:#00b4d8,stroke-width:2px,color:#67e8f9
+    style UI fill:#172554,stroke:#3498db,stroke-width:2px,color:#93c5fd
+    style Core fill:#1e1b4b,stroke:#9b59b6,stroke-width:2px,color:#c4b5fd
+    style Abilities fill:#1c1917,stroke:#c41e3a,stroke-width:1px,color:#fca5a5
+    style AI fill:#1c1917,stroke:#c41e3a,stroke-width:1px,color:#fca5a5
+    style BStates fill:#1c1917,stroke:#c41e3a,stroke-width:1px,color:#fca5a5
+    style Equipment fill:#1c1917,stroke:#c41e3a,stroke-width:1px,color:#fca5a5
+    style TeamManager fill:#1e1b4b,stroke:#9b59b6,stroke-width:1px,color:#c4b5fd
+    style WorldMap fill:#1e1b4b,stroke:#9b59b6,stroke-width:1px,color:#c4b5fd
+    style Subworld fill:#083344,stroke:#00b4d8,stroke-width:1px,color:#67e8f9
+    style CameraRig fill:#083344,stroke:#00b4d8,stroke-width:1px,color:#67e8f9">Chargement du diagramme...</div>
+    </div>
+    <span class="back-to-index" data-goto="2">◂ Index</span>
+    <div class="page-footer">&mdash; 5 &mdash;</div>
+  </div>
+</div>
+
+<!-- PAGE 6 : CHANGEMENTS RÉCENTS -->
+<div class="grimoire-page">
+  <div class="page-inner">
+    <div class="page-header">Changements R&eacute;cents</div>
+    <h2 style="font-family:'Cinzel';font-size:1.25rem;color:var(--text-gold);margin-bottom:12px">Derniers Commits</h2>
+    <div class="sep-simple"></div>
+    <div class="change-item"><span class="hash">3bfaeec</span><span class="msg">HUD panel player</span></div>
+    <div class="change-item"><span class="hash">493ef66</span><span class="msg">Ui v2 proto barrack</span></div>
+    <div class="change-item"><span class="hash">1216700</span><span class="msg">floating text heal damage and miss</span></div>
+    <div class="change-item"><span class="hash">ceb074e</span><span class="msg">Pathfind around other entities</span></div>
+    <div class="change-item"><span class="hash">77728d7</span><span class="msg">Rename some thing, Fix some bugs</span></div>
+    <div class="change-item"><span class="hash">317a11b</span><span class="msg">Doc equipment system</span></div>
+    <div class="change-item"><span class="hash">78318a2</span><span class="msg">Add equipment system + Example Equipments</span></div>
+    <div class="change-item"><span class="hash">f3f112e</span><span class="msg">Ability system doc</span></div>
+    <div class="change-item"><span class="hash">49399d7</span><span class="msg">Big update : Ability System</span></div>
+    <div class="change-item"><span class="hash">5c68460</span><span class="msg">Base enemy turn logic</span></div>
+    <div class="change-item"><span class="hash">69349bb</span><span class="msg">Fixup bug in movement code</span></div>
+    <div class="change-item"><span class="hash">ab0aa82</span><span class="msg">Link gameplay + team + UI</span></div>
+    <div class="change-item"><span class="hash">7c0d267</span><span class="msg">UI V1 Artefact / Competence + nom</span></div>
+    <div class="change-item"><span class="hash">3e4dc70</span><span class="msg">Team Manager + Artifact + Ability</span></div>
+    <div class="change-item"><span class="hash">599bcdc</span><span class="msg">World map / Sprite Character / Pathfinding</span></div>
+    <span class="back-to-index" data-goto="2">◂ Index</span>
+    <div class="page-footer">&mdash; 6 &mdash;</div>
+  </div>
+</div>
+
+<!-- PAGE 7 : CRÉDITS -->
+<div class="grimoire-page">
+  <div class="page-inner">
+    <div class="page-header">Cr&eacute;dits</div>
+    <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:80%;text-align:center">
+      <h3 style="font-family:'Cinzel';font-size:1.15rem;color:var(--text-gold);margin-bottom:15px">G&eacute;n&eacute;r&eacute; par DocTech</h3>
+      <div class="sep-ornate" style="width:40%"></div>
+      <p style="font-size:1rem;color:var(--text-cream-muted);margin-top:15px;font-style:italic">Claude Code Skill<br>Grimoire Edition</p>
+      <p style="font-family:'JetBrains Mono';font-size:0.85rem;color:var(--text-cream-muted);margin-top:10px">3bfaeec</p>
+    </div>
+    <span class="back-to-index" data-goto="2">◂ Index</span>
+    <div class="page-footer">&mdash; 7 &mdash;</div>
+  </div>
+</div>
+
+<!-- ====== CHAPITRE I : BATTLE (8-15) ====== -->
+<!-- PAGE 8 : Titre + Diagramme Abilities -->
+<div class="grimoire-page">
+  <div class="page-inner">
+    <div class="chapter-title-page" style="height:auto;padding:15px 0">
+      <span class="chapter-numeral">I</span>
+      <h2 class="chapter-name" style="color:var(--accent-battle-light)">Battle</h2>
+      <div class="sep-chapter"></div>
+      <p class="chapter-desc">Combat tactique au tour par tour. Orchestration des phases joueur et ennemi, syst&egrave;me de capacit&eacute;s, pipeline de dommages et soins, effets de statut empilables, intelligence artificielle, et &eacute;quipement modifiant les r&egrave;gles du combat.</p>
+    </div>
+    <h3 style="font-family:'Cinzel';font-size:1rem;color:var(--text-gold);text-align:center;margin:10px 0 6px">Hi&eacute;rarchie des Abilities</h3>
+    <div class="mermaid-container" style="padding:8px">
+      <div class="mermaid-pending" data-mermaid-source="graph TD
+    Base[&quot;BaseAbility (abstract)&quot;]
+    Punch[&quot;Punch&quot;]
+    Frappe[&quot;Frappe&quot;]
+    BouleDeFeu[&quot;BouleDeFeu&quot;]
+    Charge[&quot;Charge&quot;]
+    Glaciation[&quot;Glaciation&quot;]
+    Soin[&quot;Soin&quot;]
+    Bouclier[&quot;BouclierSacre&quot;]
+    TirPrecis[&quot;TirPrecis&quot;]
+    Pluie[&quot;PluieDeFleches&quot;]
+    MeleeStrike[&quot;MeleeStrike&quot;]
+    PoisonDart[&quot;PoisonDart&quot;]
+    BleedingSlash[&quot;BleedingSlash&quot;]
+    ForcePush[&quot;ForcePush&quot;]
+    Cleanse[&quot;Cleanse&quot;]
+    Base --> Punch
+    Base --> Frappe
+    Base --> BouleDeFeu
+    Base --> Charge
+    Base --> Glaciation
+    Base --> Soin
+    Base --> Bouclier
+    Base --> TirPrecis
+    Base --> Pluie
+    Base -.-> MeleeStrike
+    Base -.-> PoisonDart
+    Base -.-> BleedingSlash
+    Base -.-> ForcePush
+    Base -.-> Cleanse
+    style Base fill:#1c1917,stroke:#c41e3a,stroke-width:2px,color:#fca5a5
+    style Punch fill:#1c1917,stroke:#c41e3a,stroke-width:1px,color:#fca5a5
+    style Frappe fill:#1c1917,stroke:#c41e3a,stroke-width:1px,color:#fca5a5
+    style BouleDeFeu fill:#1c1917,stroke:#c41e3a,stroke-width:1px,color:#fca5a5
+    style Charge fill:#1c1917,stroke:#c41e3a,stroke-width:1px,color:#fca5a5
+    style Glaciation fill:#1c1917,stroke:#c41e3a,stroke-width:1px,color:#fca5a5
+    style Soin fill:#1c1917,stroke:#c41e3a,stroke-width:1px,color:#fca5a5
+    style Bouclier fill:#1c1917,stroke:#c41e3a,stroke-width:1px,color:#fca5a5
+    style TirPrecis fill:#1c1917,stroke:#c41e3a,stroke-width:1px,color:#fca5a5
+    style Pluie fill:#1c1917,stroke:#c41e3a,stroke-width:1px,color:#fca5a5
+    style MeleeStrike fill:#1a1a2e,stroke:#4b5563,stroke-width:1px,color:#9ca3af,stroke-dasharray:5 5
+    style PoisonDart fill:#1a1a2e,stroke:#4b5563,stroke-width:1px,color:#9ca3af,stroke-dasharray:5 5
+    style BleedingSlash fill:#1a1a2e,stroke:#4b5563,stroke-width:1px,color:#9ca3af,stroke-dasharray:5 5
+    style ForcePush fill:#1a1a2e,stroke:#4b5563,stroke-width:1px,color:#9ca3af,stroke-dasharray:5 5
+    style Cleanse fill:#1a1a2e,stroke:#4b5563,stroke-width:1px,color:#9ca3af,stroke-dasharray:5 5">Chargement...</div>
+    </div>
+    <span class="back-to-index" data-goto="2">◂ Index</span>
+    <div class="page-footer">&mdash; 8 &mdash;</div>
+  </div>
+</div>
+
+<!-- PAGE 9 : State Machine + Pipeline -->
+<div class="grimoire-page">
+  <div class="page-inner">
+    <div class="page-header">Battle</div>
+    <h3 style="font-family:'Cinzel';font-size:1rem;color:var(--text-gold);margin-bottom:8px">Machine &agrave; &eacute;tats</h3>
+    <div class="mermaid-container" style="padding:8px">
+      <div class="mermaid-pending" data-mermaid-source="stateDiagram-v2
+    [*] --> Positioning
+    Positioning --> PlayerTurn
+    PlayerTurn --> EnemyTurn
+    EnemyTurn --> PlayerTurn
+    EnemyTurn --> [*]">Chargement...</div>
+    </div>
+    <h3 style="font-family:'Cinzel';font-size:1rem;color:var(--text-gold);margin:10px 0 8px">Pipeline d'&eacute;v&eacute;nements</h3>
+    <div class="mermaid-container" style="padding:8px">
+      <div class="mermaid-pending" data-mermaid-source="graph LR
+    Source[&quot;Source&quot;]
+    OnBefore[&quot;OnBefore&quot;]
+    Apply[&quot;Apply&quot;]
+    OnAfter[&quot;OnAfter&quot;]
+    Target[&quot;Target&quot;]
+    Source --> OnBefore --> Apply --> OnAfter --> Target
+    style Source fill:#1e1b4b,stroke:#9b59b6,stroke-width:2px,color:#c4b5fd
+    style OnBefore fill:#172554,stroke:#3498db,stroke-width:2px,color:#93c5fd
+    style Apply fill:#1c1917,stroke:#c41e3a,stroke-width:2px,color:#fca5a5
+    style OnAfter fill:#172554,stroke:#3498db,stroke-width:2px,color:#93c5fd
+    style Target fill:#1e1b4b,stroke:#9b59b6,stroke-width:2px,color:#c4b5fd">Chargement...</div>
+    </div>
+    <span class="back-to-index" data-goto="2">◂ Index</span>
+    <div class="page-footer">&mdash; 9 &mdash;</div>
+  </div>
+</div>
+
+<!-- PAGE 10 : BattleInstance -->
+<div class="grimoire-page">
+  <div class="page-inner">
+    <div class="page-header">Battle</div>
+    <div class="grimoire-accordion" data-system="battle">
+      <button class="accordion-header" aria-expanded="false"><span class="accordion-icon">&#9656;</span><span class="accordion-title">BattleInstance</span><span class="accordion-badge">10 m&eacute;thodes</span></button>
+      <div class="accordion-body">
+        <p>Noeud central orchestrant une bataille : spawn des pawns, gestion des &eacute;tats, requ&ecirc;tes de position et interactions sur le terrain. Classe partielle &eacute;tendue par BattleInstanceMovement et BattleInstanceActions.</p>
+        <h4>M&eacute;thodes publiques</h4>
+        <ul>
+          <li><code>void Init()</code></li>
+          <li><code>void BeginNewTurn()</code></li>
+          <li><code>bool GetPawnAtLocation(Vector2I, out BattlePawn)</code></li>
+          <li><code>bool TryUpdateObjectLocation(ITerrainObject, Vector3)</code></li>
+          <li><code>bool TrySwapObjects(ITerrainObject, ITerrainObject)</code></li>
+          <li><code>bool MovePawn(BattlePawn, List&lt;Vector2I&gt;)</code></li>
+          <li><code>bool TeleportPawn(BattlePawn, Vector2I, bool)</code></li>
+          <li><code>bool PushPawn(BattlePawn, Vector2I, int)</code></li>
+          <li><code>void DealDamage(DamagePacket)</code></li>
+          <li><code>void Heal(HealPacket)</code></li>
+        </ul>
+        <h4>Exemple d'usage</h4>
+        <pre class="code-block"><span class="cmt">// Rechercher un pion &agrave; une position et infliger des d&eacute;g&acirc;ts</span>
+<span class="kw">if</span> (battle.<span class="fn">GetPawnAtLocation</span>(targetCell, <span class="kw">out</span> <span class="type">BattlePawn</span> target))
+{
+    <span class="kw">var</span> packet = <span class="kw">new</span> <span class="type">DamagePacket</span>(source, target, <span class="num">25</span>,
+        <span class="type">DamageType</span>.Magical);
+    battle.<span class="fn">DealDamage</span>(packet);
+}
+<span class="cmt">// D&eacute;placer un pion le long d'un chemin</span>
+<span class="kw">var</span> path = <span class="type">PathfinderOK</span>.<span class="fn">PathfindDumb</span>&lt;<span class="type">NavNode</span>&gt;(
+    navGraph, startCell, destCell);
+battle.<span class="fn">MovePawn</span>(pawn, path);</pre>
+      </div>
+    </div>
+    <span class="back-to-index" data-goto="2">◂ Index</span>
+    <div class="page-footer">&mdash; 10 &mdash;</div>
+  </div>
+</div>
+
+<!-- PAGE 11 : BattlePawn -->
+<div class="grimoire-page">
+  <div class="page-inner">
+    <div class="page-header">Battle</div>
+    <div class="grimoire-accordion" data-system="battle">
+      <button class="accordion-header" aria-expanded="false"><span class="accordion-icon">&#9656;</span><span class="accordion-title">BattlePawn</span><span class="accordion-badge">8 m&eacute;thodes</span></button>
+      <div class="accordion-body">
+        <p>Noeud principal d'un combattant : g&egrave;re les stats (HP/AP/MP), le mouvement, les capacit&eacute;s, les effets de statut et l'&eacute;quipement.</p>
+        <h4>M&eacute;thodes publiques</h4>
+        <ul>
+          <li><code>void Initialize(BattleInstance)</code></li>
+          <li><code>void InitializeFromCharacterData(BattleInstance, CharacterData)</code></li>
+          <li><code>bool CanBePlayed()</code></li>
+          <li><code>void OnBeginTurn()</code></li>
+          <li><code>void OnEndTurn(bool)</code></li>
+          <li><code>void RequestMoveAlongPath(List&lt;Vector2I&gt;)</code></li>
+          <li><code>bool CanMove()</code></li>
+          <li><code>int GetEffectiveMovementPoints()</code></li>
+        </ul>
+        <h4>&Eacute;v&eacute;nements</h4>
+        <ul>
+          <li><code>event Action&lt;DamagePacket&gt; OnBeforeDealDamage</code></li>
+          <li><code>event Action&lt;DamagePacket&gt; OnBeforeTakeDamage</code></li>
+          <li><code>event Action&lt;HealPacket&gt; OnBeforeReceiveHeal</code></li>
+          <li><code>event Action&lt;StatusEffect&gt; OnBeforeReceiveEffect</code></li>
+          <li><code>event Action&lt;MoveRequest&gt; OnBeforeMove</code></li>
+        </ul>
+        <h4>Exemple d'usage</h4>
+        <pre class="code-block"><span class="cmt">// Initialiser le pion avec les donn&eacute;es personnage</span>
+pawn.<span class="fn">InitializeFromCharacterData</span>(battle, charData);
+<span class="cmt">// V&eacute;rifier les PM effectifs (statuts + &eacute;quipement)</span>
+<span class="kw">int</span> mp = pawn.<span class="fn">GetEffectiveMovementPoints</span>();
+<span class="cmt">// &Eacute;couter les d&eacute;g&acirc;ts entrants via l'event pipeline</span>
+pawn.OnBeforeTakeDamage += (packet) =&gt; {
+    <span class="kw">if</span> (packet.DamageType == <span class="type">DamageType</span>.Physical)
+        packet.FinalAmount -= <span class="num">3</span>; <span class="cmt">// armure</span>
+};
+<span class="cmt">// D&eacute;placer le pion sur la grille</span>
+pawn.<span class="fn">RequestMoveAlongPath</span>(path);</pre>
+      </div>
+    </div>
+    <span class="back-to-index" data-goto="2">◂ Index</span>
+    <div class="page-footer">&mdash; 11 &mdash;</div>
+  </div>
+</div>
+
+<!-- PAGE 12 : BaseAbility, TurnsOrchestrator, Packets -->
+<div class="grimoire-page">
+  <div class="page-inner">
+    <div class="page-header">Battle</div>
+    <div class="grimoire-accordion" data-system="battle">
+      <button class="accordion-header" aria-expanded="false"><span class="accordion-icon">&#9656;</span><span class="accordion-title">BaseAbility</span><span class="accordion-badge">6 m&eacute;thodes</span></button>
+      <div class="accordion-body">
+        <p>Classe de base abstraite pour toutes les capacit&eacute;s. D&eacute;finit le contrat commun (port&eacute;e, zone d'effet, d&eacute;clenchement).</p>
+        <h4>M&eacute;thodes</h4>
+        <ul>
+          <li><code>string GetName()</code></li>
+          <li><code>abstract string GetDescription()</code></li>
+          <li><code>abstract bool CanPawnCast(BattlePawn, BattleInstance)</code></li>
+          <li><code>abstract List&lt;Vector2I&gt; GetCastArea(...)</code></li>
+          <li><code>abstract List&lt;Vector2I&gt; GetEffectArea(...)</code></li>
+          <li><code>abstract void CastAbility(...)</code></li>
+        </ul>
+        <h4>Exemple &mdash; BouleDeFeu</h4>
+        <pre class="code-block"><span class="kw">public class</span> <span class="type">BouleDeFeu</span> : <span class="type">BaseAbility</span> {
+  <span class="kw">public override</span> <span class="type">List</span>&lt;<span class="type">Vector2I</span>&gt; <span class="fn">GetCastArea</span>(...) {
+    <span class="kw">var</span> b = <span class="kw">new</span> <span class="type">ShapeBuilder</span>(pawn.<span class="fn">GetCellPos</span>(world));
+    b.<span class="fn">AddSplat</span>(<span class="num">4</span>, <span class="num">0</span>, <span class="num">0</span>); <span class="cmt">// port&eacute;e 4</span>
+    b.<span class="fn">AddSingle</span>(<span class="num">0</span>, <span class="num">0</span>);
+    b.<span class="fn">CollapseSubstract</span>(); <span class="cmt">// exclure soi-m&ecirc;me</span>
+    <span class="kw">return</span> b.<span class="fn">Collapse</span>().cells;
+  }
+  <span class="kw">public override</span> <span class="type">List</span>&lt;<span class="type">Vector2I</span>&gt; <span class="fn">GetEffectArea</span>(...) {
+    <span class="kw">var</span> b = <span class="kw">new</span> <span class="type">ShapeBuilder</span>(target);
+    b.<span class="fn">AddSplat</span>(<span class="num">1</span>, <span class="num">0</span>, <span class="num">0</span>); <span class="cmt">// zone 1</span>
+    <span class="kw">return</span> b.<span class="fn">Collapse</span>().cells;
+  }
+}</pre>
+      </div>
+    </div>
+    <div class="grimoire-accordion" data-system="battle">
+      <button class="accordion-header" aria-expanded="false"><span class="accordion-icon">&#9656;</span><span class="accordion-title">TurnsOrchestrator</span><span class="accordion-badge">3 m&eacute;thodes</span></button>
+      <div class="accordion-body">
+        <p>G&egrave;re l'alternance des tours (Joueur &harr; Ennemi) avec pile d'overrides pour tours sp&eacute;ciaux.</p>
+        <h4>M&eacute;thodes</h4>
+        <ul>
+          <li><code>BattleTurn GetCurrentTurn()</code></li>
+          <li><code>BattleTurn GetNextTurn()</code></li>
+          <li><code>void PushTurnOverride(BattleTurn)</code></li>
+        </ul>
+      </div>
+    </div>
+    <div class="grimoire-accordion" data-system="battle">
+      <button class="accordion-header" aria-expanded="false"><span class="accordion-icon">&#9656;</span><span class="accordion-title">DamagePacket / HealPacket</span><span class="accordion-badge">data</span></button>
+      <div class="accordion-body">
+        <p>Data-classes repr&eacute;sentant les intentions d'action. Chaque paquet contient source, cible, montant et peut &ecirc;tre annul&eacute; avant ex&eacute;cution.</p>
+        <h4>Propri&eacute;t&eacute;s (DamagePacket)</h4>
+        <ul>
+          <li><code>BattlePawn SourcePawn / TargetPawn</code></li>
+          <li><code>int BaseAmount / FinalAmount</code></li>
+          <li><code>DamageType DamageType</code></li>
+          <li><code>bool IsCancelled</code></li>
+        </ul>
+      </div>
+    </div>
+    <span class="back-to-index" data-goto="2">◂ Index</span>
+    <div class="page-footer">&mdash; 12 &mdash;</div>
+  </div>
+</div>
+
+<!-- PAGE 13 : StatusEffect/StatusController -->
+<div class="grimoire-page">
+  <div class="page-inner">
+    <div class="page-header">Battle</div>
+    <div class="grimoire-accordion" data-system="battle">
+      <button class="accordion-header" aria-expanded="false"><span class="accordion-icon">&#9656;</span><span class="accordion-title">StatusEffect / StatusController</span><span class="accordion-badge">6 m&eacute;thodes</span></button>
+      <div class="accordion-body">
+        <p>Hi&eacute;rarchie des effets de statut (buff/debuff/DoT/immobilisation) avec gestion de dur&eacute;e, stacks et tags. Le StatusController g&egrave;re ajout, suppression et tick.</p>
+        <h4>M&eacute;thodes (StatusController)</h4>
+        <ul>
+          <li><code>void AddEffect(StatusEffect, BattleInstance)</code></li>
+          <li><code>bool RemoveEffect(StatusEffect, BattleInstance)</code></li>
+          <li><code>int RemoveEffectsByTag(string, BattleInstance, int)</code></li>
+          <li><code>bool CanMove()</code></li>
+          <li><code>void ProcessTurnStart(BattleInstance)</code></li>
+          <li><code>void ProcessTurnEnd(BattleInstance)</code></li>
+        </ul>
+        <h4>Exemple d'usage</h4>
+        <pre class="code-block"><span class="cmt">// Appliquer un poison empilable au pion cible</span>
+<span class="kw">var</span> poison = <span class="kw">new</span> <span class="type">PoisonEffect</span>(duration: <span class="num">3</span>, dps: <span class="num">5</span>);
+target.StatusController.<span class="fn">AddEffect</span>(poison, battle);
+<span class="cmt">// Purger les d&eacute;buffs via tag</span>
+<span class="kw">int</span> purged = pawn.StatusController
+    .<span class="fn">RemoveEffectsByTag</span>(<span class="str">"Debuff"</span>, battle, <span class="num">2</span>);
+<span class="cmt">// V&eacute;rifier si le pion peut bouger</span>
+<span class="kw">if</span> (pawn.StatusController.<span class="fn">CanMove</span>())
+    pawn.<span class="fn">RequestMoveAlongPath</span>(path);</pre>
+      </div>
+    </div>
+    <span class="back-to-index" data-goto="2">◂ Index</span>
+    <div class="page-footer">&mdash; 13 &mdash;</div>
+  </div>
+</div>
+
+<!-- PAGE 14 : Equipment, Pathfinder, Movement -->
+<div class="grimoire-page">
+  <div class="page-inner">
+    <div class="page-header">Battle</div>
+    <div class="grimoire-accordion" data-system="battle">
+      <button class="accordion-header" aria-expanded="false"><span class="accordion-icon">&#9656;</span><span class="accordion-title">BaseEquipment / EquipmentController</span><span class="accordion-badge">4 m&eacute;thodes</span></button>
+      <div class="accordion-body">
+        <p>Syst&egrave;me d'&eacute;quipement par slots. Chaque &eacute;quipement s'abonne aux &eacute;v&eacute;nements du BattlePawn pour modifier les actions.</p>
+        <h4>M&eacute;thodes</h4>
+        <ul>
+          <li><code>bool Equip(BaseEquipment)</code></li>
+          <li><code>bool Unequip(EquipmentType)</code></li>
+          <li><code>int GetMovementPointBonus()</code></li>
+          <li><code>int GetActionPointBonus()</code></li>
+        </ul>
+        <h4>Exemple &mdash; &Eacute;p&eacute;e avec bonus d&eacute;g&acirc;ts</h4>
+        <pre class="code-block"><span class="kw">public class</span> <span class="type">SwordOfDamage</span> : <span class="type">BaseEquipment</span> {
+  <span class="kw">public override void</span> <span class="fn">OnEquip</span>(<span class="type">BattlePawn</span> pawn) {
+    pawn.OnBeforeDealDamage += <span class="fn">Boost</span>;
+  }
+  <span class="kw">void</span> <span class="fn">Boost</span>(<span class="type">DamagePacket</span> p) {
+    p.FinalAmount += <span class="num">5</span>; <span class="cmt">// +5 d&eacute;g&acirc;ts</span>
+  }
+}
+<span class="cmt">// &Eacute;quiper via le controller</span>
+pawn.EquipmentController.<span class="fn">Equip</span>(sword);</pre>
+      </div>
+    </div>
+    <div class="grimoire-accordion" data-system="battle">
+      <button class="accordion-header" aria-expanded="false"><span class="accordion-icon">&#9656;</span><span class="accordion-title">PathfinderOK</span><span class="accordion-badge">3 m&eacute;thodes</span></button>
+      <div class="accordion-body">
+        <p>Pathfinding g&eacute;n&eacute;rique : BFS, A* et cellules atteignables sur NavGraphAdvanced.</p>
+        <h4>M&eacute;thodes</h4>
+        <ul>
+          <li><code>static List&lt;Vector2I&gt; PathfindDumb&lt;T&gt;(...)</code></li>
+          <li><code>static bool IsPositionReachable&lt;T&gt;(...)</code></li>
+          <li><code>static List&lt;Vector2I&gt; GetAllReachableCells(...)</code></li>
+        </ul>
+      </div>
+    </div>
+    <div class="grimoire-accordion" data-system="battle">
+      <button class="accordion-header" aria-expanded="false"><span class="accordion-icon">&#9656;</span><span class="accordion-title">MovementController</span><span class="accordion-badge">3 m&eacute;thodes</span></button>
+      <div class="accordion-body">
+        <p>Anime un Node3D le long d'un chemin de cellules en interpolant sa position.</p>
+        <h4>M&eacute;thodes</h4>
+        <ul>
+          <li><code>bool Update(float _dt)</code></li>
+          <li><code>void BeginFollowPath(List&lt;Vector2I&gt;)</code></li>
+          <li><code>void StopOngoingMovement()</code></li>
+        </ul>
+      </div>
+    </div>
+    <span class="back-to-index" data-goto="2">◂ Index</span>
+    <div class="page-footer">&mdash; 14 &mdash;</div>
+  </div>
+</div>
+
+<!-- PAGE 15 : EnemyAI, Battle States -->
+<div class="grimoire-page">
+  <div class="page-inner">
+    <div class="page-header">Battle</div>
+    <div class="grimoire-accordion" data-system="battle">
+      <button class="accordion-header" aria-expanded="false"><span class="accordion-icon">&#9656;</span><span class="accordion-title">EnemyAISystem</span><span class="accordion-badge">2 m&eacute;thodes</span></button>
+      <div class="accordion-body">
+        <p>IA ennemie utilisant un algorithme minimax simplifi&eacute; pour calculer le meilleur plan d'action.</p>
+        <h4>M&eacute;thodes</h4>
+        <ul>
+          <li><code>TurnPlan CalculateBestTurn(BattlePawn)</code></li>
+          <li><code>void ExecuteTurnPlan(BattlePawn, TurnPlan)</code></li>
+        </ul>
+      </div>
+    </div>
+    <div class="grimoire-accordion" data-system="battle">
+      <button class="accordion-header" aria-expanded="false"><span class="accordion-icon">&#9656;</span><span class="accordion-title">&Eacute;tats de Bataille</span><span class="accordion-badge">interface</span></button>
+      <div class="accordion-body">
+        <p>IBattleState : StatePlayerPositioning, StatePlayerTurn et StateEnemyTurn.</p>
+        <h4>Interface IBattleState</h4>
+        <ul>
+          <li><code>void OnBeginState()</code></li>
+          <li><code>void OnProcessState(float _dt)</code></li>
+          <li><code>void OnExitState()</code></li>
+          <li><code>bool IsStateFinished(float _dt)</code></li>
+        </ul>
+      </div>
+    </div>
+    <span class="back-to-index" data-goto="2">◂ Index</span>
+    <div class="page-footer">&mdash; 15 &mdash;</div>
+  </div>
+</div>
+
+<!-- ====== CHAPITRE II : CORE (16-19) ====== -->
+<div class="grimoire-page">
+  <div class="page-inner">
+    <div class="chapter-title-page">
+      <span class="chapter-numeral">II</span>
+      <h2 class="chapter-name" style="color:var(--accent-core-light)">Core</h2>
+      <div class="sep-chapter"></div>
+      <p class="chapter-desc">Socle fondamental du jeu. Boucle principale et machine &agrave; &eacute;tats globale, singleton Game, gestion d'&eacute;quipe avec aptitudes et artefacts, donn&eacute;es de personnage, et carte du monde en graphe de noeuds.</p>
+    </div>
+    <span class="back-to-index" data-goto="2">◂ Index</span>
+    <div class="page-footer">&mdash; 16 &mdash;</div>
+  </div>
+</div>
+
+<!-- PAGE 17 : Game, GameState, Battle node -->
+<div class="grimoire-page">
+  <div class="page-inner">
+    <div class="page-header">Core</div>
+    <div class="grimoire-accordion" data-system="core">
+      <button class="accordion-header" aria-expanded="false"><span class="accordion-icon">&#9656;</span><span class="accordion-title">Game</span><span class="accordion-badge">3 m&eacute;thodes</span></button>
+      <div class="accordion-body">
+        <p>Singleton central ; g&egrave;re les transitions d'&eacute;tats (MainMenu, Camp, Battle), instancie/d&eacute;truit les sc&egrave;nes.</p>
+        <h4>M&eacute;thodes</h4>
+        <ul>
+          <li><code>static PackedScene[] GetPlayerPawnsPrefabs()</code></li>
+          <li><code>static PackedScene GetPlayerPawnTemplate()</code></li>
+          <li><code>static void RequestChangeGameState(GameState)</code></li>
+        </ul>
+        <h4>&Eacute;v&eacute;nements</h4>
+        <ul><li><code>static Action&lt;GameState&gt; onGameStateChanged</code></li></ul>
+        <h4>Exemple d'usage</h4>
+        <pre class="code-block"><span class="cmt">// Changer d'&eacute;tat de jeu (d&eacute;truit la sc&egrave;ne</span>
+<span class="cmt">// actuelle et instancie la nouvelle)</span>
+<span class="type">Game</span>.<span class="fn">RequestChangeGameState</span>(
+    <span class="type">GameState</span>.Battle);
+<span class="cmt">// &Eacute;couter les transitions d'&eacute;tat</span>
+<span class="type">Game</span>.onGameStateChanged += (state) =&gt; {
+    <span class="kw">if</span> (state == <span class="type">GameState</span>.Camp)
+        <span class="type">TeamManager</span>.<span class="fn">Initialize</span>();
+};</pre>
+      </div>
+    </div>
+    <div class="grimoire-accordion" data-system="core">
+      <button class="accordion-header" aria-expanded="false"><span class="accordion-icon">&#9656;</span><span class="accordion-title">GameState (enum)</span><span class="accordion-badge">enum</span></button>
+      <div class="accordion-body">
+        <p>&Eacute;tats de jeu : None, MainMenu, WorldMap, Camp, Battle, Exploration.</p>
+      </div>
+    </div>
+    <div class="grimoire-accordion" data-system="core">
+      <button class="accordion-header" aria-expanded="false"><span class="accordion-icon">&#9656;</span><span class="accordion-title">Battle (noeud sc&egrave;ne)</span><span class="accordion-badge">2 m&eacute;thodes</span></button>
+      <div class="accordion-body">
+        <p>Noeud principal du mode bataille ; g&egrave;re g&eacute;n&eacute;ration terrain, cr&eacute;ation BattleInstance et curseur.</p>
+        <h4>M&eacute;thodes</h4>
+        <ul>
+          <li><code>static void RequestStartBattle(BattleDefinition)</code></li>
+          <li><code>void GenTerrain()</code></li>
+        </ul>
+      </div>
+    </div>
+    <span class="back-to-index" data-goto="2">◂ Index</span>
+    <div class="page-footer">&mdash; 17 &mdash;</div>
+  </div>
+</div>
+
+<!-- PAGE 18 : TeamManager, CharacterData, WorldMap -->
+<div class="grimoire-page">
+  <div class="page-inner">
+    <div class="page-header">Core</div>
+    <div class="grimoire-accordion" data-system="core">
+      <button class="accordion-header" aria-expanded="false"><span class="accordion-icon">&#9656;</span><span class="accordion-title">TeamManager</span><span class="accordion-badge">3 m&eacute;thodes</span></button>
+      <div class="accordion-body">
+        <p>Singleton statique : &eacute;quipe de 4 personnages, slots d'aptitudes et d'artefacts.</p>
+        <h4>M&eacute;thodes</h4>
+        <ul>
+          <li><code>static void Initialize()</code></li>
+          <li><code>static void SetAbilitySlot(int, int, BaseAbility)</code></li>
+          <li><code>static void SetArtifactSlot(int, int, ArtifactData)</code></li>
+        </ul>
+        <h4>Propri&eacute;t&eacute;s</h4>
+        <ul><li><code>static List&lt;CharacterData&gt; Team { get; }</code></li></ul>
+      </div>
+    </div>
+    <div class="grimoire-accordion" data-system="core">
+      <button class="accordion-header" aria-expanded="false"><span class="accordion-icon">&#9656;</span><span class="accordion-title">CharacterData</span><span class="accordion-badge">props</span></button>
+      <div class="accordion-body">
+        <p>Donn&eacute;es personnage : identit&eacute;, stats PV/PA/PM, aptitudes et artefacts.</p>
+        <h4>Propri&eacute;t&eacute;s</h4>
+        <ul>
+          <li><code>string Name, ClassName</code></li>
+          <li><code>int PV, PA, PM</code></li>
+          <li><code>BaseAbility AbilityA, AbilityB, AbilitySlot1, AbilitySlot2</code></li>
+          <li><code>ArtifactData[] ArtifactSlots</code></li>
+          <li><code>Color ClassColor { get; }</code></li>
+        </ul>
+      </div>
+    </div>
+    <div class="grimoire-accordion" data-system="core">
+      <button class="accordion-header" aria-expanded="false"><span class="accordion-icon">&#9656;</span><span class="accordion-title">WorldMap</span><span class="accordion-badge">1 m&eacute;thode</span></button>
+      <div class="accordion-body">
+        <p>Carte du monde 2D ; graphe d'adjacence, d&eacute;placement BFS + Tween, d&eacute;clenchement batailles.</p>
+        <h4>M&eacute;thodes</h4>
+        <ul><li><code>void BeginBattle()</code></li></ul>
+      </div>
+    </div>
+    <span class="back-to-index" data-goto="2">◂ Index</span>
+    <div class="page-footer">&mdash; 18 &mdash;</div>
+  </div>
+</div>
+
+<!-- PAGE 19 : ArtifactData, GameProgress -->
+<div class="grimoire-page">
+  <div class="page-inner">
+    <div class="page-header">Core</div>
+    <div class="grimoire-accordion" data-system="core">
+      <button class="accordion-header" aria-expanded="false"><span class="accordion-icon">&#9656;</span><span class="accordion-title">ArtifactData</span><span class="accordion-badge">props</span></button>
+      <div class="accordion-body">
+        <p>Donn&eacute;es d'un artefact &eacute;quipable (nom et description).</p>
+        <h4>Propri&eacute;t&eacute;s</h4>
+        <ul>
+          <li><code>string Name</code></li>
+          <li><code>string Description</code></li>
+        </ul>
+      </div>
+    </div>
+    <div class="grimoire-accordion" data-system="core">
+      <button class="accordion-header" aria-expanded="false"><span class="accordion-icon">&#9656;</span><span class="accordion-title">GameProgress</span><span class="accordion-badge">data</span></button>
+      <div class="accordion-body">
+        <p>Progression de la partie : niveaux compl&eacute;t&eacute;s et &eacute;tats de jeu via dictionnaires priv&eacute;s.</p>
+      </div>
+    </div>
+    <span class="back-to-index" data-goto="2">◂ Index</span>
+    <div class="page-footer">&mdash; 19 &mdash;</div>
+  </div>
+</div>
+
+<!-- ====== CHAPITRE III : CAMP (20-23) ====== -->
+<div class="grimoire-page">
+  <div class="page-inner">
+    <div class="chapter-title-page">
+      <span class="chapter-numeral">III</span>
+      <h2 class="chapter-name" style="color:var(--accent-camp-light)">Camp</h2>
+      <div class="sep-chapter"></div>
+      <p class="chapter-desc">Zone de repos entre les batailles. Navigation 3D libre du personnage, objets interactifs dans l'environnement, et caserne pour la gestion de l'&eacute;quipe et la pr&eacute;paration strat&eacute;gique.</p>
+    </div>
+    <span class="back-to-index" data-goto="2">◂ Index</span>
+    <div class="page-footer">&mdash; 20 &mdash;</div>
+  </div>
+</div>
+
+<div class="grimoire-page">
+  <div class="page-inner">
+    <div class="page-header">Camp</div>
+    <div class="grimoire-accordion" data-system="camp">
+      <button class="accordion-header" aria-expanded="false"><span class="accordion-icon">&#9656;</span><span class="accordion-title">CampController</span><span class="accordion-badge">exports</span></button>
+      <div class="accordion-body">
+        <p>Contr&ocirc;leur de sc&egrave;ne Camp ; clics, d&eacute;placement personnage, interactions objets, transitions d'&eacute;tat.</p>
+        <h4>Propri&eacute;t&eacute;s Export</h4>
+        <ul>
+          <li><code>CampCharacter character</code></li>
+          <li><code>NavigationRegion3D navigationRegion</code></li>
+          <li><code>CampInteractable worldMapTable</code></li>
+          <li><code>CampInteractable barracks</code></li>
+          <li><code>BarracksUI barracksUI</code></li>
+        </ul>
+      </div>
+    </div>
+    <div class="grimoire-accordion" data-system="camp">
+      <button class="accordion-header" aria-expanded="false"><span class="accordion-icon">&#9656;</span><span class="accordion-title">CampCharacter</span><span class="accordion-badge">1 m&eacute;thode</span></button>
+      <div class="accordion-body">
+        <p>Personnage camp ; se d&eacute;place via NavigationAgent3D vers une destination.</p>
+        <h4>M&eacute;thodes</h4>
+        <ul><li><code>void SetDestination(Vector3 target)</code></li></ul>
+      </div>
+    </div>
+    <span class="back-to-index" data-goto="2">◂ Index</span>
+    <div class="page-footer">&mdash; 21 &mdash;</div>
+  </div>
+</div>
+
+<div class="grimoire-page">
+  <div class="page-inner">
+    <div class="page-header">Camp</div>
+    <div class="grimoire-accordion" data-system="camp">
+      <button class="accordion-header" aria-expanded="false"><span class="accordion-icon">&#9656;</span><span class="accordion-title">CampInteractable</span><span class="accordion-badge">1 m&eacute;thode</span></button>
+      <div class="accordion-body">
+        <p>Objet interactif (StaticBody3D) ; proximit&eacute; via Area3D, label d'invite, signal Interacted.</p>
+        <h4>M&eacute;thodes</h4>
+        <ul><li><code>bool TryInteract()</code></li></ul>
+        <h4>Signaux</h4>
+        <ul><li><code>[Signal] InteractedEventHandler()</code></li></ul>
+      </div>
+    </div>
+    <span class="back-to-index" data-goto="2">◂ Index</span>
+    <div class="page-footer">&mdash; 22 &mdash;</div>
+  </div>
+</div>
+
+<div class="grimoire-page">
+  <div class="page-inner">
+    <div class="page-header">Camp</div>
+    <div class="grimoire-accordion" data-system="camp">
+      <button class="accordion-header" aria-expanded="false"><span class="accordion-icon">&#9656;</span><span class="accordion-title">BarracksUI</span><span class="accordion-badge">2 m&eacute;thodes</span></button>
+      <div class="accordion-body">
+        <p>Interface caserne ; liste &eacute;quipe en cartes, d&eacute;tail h&eacute;ros (stats, artefacts, aptitudes, passif).</p>
+        <h4>M&eacute;thodes</h4>
+        <ul>
+          <li><code>void Open()</code></li>
+          <li><code>void Close()</code></li>
+        </ul>
+      </div>
+    </div>
+    <span class="back-to-index" data-goto="2">◂ Index</span>
+    <div class="page-footer">&mdash; 23 &mdash;</div>
+  </div>
+</div>
+
+<!-- ====== CHAPITRE IV : UI (24-27) ====== -->
+<div class="grimoire-page">
+  <div class="page-inner">
+    <div class="chapter-title-page">
+      <span class="chapter-numeral">IV</span>
+      <h2 class="chapter-name" style="color:var(--accent-ui-light)">UI</h2>
+      <div class="sep-chapter"></div>
+      <p class="chapter-desc">Interface utilisateur multicouche. Couches exclusives par phase de jeu, HUD de bataille avec stats et aptitudes, textes flottants 3D pour les retours visuels, et menus de navigation entre sc&egrave;nes.</p>
+    </div>
+    <span class="back-to-index" data-goto="2">◂ Index</span>
+    <div class="page-footer">&mdash; 24 &mdash;</div>
+  </div>
+</div>
+
+<div class="grimoire-page">
+  <div class="page-inner">
+    <div class="page-header">UI</div>
+    <div class="grimoire-accordion" data-system="ui">
+      <button class="accordion-header" aria-expanded="false"><span class="accordion-icon">&#9656;</span><span class="accordion-title">BattleUI</span><span class="accordion-badge">2 m&eacute;thodes</span></button>
+      <div class="accordion-body">
+        <p>Conteneur UI de bataille ; registre des couches, activation exclusive d'une couche visible.</p>
+        <h4>M&eacute;thodes</h4>
+        <ul>
+          <li><code>void Initialize(BattleInstance)</code></li>
+          <li><code>bool SetVisibleLayer&lt;LayerT&gt;(out LayerT)</code></li>
+        </ul>
+        <h4>Exemple d'usage</h4>
+        <pre class="code-block"><span class="cmt">// Depuis StatePlayerTurn : activer la couche UI</span>
+<span class="kw">if</span> (battle.BattleUI.<span class="fn">SetVisibleLayer</span>&lt;<span class="type">PlayerTurnUI</span>&gt;(
+    <span class="kw">out</span> <span class="type">PlayerTurnUI</span> ui))
+{
+    ui.<span class="fn">ReInitialize</span>(activePawn);
+    ui.OnAbilitySelected += <span class="fn">OnAbilitySelected</span>;
+    ui.OnEndTurnRequested += <span class="fn">OnEndTurn</span>;
+}</pre>
+      </div>
+    </div>
+    <div class="grimoire-accordion" data-system="ui">
+      <button class="accordion-header" aria-expanded="false"><span class="accordion-icon">&#9656;</span><span class="accordion-title">PlayerTurnUI</span><span class="accordion-badge">2 m&eacute;thodes</span></button>
+      <div class="accordion-body">
+        <p>Couche tour joueur ; infos pion actif (PV/PA/PM, portrait), boutons d'aptitudes.</p>
+        <h4>M&eacute;thodes</h4>
+        <ul>
+          <li><code>void RequestEndOfTurn()</code></li>
+          <li><code>void ReInitialize(BattlePawn)</code></li>
+        </ul>
+        <h4>Callbacks</h4>
+        <ul>
+          <li><code>Action&lt;int&gt; OnAbilitySelected</code></li>
+          <li><code>Action OnEndTurnRequested</code></li>
+        </ul>
+        <h4>Exemple &mdash; Cr&eacute;ation boutons aptitudes</h4>
+        <pre class="code-block"><span class="cmt">// ReInitialize cr&eacute;e les boutons dynamiquement</span>
+<span class="kw">foreach</span> (<span class="kw">var</span> ability <span class="kw">in</span> pawn.AbilitiesRefs) {
+  <span class="kw">var</span> btn = AbilitySelectBtn.<span class="fn">Instantiate</span>&lt;<span class="type">AbilityButton</span>&gt;();
+  btn.Text = ability.abilityInstance.<span class="fn">GetName</span>();
+  btn.TooltipText = ability.abilityInstance
+      .<span class="fn">GetDescription</span>();
+  btn.Pressed += () =&gt;
+      pawn.<span class="fn">SetAbilityPreviewing</span>(id);
+  abilityContainer.<span class="fn">AddChild</span>(btn);
+}</pre>
+      </div>
+    </div>
+    <span class="back-to-index" data-goto="2">◂ Index</span>
+    <div class="page-footer">&mdash; 25 &mdash;</div>
+  </div>
+</div>
+
+<div class="grimoire-page">
+  <div class="page-inner">
+    <div class="page-header">UI</div>
+    <div class="grimoire-accordion" data-system="ui">
+      <button class="accordion-header" aria-expanded="false"><span class="accordion-icon">&#9656;</span><span class="accordion-title">FloatingText</span><span class="accordion-badge">1 m&eacute;thode</span></button>
+      <div class="accordion-body">
+        <p>Textes flottants 3D (d&eacute;g&acirc;ts, soins, miss) avec animation mont&eacute;e + fondu.</p>
+        <h4>M&eacute;thodes</h4>
+        <ul><li><code>static void Spawn(Node, Vector3, string, Color, float, float)</code></li></ul>
+      </div>
+    </div>
+    <div class="grimoire-accordion" data-system="ui">
+      <button class="accordion-header" aria-expanded="false"><span class="accordion-icon">&#9656;</span><span class="accordion-title">EscapeMenu</span><span class="accordion-badge">4 m&eacute;thodes</span></button>
+      <div class="accordion-body">
+        <p>Menu pause : navigation MainMenu, WorldMap, Camp selon l'&eacute;tat courant.</p>
+        <h4>M&eacute;thodes</h4>
+        <ul>
+          <li><code>void GoToMainMenu()</code></li>
+          <li><code>void GoToWorldMap()</code></li>
+          <li><code>void GoToCamp()</code></li>
+          <li><code>void OnQuitRequest()</code></li>
+        </ul>
+      </div>
+    </div>
+    <div class="grimoire-accordion" data-system="ui">
+      <button class="accordion-header" aria-expanded="false"><span class="accordion-icon">&#9656;</span><span class="accordion-title">MainMenu</span><span class="accordion-badge">1 m&eacute;thode</span></button>
+      <div class="accordion-body">
+        <p>Menu principal ; d&eacute;marre la partie vers Camp.</p>
+        <h4>M&eacute;thodes</h4>
+        <ul><li><code>void StartGame()</code></li></ul>
+      </div>
+    </div>
+    <span class="back-to-index" data-goto="2">◂ Index</span>
+    <div class="page-footer">&mdash; 26 &mdash;</div>
+  </div>
+</div>
+
+<div class="grimoire-page">
+  <div class="page-inner">
+    <div class="page-header">UI</div>
+    <div class="grimoire-accordion" data-system="ui">
+      <button class="accordion-header" aria-expanded="false"><span class="accordion-icon">&#9656;</span><span class="accordion-title">BtnBattleStarter</span><span class="accordion-badge">2 m&eacute;thodes</span></button>
+      <div class="accordion-body">
+        <p>Bouton carte du monde d&eacute;clenchant une bataille.</p>
+        <h4>M&eacute;thodes</h4>
+        <ul>
+          <li><code>void TriggerBattle()</code></li>
+          <li><code>BattleDefinition GetBattleDefinition()</code></li>
+        </ul>
+      </div>
+    </div>
+    <div class="grimoire-accordion" data-system="ui">
+      <button class="accordion-header" aria-expanded="false"><span class="accordion-icon">&#9656;</span><span class="accordion-title">IBattleUILayer / PositioningUI / EnemyTurnUI</span><span class="accordion-badge">interface</span></button>
+      <div class="accordion-body">
+        <p>Interface marqueur et couches sp&eacute;cifiques par phase. PositioningUI et EnemyTurnUI sont des placeholders. AbilityButton est un bouton sp&eacute;cialis&eacute;.</p>
+      </div>
+    </div>
+    <span class="back-to-index" data-goto="2">◂ Index</span>
+    <div class="page-footer">&mdash; 27 &mdash;</div>
+  </div>
+</div>
+
+<!-- ====== CHAPITRE V : WORLD (28-31) ====== -->
+<div class="grimoire-page">
+  <div class="page-inner">
+    <div class="chapter-title-page">
+      <span class="chapter-numeral">V</span>
+      <h2 class="chapter-name" style="color:var(--accent-world-light)">World</h2>
+      <div class="sep-chapter"></div>
+      <p class="chapter-desc">Construction du monde de jeu. G&eacute;n&eacute;ration proc&eacute;durale de terrain par chunks via heightmaps, graphe de navigation avanc&eacute;, cam&eacute;ra isom&eacute;trique avec drag et rotation, et maillage optimis&eacute; par greedy mesh.</p>
+    </div>
+    <span class="back-to-index" data-goto="2">◂ Index</span>
+    <div class="page-footer">&mdash; 28 &mdash;</div>
+  </div>
+</div>
+
+<div class="grimoire-page">
+  <div class="page-inner">
+    <div class="page-header">World</div>
+    <div class="grimoire-accordion" data-system="world">
+      <button class="accordion-header" aria-expanded="false"><span class="accordion-icon">&#9656;</span><span class="accordion-title">Subworld</span><span class="accordion-badge">6 m&eacute;thodes</span></button>
+      <div class="accordion-body">
+        <p>Monde de jeu compos&eacute; de chunks ; acc&egrave;s aux hauteurs, graphe de navigation, batailles actives.</p>
+        <h4>M&eacute;thodes</h4>
+        <ul>
+          <li><code>void Init(int _world_id, string _name)</code></li>
+          <li><code>void InitializeChunksForWorldGeneration()</code></li>
+          <li><code>void BuildRuntimeChunksAccess()</code></li>
+          <li><code>float GetHeightAtWorldPos(Vector3)</code></li>
+          <li><code>float GetHeightAtWorldPos(Vector2I)</code></li>
+          <li><code>void SetHeightAtWorldPos(Vector2I, float)</code></li>
+        </ul>
+        <h4>Exemple d'usage</h4>
+        <pre class="code-block"><span class="cmt">// G&eacute;n&eacute;rer un plateau dans le terrain</span>
+<span class="kw">for</span> (<span class="kw">int</span> x = <span class="num">0</span>; x &lt; size; x++)
+  <span class="kw">for</span> (<span class="kw">int</span> y = <span class="num">0</span>; y &lt; size; y++) {
+    <span class="kw">var</span> wp = pos + <span class="kw">new</span> <span class="type">Vector2I</span>(x, y);
+    <span class="kw">float</span> h = world.<span class="fn">GetHeightAtWorldPos</span>(wp);
+    world.<span class="fn">SetHeightAtWorldPos</span>(wp, h + <span class="num">2f</span>);
+  }</pre>
+      </div>
+    </div>
+    <div class="grimoire-accordion" data-system="world">
+      <button class="accordion-header" aria-expanded="false"><span class="accordion-icon">&#9656;</span><span class="accordion-title">SubworldChunk</span><span class="accordion-badge">props</span></button>
+      <div class="accordion-body">
+        <p>Chunk 16&times;16 tuiles ; tableau de hauteurs, multimesh terrain, g&eacute;n&eacute;rateur collider.</p>
+        <h4>Propri&eacute;t&eacute;s</h4>
+        <ul>
+          <li><code>Vector2I ChunkPosID</code></li>
+          <li><code>MultiMeshInstance3D TerrainMultimesh</code></li>
+          <li><code>float[] heights</code></li>
+          <li><code>const int CHUNK_SIZE = 16</code></li>
+        </ul>
+      </div>
+    </div>
+    <span class="back-to-index" data-goto="2">◂ Index</span>
+    <div class="page-footer">&mdash; 29 &mdash;</div>
+  </div>
+</div>
+
+<div class="grimoire-page">
+  <div class="page-inner">
+    <div class="page-header">World</div>
+    <div class="grimoire-accordion" data-system="world">
+      <button class="accordion-header" aria-expanded="false"><span class="accordion-icon">&#9656;</span><span class="accordion-title">SubworldGenerator</span><span class="accordion-badge">3 m&eacute;thodes</span></button>
+      <div class="accordion-body">
+        <p>G&eacute;n&eacute;rateur terrain ; cubique simple et marching cubes, plateaux via Poisson Disk Sampling.</p>
+        <h4>M&eacute;thodes</h4>
+        <ul>
+          <li><code>void Init(Subworld)</code></li>
+          <li><code>void GenerateSimpleTerrain()</code></li>
+          <li><code>void GenerateRoughTerrain()</code></li>
+        </ul>
+        <h4>Exports</h4>
+        <ul>
+          <li><code>int Seed</code></li>
+          <li><code>float NoiseScale, HeightScale</code></li>
+        </ul>
+      </div>
+    </div>
+    <div class="grimoire-accordion" data-system="world">
+      <button class="accordion-header" aria-expanded="false"><span class="accordion-icon">&#9656;</span><span class="accordion-title">CameraRig</span><span class="accordion-badge">3 m&eacute;thodes</span></button>
+      <div class="accordion-body">
+        <p>Cam&eacute;ra isom&eacute;trique 3D ; d&eacute;placement, drag, zoom, rotation 90&deg;, suivi cible.</p>
+        <h4>M&eacute;thodes</h4>
+        <ul>
+          <li><code>static RaycastResult RaycastFromMouse()</code></li>
+          <li><code>static bool RaycastFromMouse(out RaycastResult, LAYERS_MASKS)</code></li>
+          <li><code>void CtxInput(InputEvent)</code></li>
+        </ul>
+      </div>
+    </div>
+    <span class="back-to-index" data-goto="2">◂ Index</span>
+    <div class="page-footer">&mdash; 30 &mdash;</div>
+  </div>
+</div>
+
+<div class="grimoire-page">
+  <div class="page-inner">
+    <div class="page-header">World</div>
+    <div class="grimoire-accordion" data-system="world">
+      <button class="accordion-header" aria-expanded="false"><span class="accordion-icon">&#9656;</span><span class="accordion-title">TerrainColliderGenerator / TerrainMesher</span><span class="accordion-badge">4 m&eacute;thodes</span></button>
+      <div class="accordion-body">
+        <p>Colliders et meshes terrain par greedy mesh depuis les heightmaps.</p>
+        <h4>M&eacute;thodes</h4>
+        <ul>
+          <li><code>void Generate()</code></li>
+          <li><code>static List&lt;Vector3&gt; GenerateColliderMeshGreedy(float[])</code></li>
+          <li><code>static Mesh GenerateMeshGreedy(float[,], bool)</code></li>
+          <li><code>static Mesh GenerateMeshSimple(float[,])</code></li>
+        </ul>
+      </div>
+    </div>
+    <div class="grimoire-accordion" data-system="world">
+      <button class="accordion-header" aria-expanded="false"><span class="accordion-icon">&#9656;</span><span class="accordion-title">WorldGeneratorBasic</span><span class="accordion-badge">3 m&eacute;thodes</span></button>
+      <div class="accordion-body">
+        <p>Marching Cubes pour g&eacute;n&eacute;rer un mesh 3D depuis un buffer de voxels.</p>
+        <h4>M&eacute;thodes</h4>
+        <ul>
+          <li><code>static float[] GetTerrainBuffer()</code></li>
+          <li><code>static List&lt;Vector3&gt; GenerateChunkMesh(Span&lt;float&gt;, float)</code></li>
+          <li><code>static void GenerateNormals(IList&lt;Vector3&gt;, ...)</code></li>
+        </ul>
+      </div>
+    </div>
+    <span class="back-to-index" data-goto="2">◂ Index</span>
+    <div class="page-footer">&mdash; 31 &mdash;</div>
+  </div>
+</div>
+
+<!-- ====== CHAPITRE VI : HELPERS (32-35) ====== -->
+<div class="grimoire-page">
+  <div class="page-inner">
+    <div class="chapter-title-page">
+      <span class="chapter-numeral">VI</span>
+      <h2 class="chapter-name" style="color:var(--accent-helpers-light)">Helpers &amp; Misc</h2>
+      <div class="sep-chapter"></div>
+      <p class="chapter-desc">Outils et utilitaires transversaux. Rendu imm&eacute;diat via RenderingServer, raycast physique, bases de donn&eacute;es de ressources par r&eacute;flexion, constructeur de zones d'effet, et extensions de vecteurs et transformations.</p>
+    </div>
+    <span class="back-to-index" data-goto="2">◂ Index</span>
+    <div class="page-footer">&mdash; 32 &mdash;</div>
+  </div>
+</div>
+
+<div class="grimoire-page">
+  <div class="page-inner">
+    <div class="page-header">Helpers</div>
+    <div class="grimoire-accordion" data-system="helpers">
+      <button class="accordion-header" aria-expanded="false"><span class="accordion-icon">&#9656;</span><span class="accordion-title">ImmediateRenderer</span><span class="accordion-badge">5 m&eacute;thodes</span></button>
+      <div class="accordion-body">
+        <p>Renderer &laquo; immediate mode &raquo; via RenderingServer ; instances de mesh sans SceneTree.</p>
+        <h4>M&eacute;thodes</h4>
+        <ul>
+          <li><code>Rid AddCellRenderer(Vector2I, Color, bool, float)</code></li>
+          <li><code>static void RenderMeshAt(ref Rid, Mesh, Vector3, Vector3, Rid)</code></li>
+          <li><code>static void ClearInstance(Rid)</code></li>
+          <li><code>void ClearAll()</code></li>
+          <li><code>void ClearTemps()</code></li>
+        </ul>
+        <h4>Exemple d'usage</h4>
+        <pre class="code-block"><span class="cmt">// Afficher la zone de port&eacute;e d'une capacit&eacute;</span>
+<span class="kw">foreach</span> (<span class="kw">var</span> cell <span class="kw">in</span> castArea)
+    renderer.<span class="fn">AddCellRenderer</span>(cell,
+        <span class="kw">new</span> <span class="type">Color</span>(<span class="num">0.2f</span>, <span class="num">0.6f</span>, <span class="num">1f</span>, <span class="num">0.3f</span>),
+        isTemp: <span class="kw">true</span>);
+<span class="cmt">// Nettoyer apr&egrave;s annulation</span>
+renderer.<span class="fn">ClearTemps</span>();</pre>
+      </div>
+    </div>
+    <div class="grimoire-accordion" data-system="helpers">
+      <button class="accordion-header" aria-expanded="false"><span class="accordion-icon">&#9656;</span><span class="accordion-title">Raycaster</span><span class="accordion-badge">3 m&eacute;thodes</span></button>
+      <div class="accordion-body">
+        <p>Singleton Node3D ; raycast physique Godot avec filtrage de couches.</p>
+        <h4>M&eacute;thodes</h4>
+        <ul>
+          <li><code>static void SetSpace(Rid _spaceRID)</code></li>
+          <li><code>static RaycastResult DoRaycastWorld(Vector3, Vector3, float, LAYERS_MASKS)</code></li>
+          <li><code>static RaycastResult DoRaycastWorld(Vector3, Vector3, LAYERS_MASKS)</code></li>
+        </ul>
+      </div>
+    </div>
+    <div class="grimoire-accordion" data-system="helpers">
+      <button class="accordion-header" aria-expanded="false"><span class="accordion-icon">&#9656;</span><span class="accordion-title">AbilityDB</span><span class="accordion-badge">2 m&eacute;thodes</span></button>
+      <div class="accordion-body">
+        <p>BDD aptitudes ; d&eacute;couverte par r&eacute;flexion des sous-classes de BaseAbility.</p>
+        <h4>M&eacute;thodes</h4>
+        <ul>
+          <li><code>static BaseAbility GetAbilityByName(string)</code></li>
+          <li><code>static TBaseClass[] CreateInstancesOfDerivedClasses&lt;TBaseClass&gt;()</code></li>
+        </ul>
+      </div>
+    </div>
+    <div class="grimoire-accordion" data-system="helpers">
+      <button class="accordion-header" aria-expanded="false"><span class="accordion-icon">&#9656;</span><span class="accordion-title">MeshDB</span><span class="accordion-badge">1 m&eacute;thode</span></button>
+      <div class="accordion-body">
+        <p>BDD meshes ; dictionnaire nom&rarr;Mesh avec recherche statique.</p>
+        <h4>M&eacute;thodes</h4>
+        <ul><li><code>static Mesh GetMeshByName(string)</code></li></ul>
+      </div>
+    </div>
+    <span class="back-to-index" data-goto="2">◂ Index</span>
+    <div class="page-footer">&mdash; 33 &mdash;</div>
+  </div>
+</div>
+
+<div class="grimoire-page">
+  <div class="page-inner">
+    <div class="page-header">Helpers</div>
+    <div class="grimoire-accordion" data-system="helpers">
+      <button class="accordion-header" aria-expanded="false"><span class="accordion-icon">&#9656;</span><span class="accordion-title">ShapeBuilder / AOEShape</span><span class="accordion-badge">6 m&eacute;thodes</span></button>
+      <div class="accordion-body">
+        <p>Constructeur de formes AOE par empilement (croix, diagonale, splat, carr&eacute;, ligne).</p>
+        <h4>M&eacute;thodes</h4>
+        <ul>
+          <li><code>AOEShape Collapse()</code></li>
+          <li><code>void CollapseSubstract()</code></li>
+          <li><code>int AddCross(int, int, int)</code></li>
+          <li><code>int AddSplat(int, int, int)</code></li>
+          <li><code>int AddSquare(int, int, int)</code></li>
+          <li><code>int AddLine(int, int, int, int)</code></li>
+        </ul>
+      </div>
+    </div>
+    <div class="grimoire-accordion" data-system="helpers">
+      <button class="accordion-header" aria-expanded="false"><span class="accordion-icon">&#9656;</span><span class="accordion-title">VectorHelpers</span><span class="accordion-badge">3 m&eacute;thodes</span></button>
+      <div class="accordion-body">
+        <p>Extensions Vector3/Vector2I : conversion positions monde &harr; cellule &harr; hauteur terrain.</p>
+        <h4>M&eacute;thodes</h4>
+        <ul>
+          <li><code>static Vector3 GetCellPosOfPos(this Vector3, Subworld)</code></li>
+          <li><code>static Vector3 GetWorldPosOfCell(this Vector2I, Subworld)</code></li>
+          <li><code>static Vector2I GetCellPosOfPos2D(this Vector3)</code></li>
+        </ul>
+      </div>
+    </div>
+    <span class="back-to-index" data-goto="2">◂ Index</span>
+    <div class="page-footer">&mdash; 34 &mdash;</div>
+  </div>
+</div>
+
+<div class="grimoire-page">
+  <div class="page-inner">
+    <div class="page-header">Helpers</div>
+    <div class="grimoire-accordion" data-system="helpers">
+      <button class="accordion-header" aria-expanded="false"><span class="accordion-icon">&#9656;</span><span class="accordion-title">CameraHelpers</span><span class="accordion-badge">1 m&eacute;thode</span></button>
+      <div class="accordion-body">
+        <p>Extension Camera3D ; RaycastToGround projette un rayon souris vers Y=0.</p>
+        <h4>M&eacute;thodes</h4>
+        <ul><li><code>static Vector3 RaycastToGround(this Camera3D)</code></li></ul>
+      </div>
+    </div>
+    <div class="grimoire-accordion" data-system="helpers">
+      <button class="accordion-header" aria-expanded="false"><span class="accordion-icon">&#9656;</span><span class="accordion-title">TransformHelpers / ListsHelpers</span><span class="accordion-badge">2 m&eacute;thodes</span></button>
+      <div class="accordion-body">
+        <p>Transform3D dans un buffer raw pour MultiMesh, acc&egrave;s par r&eacute;f&eacute;rence via CollectionsMarshal.</p>
+        <h4>M&eacute;thodes</h4>
+        <ul>
+          <li><code>static void SetTRSAt(this List&lt;float&gt;, Transform3D, int)</code></li>
+          <li><code>static ref T GetRef&lt;T&gt;(this List&lt;T&gt;, int)</code></li>
+        </ul>
+      </div>
+    </div>
+    <div class="grimoire-accordion" data-system="helpers">
+      <button class="accordion-header" aria-expanded="false"><span class="accordion-icon">&#9656;</span><span class="accordion-title">Names</span><span class="accordion-badge">const</span></button>
+      <div class="accordion-body">
+        <p>Registre centralis&eacute; des noms d'actions d'entr&eacute;e (InputMap) en StringName statiques.</p>
+        <h4>Constantes</h4>
+        <ul>
+          <li><code>LEFT_CLICK, RIGHT_CLICK, INTERACT, ESCAPE</code></li>
+          <li><code>LEFT, RIGHT, UP, DOWN</code></li>
+        </ul>
+      </div>
+    </div>
+    <span class="back-to-index" data-goto="2">◂ Index</span>
+    <div class="page-footer">&mdash; 35 &mdash;</div>
+  </div>
+</div>
+
+<!-- ====== FIN (36-37) ====== -->
+<div class="grimoire-page">
+  <div class="page-inner">
+    <div class="colophon">
+      <div class="colophon-title">Colophon</div>
+      <div class="sep-ornate" style="width:30%"></div>
+      <p class="colophon-line">G&eacute;n&eacute;r&eacute; le 2 mars 2026</p>
+      <p class="colophon-line">Commit : <code>3bfaeec</code></p>
+      <p class="colophon-line" style="margin-top:8px">DocTech &mdash; Claude Code Skill</p>
+      <p class="colophon-line">Grimoire Edition</p>
+      <div class="sep-chapter" style="margin-top:15px;width:40%"></div>
+      <p class="colophon-line" style="font-style:italic;font-size:0.7rem;margin-top:10px">&laquo; Le code est po&eacute;sie, le grimoire en est la m&eacute;moire &raquo;</p>
+    </div>
+    <span class="back-to-index" data-goto="2">◂ Index</span>
+    <div class="page-footer">&mdash; 36 &mdash;</div>
+  </div>
+</div>
+
+<div class="grimoire-page hard-page" data-density="hard">
+  <div class="back-cover">
+    <div class="back-cover-ornament">
+      <span style="font-size:2rem;color:var(--text-gold)">&#9876;</span>
+    </div>
+  </div>
+</div>
+
+</div>
+</div>
+
+<!-- Mermaid Zoom Modal — MUST be before the script -->
+<div id="mermaid-modal">
+  <div id="mermaid-modal-inner">
+    <button id="mermaid-modal-close">&times;</button>
+    <div class="mermaid-modal-content"></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/page-flip@2/dist/js/page-flip.browser.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>
+(async function() {
+  'use strict';
+
+  // 1. Initialize Mermaid
+  mermaid.initialize({
+    startOnLoad: false,
+    theme: 'dark',
+    themeVariables: {
+      darkMode: true, background: '#0f0d0a', primaryColor: '#5b2d8e',
+      primaryTextColor: '#d4c5a9', primaryBorderColor: '#8b7340',
+      lineColor: '#4a3728', secondaryColor: '#1a1410', tertiaryColor: '#231c14',
+      fontFamily: 'Crimson Text, serif', fontSize: '12px'
+    },
+    flowchart: { curve: 'basis', padding: 15 },
+    stateDiagram: { padding: 15 }
+  });
+
+  // 2. Prepare all mermaid-pending divs
+  document.querySelectorAll('.mermaid-pending').forEach(function(div) {
+    var src = div.getAttribute('data-mermaid-source');
+    if (!src) return;
+    div.classList.remove('mermaid-pending');
+    div.classList.add('mermaid');
+    div.textContent = src;
+  });
+
+  // 3. Render Mermaid and WAIT for it to finish before PageFlip takes the DOM
+  try {
+    await mermaid.run({ nodes: document.querySelectorAll('.mermaid') });
+  } catch(e) { console.warn('Mermaid render:', e); }
+
+  // 4. Add zoom hints
+  document.querySelectorAll('.mermaid-container').forEach(function(c) {
+    if (!c.querySelector('.mermaid-zoom-hint')) {
+      var hint = document.createElement('div');
+      hint.className = 'mermaid-zoom-hint';
+      hint.textContent = 'Cliquer pour agrandir';
+      c.appendChild(hint);
+    }
+  });
+
+  // 5. Initialize PageFlip AFTER Mermaid SVGs are ready
+  var grimoireEl = document.getElementById('grimoire');
+  var origPages = grimoireEl.querySelectorAll('.grimoire-page');
+  var totalPages = origPages.length;
+  var isPortrait = window.innerWidth < 900;
+  var pageFlip = new St.PageFlip(grimoireEl, {
+    width: 800, height: 1000, size: 'stretch',
+    minWidth: 400, minHeight: 500, maxWidth: 900, maxHeight: 1100,
+    maxShadowOpacity: 0.5, showCover: true, mobileScrollSupport: false,
+    flippingTime: 600, usePortrait: isPortrait, drawShadow: true,
+    autoSize: true, startPage: 0,
+    clickEventForward: false,
+    useMouseEvents: false,
+    swipeDistance: 99999,
+    disableFlipByClick: true
+  });
+  pageFlip.loadFromHTML(origPages);
+
+  // 6. UI update
+  var indicator = document.getElementById('page-indicator');
+  var prevBtn = document.getElementById('nav-prev');
+  var nextBtn = document.getElementById('nav-next');
+  var pitchPanel = document.getElementById('pitch-panel');
+  var wrapper = document.getElementById('grimoire-wrapper');
+  function getPages() { return grimoireEl.querySelectorAll('.grimoire-page'); }
+  function updateUI() {
+    var current = pageFlip.getCurrentPageIndex();
+    indicator.textContent = '\u2014 Page ' + current + ' / ' + (totalPages - 1) + ' \u2014';
+    prevBtn.classList.toggle('hidden', current <= 0);
+    nextBtn.classList.toggle('hidden', current >= totalPages - 1);
+    // Show pitch only on page 0
+    var showPitch = (current === 0);
+    pitchPanel.classList.toggle('hidden', !showPitch);
+    wrapper.classList.toggle('with-pitch', showPitch);
+    updateBottomNav(current);
+    var pagesToRender = [current];
+    if (!isPortrait && current + 1 < totalPages) pagesToRender.push(current + 1);
+    if (pagesToRender.indexOf(4) !== -1 || pagesToRender.indexOf(5) !== -1) triggerCounters();
+    pagesToRender.forEach(function(idx) {
+      var pages = getPages();
+      var els = pages[idx] ? pages[idx].querySelectorAll('.fade-in-page') : [];
+      els.forEach(function(el, i) { setTimeout(function() { el.classList.add('visible'); }, 100 + i * 80); });
+    });
+  }
+  pageFlip.on('flip', function() { updateUI(); });
+  updateUI();
+
+  // 7. Navigation arrows
+  prevBtn.addEventListener('click', function() { pageFlip.flipPrev(); });
+  nextBtn.addEventListener('click', function() { pageFlip.flipNext(); });
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowRight' || e.key === 'PageDown') { pageFlip.flipNext(); e.preventDefault(); }
+    if (e.key === 'ArrowLeft' || e.key === 'PageUp') { pageFlip.flipPrev(); e.preventDefault(); }
+    if (e.key === 'Home') { pageFlip.turnToPage(0); e.preventDefault(); }
+    if (e.key === 'End') { pageFlip.turnToPage(totalPages - 1); e.preventDefault(); }
+  });
+
+  // 8. Event delegation for ALL [data-goto] clicks
+  document.addEventListener('click', function(e) {
+    // Skip if inside mermaid modal
+    if (e.target.closest('#mermaid-modal')) return;
+    // Skip accordion headers (handled separately)
+    if (e.target.closest('.accordion-header')) return;
+    var gotoEl = e.target.closest('[data-goto]');
+    if (!gotoEl) return;
+    var p = parseInt(gotoEl.getAttribute('data-goto'), 10);
+    if (!isNaN(p)) {
+      e.preventDefault();
+      e.stopPropagation();
+      pageFlip.turnToPage(p);
+    }
+  });
+
+  // 9. Bottom nav highlighting
+  function updateBottomNav(currentPage) {
+    var items = document.querySelectorAll('#bottom-nav .bnav-item[data-goto]');
+    var activeItem = null;
+    items.forEach(function(item) {
+      var gotoPage = parseInt(item.getAttribute('data-goto'), 10);
+      item.classList.remove('active');
+      if (currentPage >= gotoPage) activeItem = item;
+    });
+    if (activeItem) activeItem.classList.add('active');
+  }
+
+  // 10. Event delegation for accordion headers
+  document.addEventListener('click', function(e) {
+    var btn = e.target.closest('.accordion-header');
+    if (!btn) return;
+    e.stopPropagation();
+    var isOpen = btn.getAttribute('aria-expanded') === 'true';
+    var page = btn.closest('.grimoire-page');
+    if (page) {
+      page.querySelectorAll('.accordion-header[aria-expanded="true"]').forEach(function(o) {
+        o.setAttribute('aria-expanded', 'false');
+        if (o.nextElementSibling) o.nextElementSibling.classList.remove('open');
+      });
+    }
+    if (!isOpen) {
+      btn.setAttribute('aria-expanded', 'true');
+      if (btn.nextElementSibling) btn.nextElementSibling.classList.add('open');
+    }
+  });
+
+  // 11. Counter animation
+  var countersAnimated = false;
+  function triggerCounters() {
+    if (countersAnimated) return;
+    countersAnimated = true;
+    document.querySelectorAll('.stat-value[data-target]').forEach(function(el) { animateCounter(el); });
+  }
+  function animateCounter(el) {
+    var target = parseInt(el.getAttribute('data-target'), 10);
+    if (isNaN(target)) return;
+    var duration = 1500, startTime = null;
+    function easeOutExpo(t) { return t === 1 ? 1 : 1 - Math.pow(2, -10 * t); }
+    function step(ts) {
+      if (!startTime) startTime = ts;
+      var p = Math.min((ts - startTime) / duration, 1);
+      var val = Math.round(easeOutExpo(p) * target);
+      el.textContent = target > 1000 ? '~' + val.toLocaleString('fr-FR') : val;
+      if (p < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+
+  // 12. Responsive
+  window.addEventListener('resize', function() {
+    var newP = window.innerWidth < 900;
+    if (newP !== isPortrait) { isPortrait = newP; updateUI(); }
+  });
+
+  // 13. Mermaid Zoom Modal
+  var modal = document.getElementById('mermaid-modal');
+  var modalInner = document.getElementById('mermaid-modal-inner');
+  var modalClose = document.getElementById('mermaid-modal-close');
+
+  document.addEventListener('click', function(e) {
+    if (e.target.closest('.accordion-header')) return;
+    if (e.target.closest('#mermaid-modal')) return;
+    if (e.target.closest('[data-goto]')) return;
+    var container = e.target.closest('.mermaid-container');
+    if (!container) return;
+    var svg = container.querySelector('svg');
+    if (!svg) return;
+    var content = modalInner.querySelector('.mermaid-modal-content');
+    content.innerHTML = '';
+    var clone = svg.cloneNode(true);
+    clone.removeAttribute('style');
+    clone.removeAttribute('width');
+    clone.removeAttribute('height');
+    content.appendChild(clone);
+    modal.classList.add('open');
+  });
+
+  modal.addEventListener('click', function(e) {
+    if (e.target === modal) modal.classList.remove('open');
+  });
+  modalClose.addEventListener('click', function() { modal.classList.remove('open'); });
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && modal.classList.contains('open')) {
+      modal.classList.remove('open');
+      e.stopPropagation();
+    }
+  });
+})();
+</script>
+
+</body>
+</html>
