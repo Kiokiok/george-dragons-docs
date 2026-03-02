@@ -2093,11 +2093,30 @@ renderer.<span class="fn">ClearTemps</span>();</pre>
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/page-flip@2/dist/js/page-flip.browser.js"></script>
+<script id="pageflip-loader">
+// Load page-flip with patched flipPrev (bug #29: x:10 → x:this.render.getRect().left+10)
+fetch('https://cdn.jsdelivr.net/npm/page-flip@2/dist/js/page-flip.browser.js')
+  .then(function(r){return r.text()})
+  .then(function(code){
+    code=code.replace(
+      'flipPrev(t){this.flip({x:10,',
+      'flipPrev(t){this.flip({x:this.render.getRect().left+10,'
+    );
+    var s=document.createElement('script');
+    s.textContent=code;
+    document.head.appendChild(s);
+    document.dispatchEvent(new Event('pageflip-ready'));
+  });
+</script>
 <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
 <script>
 (async function() {
   'use strict';
+
+  // 0. Wait for patched page-flip library
+  if (typeof St === 'undefined') {
+    await new Promise(function(resolve) { document.addEventListener('pageflip-ready', resolve); });
+  }
 
   // 1. Initialize Mermaid
   mermaid.initialize({
@@ -2148,7 +2167,7 @@ renderer.<span class="fn">ClearTemps</span>();</pre>
     maxShadowOpacity: 0.5, showCover: true, mobileScrollSupport: false,
     flippingTime: 600, usePortrait: isPortrait, drawShadow: true,
     autoSize: true, startPage: 0,
-    clickEventForward: false,
+    clickEventForward: true,
     useMouseEvents: false,
     swipeDistance: 99999,
     disableFlipByClick: true
@@ -2193,7 +2212,7 @@ renderer.<span class="fn">ClearTemps</span>();</pre>
     wrapper.classList.add('ready');
   });
 
-  // 7. Navigation arrows
+  // 7. Navigation arrows — flipPrev/flipNext with animation (bug #29 patched at load time)
   prevBtn.addEventListener('click', function() { pageFlip.flipPrev(); });
   nextBtn.addEventListener('click', function() { pageFlip.flipNext(); });
   document.addEventListener('keydown', function(e) {
@@ -2203,7 +2222,7 @@ renderer.<span class="fn">ClearTemps</span>();</pre>
     if (e.key === 'End') { pageFlip.turnToPage(totalPages - 1); e.preventDefault(); }
   });
 
-  // 8. Event delegation for ALL [data-goto] clicks
+  // 9. Event delegation for ALL [data-goto] clicks
   document.addEventListener('click', function(e) {
     // Skip if inside mermaid modal
     if (e.target.closest('#mermaid-modal')) return;
@@ -2220,7 +2239,7 @@ renderer.<span class="fn">ClearTemps</span>();</pre>
     }
   });
 
-  // 9. Bottom nav highlighting
+  // 10. Bottom nav highlighting
   function updateBottomNav(currentPage) {
     var items = document.querySelectorAll('#bottom-nav .bnav-item[data-goto]');
     var activeItem = null;
@@ -2232,7 +2251,7 @@ renderer.<span class="fn">ClearTemps</span>();</pre>
     if (activeItem) activeItem.classList.add('active');
   }
 
-  // 10. Event delegation for accordion headers
+  // 11. Event delegation for accordion headers
   document.addEventListener('click', function(e) {
     var btn = e.target.closest('.accordion-header');
     if (!btn) return;
@@ -2251,7 +2270,7 @@ renderer.<span class="fn">ClearTemps</span>();</pre>
     }
   });
 
-  // 11. Counter animation
+  // 12. Counter animation
   var countersAnimated = false;
   function triggerCounters() {
     if (countersAnimated) return;
@@ -2273,13 +2292,13 @@ renderer.<span class="fn">ClearTemps</span>();</pre>
     requestAnimationFrame(step);
   }
 
-  // 12. Responsive
+  // 13. Responsive
   window.addEventListener('resize', function() {
     var newP = window.innerWidth < 900;
     if (newP !== isPortrait) { isPortrait = newP; updateUI(); }
   });
 
-  // 13. Mermaid Zoom Modal
+  // 14. Mermaid Zoom Modal
   var modal = document.getElementById('mermaid-modal');
   var modalInner = document.getElementById('mermaid-modal-inner');
   var modalClose = document.getElementById('mermaid-modal-close');
