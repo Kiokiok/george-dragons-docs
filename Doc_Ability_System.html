@@ -1,0 +1,79 @@
+<h1 id="ability-system-documentation">Ability System Documentation</h1>
+<h2 id="overview">Overview</h2>
+<p>The Ability System is a flexible framework for defining combat actions that pawns can perform. Abilities can deal damage, apply effects, move pawns, or trigger any custom logic through the Battle Action system.</p>
+<h2 id="core-components">Core Components</h2>
+<h3 id="baseability">BaseAbility</h3>
+<p>The abstract base class all abilities inherit from. Abilities define:</p>
+<ul>
+<li><strong>Casting validity</strong> (<code>CanPawnCast</code>) - Can the pawn cast this ability? (checks AP, status effects, cooldowns)</li>
+<li><strong>Cast area</strong> (<code>GetCastArea</code>) - Which cells can the ability be cast from?</li>
+<li><strong>Effect area</strong> (<code>GetEffectArea</code>) - Which cells are affected by the ability?</li>
+<li><strong>Execution</strong> (<code>CastAbility</code>) - What does the ability actually do?</li>
+</ul>
+<h3 id="battlepawn">BattlePawn</h3>
+<p>The pawn executing the ability. Abilities interact with pawns through:</p>
+<ul>
+<li><strong>Stats</strong>: <code>CurrentAP</code> (action points), <code>CurrentMovementPoints</code>, <code>CurrentHP</code></li>
+<li><strong>State</strong>: Can they move? Do they have status effects preventing actions?</li>
+<li><strong>Events</strong>: Equipment and effects can modify outgoing damage/effects through the pawn&#39;s event system</li>
+</ul>
+<h3 id="battleinstance">BattleInstance</h3>
+<p>The rules engine. Abilities call high-level action methods instead of directly mutating state:</p>
+<ul>
+<li><code>DealDamage(packet)</code> - Processes damage through event pipeline</li>
+<li><code>Heal(packet)</code> - Heals a target with modifiers</li>
+<li><code>ApplyEffect(effect)</code> - Adds a status effect</li>
+<li><code>RemoveEffect(effect)</code> - Removes a status effect</li>
+<li><code>MovePawn(request)</code> - Moves pawn via pathfinding</li>
+<li><code>TeleportPawn(request)</code> - Teleports pawn (swap-safe)</li>
+<li><code>PushPawn(request)</code> - Pushes pawn (terrain-aware)</li>
+</ul>
+<h3 id="damagepacket">DamagePacket</h3>
+<p>Intent-based damage representation with modifiable properties:</p>
+<pre><code><span class="hljs-symbol">DamagePacket</span> {
+  SourcePawn, TargetPawn
+  <span class="hljs-keyword">BaseAmount, </span>DamageType (Fire, <span class="hljs-keyword">Blunt, </span>etc.)
+  FinalAmount (modified <span class="hljs-keyword">by </span>events)
+<span class="hljs-symbol">  Flags:</span> IsDotTick, IsAbilityDamage, CanCrit, IgnoreArmor
+}
+</code></pre><p>The packet flows through source and target pawn events, allowing modifiers (equipment, status effects) to alter the final damage before it&#39;s applied.</p>
+<h3 id="statuseffect-system">StatusEffect System</h3>
+<p>Status effects represent buffs, debuffs, and DoTs:</p>
+<ul>
+<li><strong>DoT Effects</strong> - Damage over time with configurable tick timing (start/end of turn) and stacking rules</li>
+<li><strong>Movement Debuffs</strong> - Reduce movement points</li>
+<li><strong>Movement Prevention</strong> - Prevent movement entirely (root/stun)</li>
+<li><strong>Custom Effects</strong> - Extend <code>StatusEffect</code> for custom mechanics</li>
+</ul>
+<p>Effects are managed per-pawn via <code>StatusController</code> and process automatically at turn start/end.</p>
+<h3 id="equipment-system">Equipment System</h3>
+<p>Equipment items subscribe to pawn events to modify ability outcomes:</p>
+<pre><code>Equipped → OnEquipped() → Subscribe <span class="hljs-keyword">to</span> pawn events
+Cast Ability → <span class="hljs-keyword">Event</span> fires → Equipment modifies <span class="hljs-keyword">result</span>
+Unequipped → OnUnequipped() → Unsubscribe <span class="hljs-keyword">from</span> events
+</code></pre><p>Example: Ring of Flames adds +2 to all fire damage by listening to <code>OnBeforeDealDamage</code>.</p>
+<h2 id="ability-authoring-workflow">Ability Authoring Workflow</h2>
+<ol>
+<li><strong>Extend BaseAbility</strong></li>
+<li><strong>Implement CanPawnCast</strong> - Validate AP, MP, status conditions</li>
+<li><strong>Implement GetCastArea</strong> - Define valid targeting range</li>
+<li><strong>Implement GetEffectArea</strong> - Define what cells are affected</li>
+<li><strong>Implement CastAbility</strong> - Call <code>BattleInstance</code> actions:<pre><code class="lang-csharp"><span class="hljs-keyword">public</span> override <span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">CastAbility</span><span class="hljs-params">(BattlePawn pawn, BattleInstance battle, Vector2I <span class="hljs-keyword">target</span>)</span>
+</span>{
+    var targetPawn = battle.GetPawnAtCell(<span class="hljs-keyword">target</span>);
+    battle.DealDamage(<span class="hljs-keyword">new</span> DamagePacket(pawn, targetPawn, <span class="hljs-number">10</span>, DamageType.Elemental_Fire));
+    pawn.CurrentAP -= <span class="hljs-number">2</span>; <span class="hljs-comment">// Spend AP</span>
+}
+</code></pre>
+</li>
+</ol>
+<h2 id="event-pipeline">Event Pipeline</h2>
+<p>Every ability action goes through an event pipeline:</p>
+<ol>
+<li><strong>Before Event</strong> - Source/Target pawns and equipment can modify the action</li>
+<li><strong>Action Applied</strong> - State is updated</li>
+<li><strong>After Event</strong> - Pawns and equipment can react (triggers, logging, VFX)</li>
+</ol>
+<p>This allows complex interactions without modifying ability code.</p>
+<h2 id="key-design-principles">Key Design Principles</h2>
+<p>✅ <strong>Abilities don&#39;t mutate state directly</strong> - They call BattleInstance action methods<br>✅ <strong>Modifiers are decoupled</strong> - Equipment and effects hook into events, not ability code<br>✅ <strong>Centralized rules</strong> - All combat logic in BattleInstance ensures consistency<br>✅ <strong>Extensible</strong> - New equipment, status effects, and abilities don&#39;t require changes to existing code</p>

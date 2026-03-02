@@ -1,0 +1,147 @@
+<h1 id="equipment-system-documentation">Equipment System Documentation</h1>
+<h2 id="overview">Overview</h2>
+<p>The Equipment System allows pawns to equip items that modify ability behaviors, grant stat bonuses, and enhance combat capabilities. Equipment integrates seamlessly with the existing event pipeline to alter damage, healing, movement, and status effects without requiring ability code changes.</p>
+<h2 id="core-components">Core Components</h2>
+<h3 id="baseequipment">BaseEquipment</h3>
+<p>Abstract base class for all equipment. Defines:</p>
+<ul>
+<li><strong>Id &amp; Name</strong> - Unique identifier and display name</li>
+<li><strong>EquipmentSlot</strong> - Where the item can be equipped (Weapon, Armor, Helmet, Boots, Accessory1, Accessory2)</li>
+<li><strong>Lifecycle Methods</strong>:<ul>
+<li><code>OnEquip(pawn)</code> - Called when equipped; subscribe to pawn events here</li>
+<li><code>OnUnequip(pawn)</code> - Called when unequipped; unsubscribe from events here</li>
+</ul>
+</li>
+</ul>
+<h3 id="equipmentcontroller">EquipmentController</h3>
+<p>Manages all equipped items for a pawn:</p>
+<ul>
+<li><code>Equip(equipment)</code> - Equips an item to its designated slot</li>
+<li><code>Unequip(slot)</code> - Removes equipped item from slot</li>
+<li><code>GetEquipped(slot)</code> - Retrieves equipped item or null</li>
+<li><code>GetMovementPointBonus()</code> - Sums MP bonuses from all equipped items</li>
+<li><code>GetActionPointBonus()</code> - Sums AP bonuses from all equipped items</li>
+</ul>
+<h3 id="equipment-integration-with-pawns">Equipment Integration with Pawns</h3>
+<p>Equipment is managed via a pawn&#39;s <code>EquipmentController</code>:</p>
+<pre><code><span class="hljs-selector-tag">BattlePawn</span><span class="hljs-selector-class">.EquipmentController</span>
+├── <span class="hljs-selector-tag">GetMovementPointBonus</span>() → <span class="hljs-selector-tag">Increases</span> <span class="hljs-selector-tag">GetEffectiveMovementPoints</span>()
+├── <span class="hljs-selector-tag">GetActionPointBonus</span>() → <span class="hljs-selector-tag">Applied</span> <span class="hljs-keyword">when</span> resetting AP in OnEndTurn()
+└── Equipment events → Hook into pawn's damage/heal/movement events
+</code></pre><h3 id="how-equipment-alters-abilities">How Equipment Alters Abilities</h3>
+<p>Equipment modifies ability behaviors through <strong>event subscriptions</strong>:</p>
+<ol>
+<li><strong>Before Event</strong> - Equipment modifies the action packet before it&#39;s applied</li>
+<li><strong>After Event</strong> - Equipment reacts to completed actions (add effects, heal, damage)</li>
+</ol>
+<p><strong>Examples:</strong></p>
+<ul>
+<li><strong>DamageBoostWeapon</strong> - Subscribes to <code>OnBeforeDealDamage</code>, adds flat damage</li>
+<li><strong>RingOfPoison</strong> - Subscribes to <code>OnAfterDealDamage</code>, applies poison DoT to targets</li>
+<li><strong>HelmetOfProtection</strong> - Subscribes to <code>OnBeforeTakeDamage</code>, reduces incoming damage</li>
+<li><strong>StaffOfHealing</strong> - Subscribes to <code>OnBeforeHealOther</code>, amplifies healing output</li>
+</ul>
+<h3 id="event-subscriptions">Event Subscriptions</h3>
+<p>Equipment uses the same pawn event system as status effects:</p>
+<table>
+<thead>
+<tr>
+<th>Event</th>
+<th>Purpose</th>
+<th>Equipment Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>OnBeforeDealDamage</code></td>
+<td>Modify outgoing damage</td>
+<td>DamageBoostWeapon (+2 damage)</td>
+</tr>
+<tr>
+<td><code>OnAfterDealDamage</code></td>
+<td>React to dealt damage</td>
+<td>RingOfPoison (add DoT)</td>
+</tr>
+<tr>
+<td><code>OnBeforeTakeDamage</code></td>
+<td>Modify incoming damage</td>
+<td>HelmetOfProtection (-1 damage)</td>
+</tr>
+<tr>
+<td><code>OnAfterTakeDamage</code></td>
+<td>React to taken damage</td>
+<td>ArmorOfReflection (damage attacker)</td>
+</tr>
+<tr>
+<td><code>OnBeforeHealOther</code></td>
+<td>Modify outgoing healing</td>
+<td>StaffOfHealing (+2 healing)</td>
+</tr>
+<tr>
+<td><code>OnBeforeMove</code></td>
+<td>Modify movement requests</td>
+<td>BootsOfSwiftness (increase MP)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="passive-bonuses">Passive Bonuses</h3>
+<p>Equipment can grant permanent stat increases:</p>
+<ul>
+<li><strong>Movement Point Bonus</strong> - Added to effective MP pool</li>
+<li><strong>Action Point Bonus</strong> - Added when resetting AP at turn start</li>
+</ul>
+<p>These bonuses aggregate from all equipped items and are applied automatically.</p>
+<h2 id="usage-example">Usage Example</h2>
+<pre><code class="lang-csharp"><span class="hljs-comment">// Equip a weapon</span>
+<span class="hljs-type">DamageBoostWeapon</span> sword = <span class="hljs-function"><span class="hljs-keyword">new</span> <span class="hljs-title">DamageBoostWeapon</span>();
+<span class="hljs-title">pawn</span>.<span class="hljs-title">EquipmentController</span>.<span class="hljs-title">Equip</span>(sword);
+
+<span class="hljs-comment">// All damage dealt now gets +2 automatically</span>
+<span class="hljs-comment">// No ability code needs to change!</span>
+
+<span class="hljs-comment">// Equip armor</span>
+<span class="hljs-title">HelmetOfProtection</span> <span class="hljs-title">helmet</span> = <span class="hljs-title">new</span> <span class="hljs-title">HelmetOfProtection</span>();
+<span class="hljs-title">pawn</span>.<span class="hljs-title">EquipmentController</span>.<span class="hljs-title">Equip</span>(helmet);
+
+<span class="hljs-comment">// All incoming damage is now reduced by 1</span>
+
+<span class="hljs-comment">// Query bonuses</span>
+<span class="hljs-title">int</span> <span class="hljs-title">totalMPBonus</span> = <span class="hljs-title">pawn</span>.<span class="hljs-title">EquipmentController</span>.<span class="hljs-title">GetMovementPointBonus</span>();
+<span class="hljs-title">int</span> <span class="hljs-title">totalAPBonus</span> = <span class="hljs-title">pawn</span>.<span class="hljs-title">EquipmentController</span>.<span class="hljs-title">GetActionPointBonus</span>();</span>
+</code></pre>
+<h2 id="creating-custom-equipment">Creating Custom Equipment</h2>
+<p>Extend <code>BaseEquipment</code> and override lifecycle methods:</p>
+<pre><code class="lang-csharp"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">MyCustomEquipment</span> : <span class="hljs-title">BaseEquipment</span>
+{
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">override</span> <span class="hljs-keyword">void</span> <span class="hljs-title">OnEquip</span>(<span class="hljs-params">BattlePawn pawn</span>)
+    </span>{
+        pawn.OnBeforeDealDamage += ModifyDamage;
+    }
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">override</span> <span class="hljs-keyword">void</span> <span class="hljs-title">OnUnequip</span>(<span class="hljs-params">BattlePawn pawn</span>)
+    </span>{
+        pawn.OnBeforeDealDamage -= ModifyDamage;
+    }
+
+    <span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-keyword">void</span> <span class="hljs-title">ModifyDamage</span>(<span class="hljs-params">DamagePacket packet</span>)
+    </span>{
+        <span class="hljs-comment">// Modify the packet as needed</span>
+        packet.FinalAmount += <span class="hljs-number">3</span>;
+    }
+}
+</code></pre>
+<h2 id="key-design-principles">Key Design Principles</h2>
+<p>✅ <strong>Non-Intrusive</strong> - Equipment modifies abilities through events, not by changing ability code<br>✅ <strong>Composable</strong> - Multiple equipment pieces stack effects through the same event system<br>✅ <strong>Automatic</strong> - Equip → Subscribe to events → Ability uses modified values → Unequip → Unsubscribe<br>✅ <strong>Type-Safe</strong> - Modifies DamagePackets, HealPackets, and other typed objects<br>✅ <strong>Efficient</strong> - Event-based system avoids unnecessary recalculations<br>✅ <strong>Extensible</strong> - New equipment types don&#39;t require changes to BattlePawn or BattleInstance</p>
+<h2 id="equipment-slots">Equipment Slots</h2>
+<p>Equipment can occupy specific slots on a pawn. Only one item per slot:</p>
+<ul>
+<li><strong>Weapon</strong> - Primary attack tool</li>
+<li><strong>Armor</strong> - Body protection</li>
+<li><strong>Belt</strong> - ...</li>
+<li><strong>Cape</strong> - ...</li>
+<li><strong>Helmet</strong> - Head protection</li>
+<li><strong>Boots</strong> - Movement enhancement</li>
+<li><strong>Ring</strong> - ...</li>
+<li><strong>Amulet</strong> - ...</li>
+</ul>
+<p>Equipping to an occupied slot automatically unequips the previous item.</p>
