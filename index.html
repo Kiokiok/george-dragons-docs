@@ -48,13 +48,6 @@ html, body {
   display: flex; justify-content: center; align-items: center;
   min-height: 100vh; padding: 10px 10px 52px;
   animation: grimoireOpen 1.2s ease-out both;
-  transition: margin-left 0.5s ease;
-}
-#grimoire-wrapper.with-pitch {
-  margin-left: 38vw;
-}
-@media (max-width: 1100px) {
-  #grimoire-wrapper.with-pitch { margin-left: 0; }
 }
 @keyframes grimoireOpen {
   from { transform: scale(0.95) rotateY(-5deg); opacity: 0.6; }
@@ -246,9 +239,9 @@ code { background: rgba(10,8,5,0.4); border: 1px solid var(--border-ornament); p
 /* Mermaid Zoom Modal */
 #mermaid-modal { display:none; position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,0.85); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); align-items:center; justify-content:center; cursor:pointer; }
 #mermaid-modal.open { display:flex; }
-#mermaid-modal-inner { background:var(--page-bg); border:2px solid var(--border-ornament-gold); border-radius:12px; padding:40px; width:88vw; min-height:70vh; max-height:92vh; overflow:auto; box-shadow:0 0 60px rgba(201,168,76,0.2); cursor:default; position:relative; display:flex; align-items:center; justify-content:center; }
-#mermaid-modal-inner .mermaid-modal-content { width:100%; min-height:60vh; display:flex; align-items:center; justify-content:center; }
-#mermaid-modal-inner .mermaid-modal-content svg { width:100% !important; height:auto !important; min-height:55vh; }
+#mermaid-modal-inner { background:var(--page-bg); border:2px solid var(--border-ornament-gold); border-radius:12px; padding:40px; max-width:88vw; max-height:92vh; overflow:auto; box-shadow:0 0 60px rgba(201,168,76,0.2); cursor:default; position:relative; display:flex; align-items:center; justify-content:center; }
+#mermaid-modal-inner .mermaid-modal-content { display:flex; align-items:center; justify-content:center; }
+#mermaid-modal-inner .mermaid-modal-content svg { max-width:100%; height:auto !important; }
 #mermaid-modal-close { position:absolute; top:10px; right:14px; background:none; border:none; color:var(--text-gold); font-size:1.5rem; cursor:pointer; opacity:0.6; transition:opacity 0.2s; font-family:'MedievalSharp'; }
 #mermaid-modal-close:hover { opacity:1; }
 
@@ -395,23 +388,23 @@ code { background: rgba(10,8,5,0.4); border: 1px solid var(--border-ornament); p
 <nav id="bottom-nav">
   <button class="bnav-item" data-goto="0">Couverture</button>
   <div class="bnav-sep"></div>
-  <button class="bnav-item" data-goto="2">Index</button>
+  <button class="bnav-item" data-goto="1">Index</button>
   <div class="bnav-sep"></div>
-  <button class="bnav-item" data-goto="4">Vue d'ensemble</button>
+  <button class="bnav-item" data-goto="3">Vue d'ensemble</button>
   <div class="bnav-sep"></div>
-  <button class="bnav-item" data-chapter="battle" data-goto="9">I. Battle</button>
+  <button class="bnav-item" data-chapter="battle" data-goto="8">I. Battle</button>
   <div class="bnav-sep"></div>
-  <button class="bnav-item" data-chapter="core" data-goto="17">II. Core</button>
+  <button class="bnav-item" data-chapter="core" data-goto="16">II. Core</button>
   <div class="bnav-sep"></div>
-  <button class="bnav-item" data-chapter="camp" data-goto="21">III. Camp</button>
+  <button class="bnav-item" data-chapter="camp" data-goto="20">III. Camp</button>
   <div class="bnav-sep"></div>
-  <button class="bnav-item" data-chapter="ui" data-goto="25">IV. UI</button>
+  <button class="bnav-item" data-chapter="ui" data-goto="24">IV. UI</button>
   <div class="bnav-sep"></div>
-  <button class="bnav-item" data-chapter="world" data-goto="29">V. World</button>
+  <button class="bnav-item" data-chapter="world" data-goto="28">V. World</button>
   <div class="bnav-sep"></div>
-  <button class="bnav-item" data-chapter="helpers" data-goto="33">VI. Helpers</button>
+  <button class="bnav-item" data-chapter="helpers" data-goto="32">VI. Helpers</button>
   <div class="bnav-sep"></div>
-  <span class="bnav-page" id="page-indicator">&mdash; 0 / 37 &mdash;</span>
+  <span class="bnav-page" id="page-indicator">&mdash; 0 / 36 &mdash;</span>
 </nav>
 
 <!-- Pitch panel — outside the book, fixed left -->
@@ -509,94 +502,7 @@ code { background: rgba(10,8,5,0.4); border: 1px solid var(--border-ornament); p
   </div>
 </div>
 
-<!-- PAGE 1 : PAGE DE GARDE -->
-<div class="grimoire-page" style="background: radial-gradient(ellipse at 50% 40%, #2a2118 0%, #1a1410 60%, #0d0b08 100%);">
-  <div class="page-inner" style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center">
-    <div style="width:130px;height:130px;border:2px solid var(--text-gold);border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:20px;box-shadow:0 0 30px var(--glow-gold),inset 0 0 25px rgba(201,168,76,0.12);position:relative">
-      <span style="font-size:3rem">&#128081;</span>
-      <div style="position:absolute;width:155px;height:155px;border:1px solid var(--border-ornament-gold);border-radius:50%;opacity:0.5"></div>
-    </div>
-    <h2 style="font-family:'Cinzel';font-size:1.6rem;color:var(--text-gold);letter-spacing:3px;margin-bottom:8px">tactics_game_proto</h2>
-    <div class="sep-chapter" style="width:50%;margin:12px auto"></div>
-    <p style="font-family:'MedievalSharp';font-size:1.1rem;color:var(--text-gold-bright);line-height:1.7">&laquo; Que ce grimoire guide tes pas<br>dans les m&eacute;andres du code &raquo;</p>
-    <div class="sep-ornate" style="margin-top:20px;width:35%"></div>
-    <p style="font-family:'Crimson Text';font-size:0.95rem;color:var(--text-cream);margin-top:15px">Documentation Technique Compl&egrave;te</p>
-    <p style="font-family:'Crimson Text';font-size:1rem;color:var(--text-cream-muted);margin-top:5px">78 fichiers &bull; 6 syst&egrave;mes &bull; 51 classes</p>
-    <div style="margin-top:20px;padding:10px 20px;border:1px solid var(--border-ornament-gold);border-radius:6px;background:rgba(201,168,76,0.06)">
-      <p style="font-family:'JetBrains Mono';font-size:0.95rem;color:var(--text-gold)">Commit : 3bfaeec</p>
-      <p style="font-family:'Crimson Text';font-size:0.95rem;color:var(--text-cream-muted)">2 mars 2026</p>
-    </div>
-    <div class="page-footer">&mdash; 1 &mdash;</div>
-  </div>
-</div>
-
-<!-- PAGE 2 : INDEX (1/2) — remplace l'ancien sommaire -->
-<div class="grimoire-page">
-  <div class="page-inner">
-    <div class="page-header">Index</div>
-    <h2 style="font-family:'Cinzel';font-size:1.15rem;color:var(--text-gold);text-align:center;margin-bottom:8px">Sommaire</h2>
-    <div class="sep-ornate" style="width:50%;margin-bottom:10px"></div>
-
-    <div class="page-index-section" style="color:var(--text-cream-muted)">Vue d'ensemble</div>
-    <div class="page-index-entry" data-goto="4"><span class="page-index-num">4</span><span class="page-index-label">Statistiques du Projet</span></div>
-    <div class="page-index-entry" data-goto="5"><span class="page-index-num">5</span><span class="page-index-label">Architecture Globale &mdash; diagramme</span></div>
-    <div class="page-index-entry" data-goto="6"><span class="page-index-num">6</span><span class="page-index-label">Derniers Commits</span></div>
-    <div class="page-index-entry" data-goto="7"><span class="page-index-num">7</span><span class="page-index-label">Cr&eacute;dits &mdash; DocTech</span></div>
-
-    <div class="page-index-section" style="color:var(--accent-battle-light)">I &mdash; Battle</div>
-    <div class="page-index-entry" data-goto="8"><span class="page-index-num">8</span><span class="page-index-label">Hi&eacute;rarchie des Abilities</span></div>
-    <div class="page-index-entry" data-goto="9"><span class="page-index-num">9</span><span class="page-index-label">Machine &agrave; &eacute;tats &amp; Pipeline</span></div>
-    <div class="page-index-entry" data-goto="10"><span class="page-index-num">10</span><span class="page-index-label">BattleInstance</span></div>
-    <div class="page-index-entry" data-goto="11"><span class="page-index-num">11</span><span class="page-index-label">BattlePawn &mdash; stats, mouvement, events</span></div>
-    <div class="page-index-entry" data-goto="12"><span class="page-index-num">12</span><span class="page-index-label">BaseAbility, TurnsOrchestrator, Packets</span></div>
-    <div class="page-index-entry" data-goto="13"><span class="page-index-num">13</span><span class="page-index-label">StatusEffect / StatusController</span></div>
-    <div class="page-index-entry" data-goto="14"><span class="page-index-num">14</span><span class="page-index-label">Equipment, Pathfinder, Movement</span></div>
-    <div class="page-index-entry" data-goto="15"><span class="page-index-num">15</span><span class="page-index-label">EnemyAI, &Eacute;tats de Bataille</span></div>
-
-    <div class="page-index-section" style="color:var(--accent-core-light)">II &mdash; Core</div>
-    <div class="page-index-entry" data-goto="16"><span class="page-index-num">16</span><span class="page-index-label">Pr&eacute;sentation Core</span></div>
-    <div class="page-index-entry" data-goto="17"><span class="page-index-num">17</span><span class="page-index-label">Game, GameState, Battle node</span></div>
-    <div class="page-index-entry" data-goto="18"><span class="page-index-num">18</span><span class="page-index-label">TeamManager, CharacterData, WorldMap</span></div>
-    <div class="page-index-entry" data-goto="19"><span class="page-index-num">19</span><span class="page-index-label">ArtifactData, GameProgress</span></div>
-
-    <div class="page-footer">&mdash; 2 &mdash;</div>
-  </div>
-</div>
-
-<!-- PAGE 3 : INDEX (2/2) -->
-<div class="grimoire-page">
-  <div class="page-inner">
-    <div class="page-header">Index (suite)</div>
-
-    <div class="page-index-section" style="color:var(--accent-camp-light)">III &mdash; Camp</div>
-    <div class="page-index-entry" data-goto="20"><span class="page-index-num">20</span><span class="page-index-label">Pr&eacute;sentation Camp</span></div>
-    <div class="page-index-entry" data-goto="21"><span class="page-index-num">21</span><span class="page-index-label">CampController, CampCharacter</span></div>
-    <div class="page-index-entry" data-goto="22"><span class="page-index-num">22</span><span class="page-index-label">CampInteractable</span></div>
-    <div class="page-index-entry" data-goto="23"><span class="page-index-num">23</span><span class="page-index-label">BarracksUI</span></div>
-
-    <div class="page-index-section" style="color:var(--accent-ui-light)">IV &mdash; UI</div>
-    <div class="page-index-entry" data-goto="24"><span class="page-index-num">24</span><span class="page-index-label">Pr&eacute;sentation UI</span></div>
-    <div class="page-index-entry" data-goto="25"><span class="page-index-num">25</span><span class="page-index-label">BattleUI, PlayerTurnUI</span></div>
-    <div class="page-index-entry" data-goto="26"><span class="page-index-num">26</span><span class="page-index-label">FloatingText, EscapeMenu, MainMenu</span></div>
-    <div class="page-index-entry" data-goto="27"><span class="page-index-num">27</span><span class="page-index-label">BtnBattleStarter, IBattleUILayer</span></div>
-
-    <div class="page-index-section" style="color:var(--accent-world-light)">V &mdash; World</div>
-    <div class="page-index-entry" data-goto="28"><span class="page-index-num">28</span><span class="page-index-label">Pr&eacute;sentation World</span></div>
-    <div class="page-index-entry" data-goto="29"><span class="page-index-num">29</span><span class="page-index-label">Subworld, SubworldChunk</span></div>
-    <div class="page-index-entry" data-goto="30"><span class="page-index-num">30</span><span class="page-index-label">SubworldGenerator, CameraRig</span></div>
-    <div class="page-index-entry" data-goto="31"><span class="page-index-num">31</span><span class="page-index-label">TerrainCollider, TerrainMesher, WorldGen</span></div>
-
-    <div class="page-index-section" style="color:var(--accent-helpers-light)">VI &mdash; Helpers</div>
-    <div class="page-index-entry" data-goto="32"><span class="page-index-num">32</span><span class="page-index-label">Pr&eacute;sentation Helpers</span></div>
-    <div class="page-index-entry" data-goto="33"><span class="page-index-num">33</span><span class="page-index-label">ImmediateRenderer, Raycaster, AbilityDB, MeshDB</span></div>
-    <div class="page-index-entry" data-goto="34"><span class="page-index-num">34</span><span class="page-index-label">ShapeBuilder / AOEShape, VectorHelpers</span></div>
-    <div class="page-index-entry" data-goto="35"><span class="page-index-num">35</span><span class="page-index-label">CameraHelpers, TransformHelpers, Names</span></div>
-
-    <div class="page-footer">&mdash; 3 &mdash;</div>
-  </div>
-</div>
-
-<!-- PAGE 4 : STATS -->
+<!-- PAGE 1 : STATS -->
 <div class="grimoire-page">
   <div class="page-inner">
     <div class="page-header">Vue d'ensemble</div>
@@ -612,12 +518,12 @@ code { background: rgba(10,8,5,0.4); border: 1px solid var(--border-ornament); p
       <div class="stat-box"><span class="stat-value" data-target="6">0</span><span class="stat-label">&#127758; World</span></div>
       <div class="stat-box"><span class="stat-value" data-target="11">0</span><span class="stat-label">&#128295; Helpers</span></div>
     </div>
-    <span class="back-to-index" data-goto="2">◂ Index</span>
-    <div class="page-footer">&mdash; 4 &mdash;</div>
+    <span class="back-to-index" data-goto="5">◂ Index</span>
+    <div class="page-footer">&mdash; 1 &mdash;</div>
   </div>
 </div>
 
-<!-- PAGE 5 : DIAGRAMME ARCHITECTURE -->
+<!-- PAGE 4 : DIAGRAMME ARCHITECTURE -->
 <div class="grimoire-page">
   <div class="page-inner">
     <div class="page-header">Vue d'ensemble</div>
@@ -658,12 +564,12 @@ code { background: rgba(10,8,5,0.4); border: 1px solid var(--border-ornament); p
     style Subworld fill:#083344,stroke:#00b4d8,stroke-width:1px,color:#67e8f9
     style CameraRig fill:#083344,stroke:#00b4d8,stroke-width:1px,color:#67e8f9">Chargement du diagramme...</div>
     </div>
-    <span class="back-to-index" data-goto="2">◂ Index</span>
-    <div class="page-footer">&mdash; 5 &mdash;</div>
+    <span class="back-to-index" data-goto="1">◂ Index</span>
+    <div class="page-footer">&mdash; 4 &mdash;</div>
   </div>
 </div>
 
-<!-- PAGE 6 : CHANGEMENTS RÉCENTS -->
+<!-- PAGE 5 : CHANGEMENTS RÉCENTS -->
 <div class="grimoire-page">
   <div class="page-inner">
     <div class="page-header">Changements R&eacute;cents</div>
@@ -684,12 +590,12 @@ code { background: rgba(10,8,5,0.4); border: 1px solid var(--border-ornament); p
     <div class="change-item"><span class="hash">7c0d267</span><span class="msg">UI V1 Artefact / Competence + nom</span></div>
     <div class="change-item"><span class="hash">3e4dc70</span><span class="msg">Team Manager + Artifact + Ability</span></div>
     <div class="change-item"><span class="hash">599bcdc</span><span class="msg">World map / Sprite Character / Pathfinding</span></div>
-    <span class="back-to-index" data-goto="2">◂ Index</span>
-    <div class="page-footer">&mdash; 6 &mdash;</div>
+    <span class="back-to-index" data-goto="1">◂ Index</span>
+    <div class="page-footer">&mdash; 5 &mdash;</div>
   </div>
 </div>
 
-<!-- PAGE 7 : CRÉDITS -->
+<!-- PAGE 6 : CRÉDITS -->
 <div class="grimoire-page">
   <div class="page-inner">
     <div class="page-header">Cr&eacute;dits</div>
@@ -699,13 +605,13 @@ code { background: rgba(10,8,5,0.4); border: 1px solid var(--border-ornament); p
       <p style="font-size:1rem;color:var(--text-cream-muted);margin-top:15px;font-style:italic">Claude Code Skill<br>Grimoire Edition</p>
       <p style="font-family:'JetBrains Mono';font-size:0.85rem;color:var(--text-cream-muted);margin-top:10px">3bfaeec</p>
     </div>
-    <span class="back-to-index" data-goto="2">◂ Index</span>
-    <div class="page-footer">&mdash; 7 &mdash;</div>
+    <span class="back-to-index" data-goto="1">◂ Index</span>
+    <div class="page-footer">&mdash; 6 &mdash;</div>
   </div>
 </div>
 
-<!-- ====== CHAPITRE I : BATTLE (8-15) ====== -->
-<!-- PAGE 8 : Titre + Diagramme Abilities -->
+<!-- ====== CHAPITRE I : BATTLE (7-14) ====== -->
+<!-- PAGE 7 : Titre + Diagramme Abilities -->
 <div class="grimoire-page">
   <div class="page-inner">
     <div class="chapter-title-page" style="height:auto;padding:15px 0">
@@ -762,12 +668,12 @@ code { background: rgba(10,8,5,0.4); border: 1px solid var(--border-ornament); p
     style ForcePush fill:#1a1a2e,stroke:#4b5563,stroke-width:1px,color:#9ca3af,stroke-dasharray:5 5
     style Cleanse fill:#1a1a2e,stroke:#4b5563,stroke-width:1px,color:#9ca3af,stroke-dasharray:5 5">Chargement...</div>
     </div>
-    <span class="back-to-index" data-goto="2">◂ Index</span>
-    <div class="page-footer">&mdash; 8 &mdash;</div>
+    <span class="back-to-index" data-goto="1">◂ Index</span>
+    <div class="page-footer">&mdash; 7 &mdash;</div>
   </div>
 </div>
 
-<!-- PAGE 9 : State Machine + Pipeline -->
+<!-- PAGE 8 : State Machine + Pipeline -->
 <div class="grimoire-page">
   <div class="page-inner">
     <div class="page-header">Battle</div>
@@ -795,12 +701,12 @@ code { background: rgba(10,8,5,0.4); border: 1px solid var(--border-ornament); p
     style OnAfter fill:#172554,stroke:#3498db,stroke-width:2px,color:#93c5fd
     style Target fill:#1e1b4b,stroke:#9b59b6,stroke-width:2px,color:#c4b5fd">Chargement...</div>
     </div>
-    <span class="back-to-index" data-goto="2">◂ Index</span>
-    <div class="page-footer">&mdash; 9 &mdash;</div>
+    <span class="back-to-index" data-goto="1">◂ Index</span>
+    <div class="page-footer">&mdash; 8 &mdash;</div>
   </div>
 </div>
 
-<!-- PAGE 10 : BattleInstance -->
+<!-- PAGE 9 : BattleInstance -->
 <div class="grimoire-page">
   <div class="page-inner">
     <div class="page-header">Battle</div>
@@ -835,12 +741,12 @@ code { background: rgba(10,8,5,0.4); border: 1px solid var(--border-ornament); p
 battle.<span class="fn">MovePawn</span>(pawn, path);</pre>
       </div>
     </div>
-    <span class="back-to-index" data-goto="2">◂ Index</span>
-    <div class="page-footer">&mdash; 10 &mdash;</div>
+    <span class="back-to-index" data-goto="1">◂ Index</span>
+    <div class="page-footer">&mdash; 9 &mdash;</div>
   </div>
 </div>
 
-<!-- PAGE 11 : BattlePawn -->
+<!-- PAGE 10 : BattlePawn -->
 <div class="grimoire-page">
   <div class="page-inner">
     <div class="page-header">Battle</div>
@@ -881,12 +787,12 @@ pawn.OnBeforeTakeDamage += (packet) =&gt; {
 pawn.<span class="fn">RequestMoveAlongPath</span>(path);</pre>
       </div>
     </div>
-    <span class="back-to-index" data-goto="2">◂ Index</span>
-    <div class="page-footer">&mdash; 11 &mdash;</div>
+    <span class="back-to-index" data-goto="1">◂ Index</span>
+    <div class="page-footer">&mdash; 10 &mdash;</div>
   </div>
 </div>
 
-<!-- PAGE 12 : BaseAbility, TurnsOrchestrator, Packets -->
+<!-- PAGE 11 : BaseAbility, TurnsOrchestrator, Packets -->
 <div class="grimoire-page">
   <div class="page-inner">
     <div class="page-header">Battle</div>
@@ -945,12 +851,12 @@ pawn.<span class="fn">RequestMoveAlongPath</span>(path);</pre>
         </ul>
       </div>
     </div>
-    <span class="back-to-index" data-goto="2">◂ Index</span>
-    <div class="page-footer">&mdash; 12 &mdash;</div>
+    <span class="back-to-index" data-goto="1">◂ Index</span>
+    <div class="page-footer">&mdash; 11 &mdash;</div>
   </div>
 </div>
 
-<!-- PAGE 13 : StatusEffect/StatusController -->
+<!-- PAGE 12 : StatusEffect/StatusController -->
 <div class="grimoire-page">
   <div class="page-inner">
     <div class="page-header">Battle</div>
@@ -979,12 +885,12 @@ target.StatusController.<span class="fn">AddEffect</span>(poison, battle);
     pawn.<span class="fn">RequestMoveAlongPath</span>(path);</pre>
       </div>
     </div>
-    <span class="back-to-index" data-goto="2">◂ Index</span>
-    <div class="page-footer">&mdash; 13 &mdash;</div>
+    <span class="back-to-index" data-goto="1">◂ Index</span>
+    <div class="page-footer">&mdash; 12 &mdash;</div>
   </div>
 </div>
 
-<!-- PAGE 14 : Equipment, Pathfinder, Movement -->
+<!-- PAGE 13 : Equipment, Pathfinder, Movement -->
 <div class="grimoire-page">
   <div class="page-inner">
     <div class="page-header">Battle</div>
@@ -1036,12 +942,12 @@ pawn.EquipmentController.<span class="fn">Equip</span>(sword);</pre>
         </ul>
       </div>
     </div>
-    <span class="back-to-index" data-goto="2">◂ Index</span>
-    <div class="page-footer">&mdash; 14 &mdash;</div>
+    <span class="back-to-index" data-goto="1">◂ Index</span>
+    <div class="page-footer">&mdash; 13 &mdash;</div>
   </div>
 </div>
 
-<!-- PAGE 15 : EnemyAI, Battle States -->
+<!-- PAGE 14 : EnemyAI, Battle States -->
 <div class="grimoire-page">
   <div class="page-inner">
     <div class="page-header">Battle</div>
@@ -1069,12 +975,12 @@ pawn.EquipmentController.<span class="fn">Equip</span>(sword);</pre>
         </ul>
       </div>
     </div>
-    <span class="back-to-index" data-goto="2">◂ Index</span>
-    <div class="page-footer">&mdash; 15 &mdash;</div>
+    <span class="back-to-index" data-goto="1">◂ Index</span>
+    <div class="page-footer">&mdash; 14 &mdash;</div>
   </div>
 </div>
 
-<!-- ====== CHAPITRE II : CORE (16-19) ====== -->
+<!-- ====== CHAPITRE II : CORE (15-18) ====== -->
 <div class="grimoire-page">
   <div class="page-inner">
     <div class="chapter-title-page">
@@ -1083,12 +989,12 @@ pawn.EquipmentController.<span class="fn">Equip</span>(sword);</pre>
       <div class="sep-chapter"></div>
       <p class="chapter-desc">Socle fondamental du jeu. Boucle principale et machine &agrave; &eacute;tats globale, singleton Game, gestion d'&eacute;quipe avec aptitudes et artefacts, donn&eacute;es de personnage, et carte du monde en graphe de noeuds.</p>
     </div>
-    <span class="back-to-index" data-goto="2">◂ Index</span>
-    <div class="page-footer">&mdash; 16 &mdash;</div>
+    <span class="back-to-index" data-goto="1">◂ Index</span>
+    <div class="page-footer">&mdash; 15 &mdash;</div>
   </div>
 </div>
 
-<!-- PAGE 17 : Game, GameState, Battle node -->
+<!-- PAGE 16 : Game, GameState, Battle node -->
 <div class="grimoire-page">
   <div class="page-inner">
     <div class="page-header">Core</div>
@@ -1133,12 +1039,12 @@ pawn.EquipmentController.<span class="fn">Equip</span>(sword);</pre>
         </ul>
       </div>
     </div>
-    <span class="back-to-index" data-goto="2">◂ Index</span>
-    <div class="page-footer">&mdash; 17 &mdash;</div>
+    <span class="back-to-index" data-goto="1">◂ Index</span>
+    <div class="page-footer">&mdash; 16 &mdash;</div>
   </div>
 </div>
 
-<!-- PAGE 18 : TeamManager, CharacterData, WorldMap -->
+<!-- PAGE 17 : TeamManager, CharacterData, WorldMap -->
 <div class="grimoire-page">
   <div class="page-inner">
     <div class="page-header">Core</div>
@@ -1178,12 +1084,12 @@ pawn.EquipmentController.<span class="fn">Equip</span>(sword);</pre>
         <ul><li><code>void BeginBattle()</code></li></ul>
       </div>
     </div>
-    <span class="back-to-index" data-goto="2">◂ Index</span>
-    <div class="page-footer">&mdash; 18 &mdash;</div>
+    <span class="back-to-index" data-goto="1">◂ Index</span>
+    <div class="page-footer">&mdash; 17 &mdash;</div>
   </div>
 </div>
 
-<!-- PAGE 19 : ArtifactData, GameProgress -->
+<!-- PAGE 18 : ArtifactData, GameProgress -->
 <div class="grimoire-page">
   <div class="page-inner">
     <div class="page-header">Core</div>
@@ -1204,12 +1110,12 @@ pawn.EquipmentController.<span class="fn">Equip</span>(sword);</pre>
         <p>Progression de la partie : niveaux compl&eacute;t&eacute;s et &eacute;tats de jeu via dictionnaires priv&eacute;s.</p>
       </div>
     </div>
-    <span class="back-to-index" data-goto="2">◂ Index</span>
-    <div class="page-footer">&mdash; 19 &mdash;</div>
+    <span class="back-to-index" data-goto="1">◂ Index</span>
+    <div class="page-footer">&mdash; 18 &mdash;</div>
   </div>
 </div>
 
-<!-- ====== CHAPITRE III : CAMP (20-23) ====== -->
+<!-- ====== CHAPITRE III : CAMP (19-22) ====== -->
 <div class="grimoire-page">
   <div class="page-inner">
     <div class="chapter-title-page">
@@ -1218,8 +1124,8 @@ pawn.EquipmentController.<span class="fn">Equip</span>(sword);</pre>
       <div class="sep-chapter"></div>
       <p class="chapter-desc">Zone de repos entre les batailles. Navigation 3D libre du personnage, objets interactifs dans l'environnement, et caserne pour la gestion de l'&eacute;quipe et la pr&eacute;paration strat&eacute;gique.</p>
     </div>
-    <span class="back-to-index" data-goto="2">◂ Index</span>
-    <div class="page-footer">&mdash; 20 &mdash;</div>
+    <span class="back-to-index" data-goto="1">◂ Index</span>
+    <div class="page-footer">&mdash; 19 &mdash;</div>
   </div>
 </div>
 
@@ -1248,8 +1154,8 @@ pawn.EquipmentController.<span class="fn">Equip</span>(sword);</pre>
         <ul><li><code>void SetDestination(Vector3 target)</code></li></ul>
       </div>
     </div>
-    <span class="back-to-index" data-goto="2">◂ Index</span>
-    <div class="page-footer">&mdash; 21 &mdash;</div>
+    <span class="back-to-index" data-goto="1">◂ Index</span>
+    <div class="page-footer">&mdash; 20 &mdash;</div>
   </div>
 </div>
 
@@ -1266,8 +1172,8 @@ pawn.EquipmentController.<span class="fn">Equip</span>(sword);</pre>
         <ul><li><code>[Signal] InteractedEventHandler()</code></li></ul>
       </div>
     </div>
-    <span class="back-to-index" data-goto="2">◂ Index</span>
-    <div class="page-footer">&mdash; 22 &mdash;</div>
+    <span class="back-to-index" data-goto="1">◂ Index</span>
+    <div class="page-footer">&mdash; 21 &mdash;</div>
   </div>
 </div>
 
@@ -1285,12 +1191,12 @@ pawn.EquipmentController.<span class="fn">Equip</span>(sword);</pre>
         </ul>
       </div>
     </div>
-    <span class="back-to-index" data-goto="2">◂ Index</span>
-    <div class="page-footer">&mdash; 23 &mdash;</div>
+    <span class="back-to-index" data-goto="1">◂ Index</span>
+    <div class="page-footer">&mdash; 22 &mdash;</div>
   </div>
 </div>
 
-<!-- ====== CHAPITRE IV : UI (24-27) ====== -->
+<!-- ====== CHAPITRE IV : UI (23-26) ====== -->
 <div class="grimoire-page">
   <div class="page-inner">
     <div class="chapter-title-page">
@@ -1299,8 +1205,8 @@ pawn.EquipmentController.<span class="fn">Equip</span>(sword);</pre>
       <div class="sep-chapter"></div>
       <p class="chapter-desc">Interface utilisateur multicouche. Couches exclusives par phase de jeu, HUD de bataille avec stats et aptitudes, textes flottants 3D pour les retours visuels, et menus de navigation entre sc&egrave;nes.</p>
     </div>
-    <span class="back-to-index" data-goto="2">◂ Index</span>
-    <div class="page-footer">&mdash; 24 &mdash;</div>
+    <span class="back-to-index" data-goto="1">◂ Index</span>
+    <div class="page-footer">&mdash; 23 &mdash;</div>
   </div>
 </div>
 
@@ -1354,8 +1260,8 @@ pawn.EquipmentController.<span class="fn">Equip</span>(sword);</pre>
 }</pre>
       </div>
     </div>
-    <span class="back-to-index" data-goto="2">◂ Index</span>
-    <div class="page-footer">&mdash; 25 &mdash;</div>
+    <span class="back-to-index" data-goto="1">◂ Index</span>
+    <div class="page-footer">&mdash; 24 &mdash;</div>
   </div>
 </div>
 
@@ -1391,8 +1297,8 @@ pawn.EquipmentController.<span class="fn">Equip</span>(sword);</pre>
         <ul><li><code>void StartGame()</code></li></ul>
       </div>
     </div>
-    <span class="back-to-index" data-goto="2">◂ Index</span>
-    <div class="page-footer">&mdash; 26 &mdash;</div>
+    <span class="back-to-index" data-goto="1">◂ Index</span>
+    <div class="page-footer">&mdash; 25 &mdash;</div>
   </div>
 </div>
 
@@ -1416,12 +1322,12 @@ pawn.EquipmentController.<span class="fn">Equip</span>(sword);</pre>
         <p>Interface marqueur et couches sp&eacute;cifiques par phase. PositioningUI et EnemyTurnUI sont des placeholders. AbilityButton est un bouton sp&eacute;cialis&eacute;.</p>
       </div>
     </div>
-    <span class="back-to-index" data-goto="2">◂ Index</span>
-    <div class="page-footer">&mdash; 27 &mdash;</div>
+    <span class="back-to-index" data-goto="1">◂ Index</span>
+    <div class="page-footer">&mdash; 26 &mdash;</div>
   </div>
 </div>
 
-<!-- ====== CHAPITRE V : WORLD (28-31) ====== -->
+<!-- ====== CHAPITRE V : WORLD (27-30) ====== -->
 <div class="grimoire-page">
   <div class="page-inner">
     <div class="chapter-title-page">
@@ -1430,8 +1336,8 @@ pawn.EquipmentController.<span class="fn">Equip</span>(sword);</pre>
       <div class="sep-chapter"></div>
       <p class="chapter-desc">Construction du monde de jeu. G&eacute;n&eacute;ration proc&eacute;durale de terrain par chunks via heightmaps, graphe de navigation avanc&eacute;, cam&eacute;ra isom&eacute;trique avec drag et rotation, et maillage optimis&eacute; par greedy mesh.</p>
     </div>
-    <span class="back-to-index" data-goto="2">◂ Index</span>
-    <div class="page-footer">&mdash; 28 &mdash;</div>
+    <span class="back-to-index" data-goto="1">◂ Index</span>
+    <div class="page-footer">&mdash; 27 &mdash;</div>
   </div>
 </div>
 
@@ -1474,8 +1380,8 @@ pawn.EquipmentController.<span class="fn">Equip</span>(sword);</pre>
         </ul>
       </div>
     </div>
-    <span class="back-to-index" data-goto="2">◂ Index</span>
-    <div class="page-footer">&mdash; 29 &mdash;</div>
+    <span class="back-to-index" data-goto="1">◂ Index</span>
+    <div class="page-footer">&mdash; 28 &mdash;</div>
   </div>
 </div>
 
@@ -1511,8 +1417,8 @@ pawn.EquipmentController.<span class="fn">Equip</span>(sword);</pre>
         </ul>
       </div>
     </div>
-    <span class="back-to-index" data-goto="2">◂ Index</span>
-    <div class="page-footer">&mdash; 30 &mdash;</div>
+    <span class="back-to-index" data-goto="1">◂ Index</span>
+    <div class="page-footer">&mdash; 29 &mdash;</div>
   </div>
 </div>
 
@@ -1544,12 +1450,12 @@ pawn.EquipmentController.<span class="fn">Equip</span>(sword);</pre>
         </ul>
       </div>
     </div>
-    <span class="back-to-index" data-goto="2">◂ Index</span>
-    <div class="page-footer">&mdash; 31 &mdash;</div>
+    <span class="back-to-index" data-goto="1">◂ Index</span>
+    <div class="page-footer">&mdash; 30 &mdash;</div>
   </div>
 </div>
 
-<!-- ====== CHAPITRE VI : HELPERS (32-35) ====== -->
+<!-- ====== CHAPITRE VI : HELPERS (31-34) ====== -->
 <div class="grimoire-page">
   <div class="page-inner">
     <div class="chapter-title-page">
@@ -1558,8 +1464,8 @@ pawn.EquipmentController.<span class="fn">Equip</span>(sword);</pre>
       <div class="sep-chapter"></div>
       <p class="chapter-desc">Outils et utilitaires transversaux. Rendu imm&eacute;diat via RenderingServer, raycast physique, bases de donn&eacute;es de ressources par r&eacute;flexion, constructeur de zones d'effet, et extensions de vecteurs et transformations.</p>
     </div>
-    <span class="back-to-index" data-goto="2">◂ Index</span>
-    <div class="page-footer">&mdash; 32 &mdash;</div>
+    <span class="back-to-index" data-goto="1">◂ Index</span>
+    <div class="page-footer">&mdash; 31 &mdash;</div>
   </div>
 </div>
 
@@ -1619,8 +1525,8 @@ renderer.<span class="fn">ClearTemps</span>();</pre>
         <ul><li><code>static Mesh GetMeshByName(string)</code></li></ul>
       </div>
     </div>
-    <span class="back-to-index" data-goto="2">◂ Index</span>
-    <div class="page-footer">&mdash; 33 &mdash;</div>
+    <span class="back-to-index" data-goto="1">◂ Index</span>
+    <div class="page-footer">&mdash; 32 &mdash;</div>
   </div>
 </div>
 
@@ -1654,8 +1560,8 @@ renderer.<span class="fn">ClearTemps</span>();</pre>
         </ul>
       </div>
     </div>
-    <span class="back-to-index" data-goto="2">◂ Index</span>
-    <div class="page-footer">&mdash; 34 &mdash;</div>
+    <span class="back-to-index" data-goto="1">◂ Index</span>
+    <div class="page-footer">&mdash; 33 &mdash;</div>
   </div>
 </div>
 
@@ -1692,8 +1598,8 @@ renderer.<span class="fn">ClearTemps</span>();</pre>
         </ul>
       </div>
     </div>
-    <span class="back-to-index" data-goto="2">◂ Index</span>
-    <div class="page-footer">&mdash; 35 &mdash;</div>
+    <span class="back-to-index" data-goto="1">◂ Index</span>
+    <div class="page-footer">&mdash; 34 &mdash;</div>
   </div>
 </div>
 
@@ -1710,8 +1616,8 @@ renderer.<span class="fn">ClearTemps</span>();</pre>
       <div class="sep-chapter" style="margin-top:15px;width:40%"></div>
       <p class="colophon-line" style="font-style:italic;font-size:0.7rem;margin-top:10px">&laquo; Le code est po&eacute;sie, le grimoire en est la m&eacute;moire &raquo;</p>
     </div>
-    <span class="back-to-index" data-goto="2">◂ Index</span>
-    <div class="page-footer">&mdash; 36 &mdash;</div>
+    <span class="back-to-index" data-goto="1">◂ Index</span>
+    <div class="page-footer">&mdash; 35 &mdash;</div>
   </div>
 </div>
 
@@ -1750,7 +1656,7 @@ renderer.<span class="fn">ClearTemps</span>();</pre>
       lineColor: '#4a3728', secondaryColor: '#1a1410', tertiaryColor: '#231c14',
       fontFamily: 'Crimson Text, serif', fontSize: '12px'
     },
-    flowchart: { curve: 'basis', padding: 15 },
+    flowchart: { curve: 'basis', padding: 25, nodeSpacing: 30, rankSpacing: 40 },
     stateDiagram: { padding: 15 }
   });
 
@@ -1801,7 +1707,6 @@ renderer.<span class="fn">ClearTemps</span>();</pre>
   var prevBtn = document.getElementById('nav-prev');
   var nextBtn = document.getElementById('nav-next');
   var pitchPanel = document.getElementById('pitch-panel');
-  var wrapper = document.getElementById('grimoire-wrapper');
   function getPages() { return grimoireEl.querySelectorAll('.grimoire-page'); }
   function updateUI() {
     var current = pageFlip.getCurrentPageIndex();
@@ -1811,11 +1716,10 @@ renderer.<span class="fn">ClearTemps</span>();</pre>
     // Show pitch only on page 0
     var showPitch = (current === 0);
     pitchPanel.classList.toggle('hidden', !showPitch);
-    wrapper.classList.toggle('with-pitch', showPitch);
     updateBottomNav(current);
     var pagesToRender = [current];
     if (!isPortrait && current + 1 < totalPages) pagesToRender.push(current + 1);
-    if (pagesToRender.indexOf(4) !== -1 || pagesToRender.indexOf(5) !== -1) triggerCounters();
+    if (pagesToRender.indexOf(3) !== -1 || pagesToRender.indexOf(4) !== -1) triggerCounters();
     pagesToRender.forEach(function(idx) {
       var pages = getPages();
       var els = pages[idx] ? pages[idx].querySelectorAll('.fade-in-page') : [];
@@ -1927,8 +1831,28 @@ renderer.<span class="fn">ClearTemps</span>();</pre>
     content.innerHTML = '';
     var clone = svg.cloneNode(true);
     clone.removeAttribute('style');
-    clone.removeAttribute('width');
-    clone.removeAttribute('height');
+    // Keep viewBox but set responsive sizing
+    var vb = clone.getAttribute('viewBox');
+    if (vb) {
+      var parts = vb.split(/[\s,]+/);
+      var vbW = parseFloat(parts[2]) || 600;
+      var vbH = parseFloat(parts[3]) || 400;
+      var ratio = vbW / vbH;
+      // Wide diagrams (flowcharts): use full width
+      // Tall/square diagrams (state machine): limit height
+      if (ratio > 1.5) {
+        clone.setAttribute('width', '100%');
+        clone.removeAttribute('height');
+      } else {
+        clone.removeAttribute('width');
+        clone.setAttribute('height', Math.min(65, 80) + 'vh');
+        clone.style.maxHeight = '65vh';
+        clone.style.width = 'auto';
+      }
+    } else {
+      clone.setAttribute('width', '100%');
+      clone.removeAttribute('height');
+    }
     content.appendChild(clone);
     modal.classList.add('open');
   });
