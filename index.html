@@ -13,7 +13,7 @@
    ============================================ */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
-  --grimoire-bg: #0d0b08;
+  --grimoire-bg: #080604;
   --page-bg: #1a1410;
   --page-bg-light: #231c14;
   --page-edge: #2a2118;
@@ -27,6 +27,7 @@
   --accent-ui: #1a3a6b; --accent-ui-light: #3498db;
   --accent-world: #0e5e6f; --accent-world-light: #00b4d8;
   --accent-helpers: #7a5c1e; --accent-helpers-light: #d4a017;
+  --accent-git: #2d6a4f; --accent-git-light: #40916c;
   --border-ornament: #4a3728;
   --border-ornament-gold: #8b7340;
   --glow-gold: rgba(201,168,76,0.3);
@@ -37,8 +38,8 @@ html, body {
   color: var(--text-cream);
   font-family: 'Crimson Text', Georgia, serif;
   line-height: 1.6;
-  min-height: 100vh;
-  overflow-x: hidden;
+  height: 100vh; height: 100dvh;
+  overflow: hidden;
 }
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
@@ -46,13 +47,14 @@ html, body {
 
 #grimoire-wrapper {
   display: flex; justify-content: center; align-items: center;
-  min-height: 100vh; padding: 10px 10px 52px;
-  animation: grimoireOpen 1.2s ease-out both;
+  height: calc(100dvh - 42px);
+  margin: 0 10px; padding: 0;
+  opacity: 0; transition: opacity 0.8s ease;
 }
-@keyframes grimoireOpen {
-  from { transform: scale(0.95) rotateY(-5deg); opacity: 0.6; }
-  to { transform: scale(1) rotateY(0); opacity: 1; }
+#grimoire {
+  max-height: calc(100dvh - 42px - 35px - 30px);
 }
+#grimoire-wrapper.ready { opacity: 1; }
 
 .grimoire-page {
   position: relative;
@@ -156,12 +158,12 @@ html, body {
 .chapter-desc::first-letter { font-family: 'MedievalSharp', cursive; font-size: 5.5rem; float: left; color: var(--text-gold); text-shadow: 0 0 10px var(--glow-gold); line-height: 0.7; margin-right: 10px; margin-top: 5px; }
 
 /* ToC */
-.toc-entry { display: flex; align-items: baseline; padding: 4px 0; cursor: pointer; transition: color 0.2s; }
+.toc-entry { display: flex; align-items: baseline; padding: 2px 0; cursor: pointer; transition: color 0.2s; }
 .toc-entry:hover { color: var(--text-gold-bright); }
-.toc-label { font-family: 'Cinzel', serif; font-size: 1.05rem; white-space: nowrap; }
-.toc-dots { flex: 1; border-bottom: 1px dotted var(--border-ornament-gold); margin: 0 8px; min-width: 20px; }
-.toc-page-num { font-family: 'MedievalSharp', cursive; font-size: 1rem; color: var(--text-gold); }
-.toc-chapter-header { font-family: 'Cinzel', serif; font-weight: 600; font-size: 0.85rem; letter-spacing: 2px; text-transform: uppercase; color: var(--text-gold); margin-top: 12px; margin-bottom: 3px; }
+.toc-label { font-family: 'Cinzel', serif; font-size: 0.7rem; white-space: nowrap; }
+.toc-dots { flex: 1; border-bottom: 1px dotted var(--border-ornament-gold); margin: 0 5px; min-width: 10px; }
+.toc-page-num { font-family: 'MedievalSharp', cursive; font-size: 0.65rem; color: var(--text-gold); }
+.toc-chapter-header { font-family: 'Cinzel', serif; font-weight: 600; font-size: 0.6rem; letter-spacing: 2px; text-transform: uppercase; color: var(--text-gold); margin-top: 8px; margin-bottom: 2px; }
 
 /* Page Index */
 .page-index-entry { display:flex; align-items:baseline; padding:2px 0; cursor:pointer; transition:color 0.2s; font-size:0.92rem; }
@@ -182,16 +184,16 @@ html, body {
 /* Accordion */
 .grimoire-accordion { margin-bottom: 10px; border-radius: 4px; overflow: hidden; }
 .accordion-header {
-  display: flex; align-items: center; gap: 10px; width: 100%; padding: 11px 14px;
+  display: flex; align-items: center; gap: 6px; width: 100%; padding: 7px 10px;
   background: rgba(26,20,16,0.5); border: 1px solid var(--border-ornament); border-radius: 4px;
-  color: var(--text-cream); font-family: 'Cinzel', serif; font-size: 1.05rem; font-weight: 600;
+  color: var(--text-cream); font-family: 'Cinzel', serif; font-size: 0.72rem; font-weight: 600;
   cursor: pointer; transition: background 0.2s, color 0.2s, box-shadow 0.2s; text-align: left;
 }
 .accordion-header:hover { background: rgba(201,168,76,0.08); color: var(--text-gold-bright); box-shadow: 0 0 8px rgba(201,168,76,0.15); }
-.accordion-icon { font-size: 0.85rem; transition: transform 0.3s ease; color: var(--text-gold); flex-shrink: 0; }
+.accordion-icon { font-size: 0.6rem; transition: transform 0.3s ease; color: var(--text-gold); flex-shrink: 0; }
 .accordion-header[aria-expanded="true"] .accordion-icon { transform: rotate(90deg); }
 .accordion-title { flex: 1; }
-.accordion-badge { font-family: 'Crimson Text', serif; font-size: 0.8rem; padding: 2px 9px; border-radius: 10px; color: var(--text-cream-muted); flex-shrink: 0; }
+.accordion-badge { font-family: 'Crimson Text', serif; font-size: 0.55rem; padding: 1px 6px; border-radius: 8px; color: var(--text-cream-muted); flex-shrink: 0; }
 
 [data-system="battle"] .accordion-badge { background: var(--accent-battle); color: #fca5a5; }
 [data-system="core"] .accordion-badge { background: var(--accent-core); color: #c4b5fd; }
@@ -207,19 +209,19 @@ html, body {
 [data-system="world"] .accordion-header { border-left: 3px solid var(--accent-world-light); }
 [data-system="helpers"] .accordion-header { border-left: 3px solid var(--accent-helpers-light); }
 
-.accordion-body { max-height: 0; opacity: 0; overflow: hidden; transition: max-height 0.35s ease-out, opacity 0.25s ease-out; padding: 0 12px; }
-.accordion-body.open { max-height: 400px; opacity: 1; overflow-y: auto; padding: 12px 14px; border-left: 3px solid var(--border-ornament-gold); margin-left: 3px; }
-.accordion-body h4 { font-family: 'Cinzel', serif; font-size: 0.9rem; color: var(--text-gold); text-transform: uppercase; letter-spacing: 1.5px; margin: 10px 0 5px; }
-.accordion-body ul { list-style: none; padding-left: 14px; }
-.accordion-body ul li { position: relative; padding: 3px 0; font-size: 1rem; color: var(--text-cream); }
-.accordion-body ul li::before { content: '\2022'; position: absolute; left: -14px; color: var(--text-gold); }
-.accordion-body p { font-size: 1rem; color: var(--text-cream-muted); font-style: italic; margin-bottom: 8px; }
+.accordion-body { max-height: 0; opacity: 0; overflow: hidden; transition: max-height 0.35s ease-out, opacity 0.25s ease-out; padding: 0 8px; }
+.accordion-body.open { max-height: 400px; opacity: 1; overflow-y: auto; padding: 8px 10px; border-left: 2px solid var(--border-ornament-gold); margin-left: 3px; }
+.accordion-body h4 { font-family: 'Cinzel', serif; font-size: 0.7rem; color: var(--text-gold); text-transform: uppercase; letter-spacing: 1.5px; margin: 6px 0 3px; }
+.accordion-body ul { list-style: none; padding-left: 10px; }
+.accordion-body ul li { position: relative; padding: 2px 0; font-size: 0.85rem; color: var(--text-cream); }
+.accordion-body ul li::before { content: '\2022'; position: absolute; left: -10px; color: var(--text-gold); }
+.accordion-body p { font-size: 0.8rem; color: var(--text-cream-muted); font-style: italic; margin-bottom: 5px; }
 
 /* Code */
 pre.code-block {
   background: var(--code-bg); border: 1px solid var(--border-ornament); border-radius: 4px;
-  padding: 8px 10px; overflow-x: auto; font-family: 'JetBrains Mono', Consolas, monospace;
-  font-size: 0.9rem; line-height: 1.5; color: var(--text-cream); margin: 6px 0; position: relative;
+  padding: 6px 10px; overflow-x: auto; font-family: 'JetBrains Mono', Consolas, monospace;
+  font-size: 0.78rem; line-height: 1.4; color: var(--text-cream); margin: 4px 0; position: relative;
 }
 pre.code-block::before { content: '\2726'; position: absolute; top: 2px; left: 4px; font-size: 0.5rem; color: var(--text-gold); opacity: 0.4; }
 pre.code-block .kw { color: #c586c0; }
@@ -228,7 +230,7 @@ pre.code-block .str { color: #ce9178; }
 pre.code-block .num { color: #b5cea8; }
 pre.code-block .cmt { color: #6a9955; font-style: italic; }
 pre.code-block .fn { color: #dcdcaa; }
-code { background: rgba(10,8,5,0.4); border: 1px solid var(--border-ornament); padding: 0.1rem 0.35rem; border-radius: 3px; font-family: 'JetBrains Mono', Consolas, monospace; font-size: 0.72em; color: var(--text-cream); }
+code { background: rgba(10,8,5,0.4); border: 1px solid var(--border-ornament); padding: 0.05rem 0.25rem; border-radius: 3px; font-family: 'JetBrains Mono', Consolas, monospace; font-size: 0.85em; color: var(--text-cream); }
 
 /* Mermaid */
 .mermaid-container { background: rgba(15,13,10,0.8); border: 2px solid var(--border-ornament); box-shadow: inset 0 0 0 1px var(--border-ornament-gold); border-radius: 8px; padding: 12px; margin: 8px 0; overflow-x: auto; min-height: 80px; cursor: pointer; transition: box-shadow 0.2s; }
@@ -239,9 +241,9 @@ code { background: rgba(10,8,5,0.4); border: 1px solid var(--border-ornament); p
 /* Mermaid Zoom Modal */
 #mermaid-modal { display:none; position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,0.85); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); align-items:center; justify-content:center; cursor:pointer; }
 #mermaid-modal.open { display:flex; }
-#mermaid-modal-inner { background:var(--page-bg); border:2px solid var(--border-ornament-gold); border-radius:12px; padding:40px; max-width:88vw; max-height:92vh; overflow:auto; box-shadow:0 0 60px rgba(201,168,76,0.2); cursor:default; position:relative; display:flex; align-items:center; justify-content:center; }
-#mermaid-modal-inner .mermaid-modal-content { display:flex; align-items:center; justify-content:center; }
-#mermaid-modal-inner .mermaid-modal-content svg { max-width:100%; height:auto !important; }
+#mermaid-modal-inner { background:var(--page-bg); border:2px solid var(--border-ornament-gold); border-radius:12px; padding:20px; width:92vw; height:90vh; overflow:auto; box-shadow:0 0 60px rgba(201,168,76,0.2); cursor:default; position:relative; display:flex; align-items:center; justify-content:center; }
+#mermaid-modal-inner .mermaid-modal-content { display:flex; align-items:center; justify-content:center; width:100%; height:100%; }
+#mermaid-modal-inner .mermaid-modal-content svg { width:100%; height:100%; }
 #mermaid-modal-close { position:absolute; top:10px; right:14px; background:none; border:none; color:var(--text-gold); font-size:1.5rem; cursor:pointer; opacity:0.6; transition:opacity 0.2s; font-family:'MedievalSharp'; }
 #mermaid-modal-close:hover { opacity:1; }
 
@@ -292,6 +294,18 @@ code { background: rgba(10,8,5,0.4); border: 1px solid var(--border-ornament); p
 #bottom-nav .bnav-item[data-chapter="world"]:hover { background: rgba(0,180,216,0.15); }
 #bottom-nav .bnav-item[data-chapter="helpers"] { color: var(--accent-helpers-light); }
 #bottom-nav .bnav-item[data-chapter="helpers"]:hover { background: rgba(212,160,23,0.15); }
+#bottom-nav .bnav-item[data-chapter="git"] { color: var(--accent-git-light); }
+#bottom-nav .bnav-item[data-chapter="git"]:hover { background: rgba(64,145,108,0.15); }
+#bottom-nav .bnav-item:focus { outline: none; }
+
+/* Code explanation */
+.code-explanation { background: rgba(201,168,76,0.05); border-left: 2px solid var(--text-gold); padding: 5px 8px; margin: 4px 0; }
+.code-explanation p { font-size: 0.78rem; font-style: normal; margin-bottom: 3px; }
+.code-explanation p:last-child { margin-bottom: 0; }
+
+/* Git system colors */
+[data-system="git"] .accordion-badge { background: var(--accent-git); color: #86efac; }
+[data-system="git"] .accordion-header { border-left: 3px solid var(--accent-git-light); }
 
 .fade-in-page { opacity: 0; transform: translateY(10px); transition: opacity 0.5s ease-out, transform 0.5s ease-out; }
 .fade-in-page.visible { opacity: 1; transform: translateY(0); }
@@ -313,9 +327,9 @@ code { background: rgba(10,8,5,0.4); border: 1px solid var(--border-ornament); p
   display: flex; flex-direction: column; justify-content: center; align-items: center;
   padding: 40px 5vw; text-align: center; z-index: 50;
   pointer-events: none;
-  opacity: 1; transition: opacity 0.5s ease;
+  opacity: 0; transition: opacity 0.5s ease;
 }
-#pitch-panel.hidden { opacity: 0; pointer-events: none; }
+#pitch-panel.visible { opacity: 1; pointer-events: auto; }
 #pitch-panel .pitch-icon {
   font-size: 3rem; margin-bottom: 16px; opacity: 0.7;
   filter: drop-shadow(0 0 15px rgba(201,168,76,0.5));
@@ -364,6 +378,7 @@ code { background: rgba(10,8,5,0.4); border: 1px solid var(--border-ornament); p
 }
 
 @media (max-width: 899px) {
+  #grimoire { max-height: calc(100dvh - 42px - 25px - 15px); }
   .nav-arrow { padding: 10px; }
   .nav-arrow svg { width: 22px; height: 38px; }
   .nav-arrow--prev { left: 2px; }
@@ -388,23 +403,25 @@ code { background: rgba(10,8,5,0.4); border: 1px solid var(--border-ornament); p
 <nav id="bottom-nav">
   <button class="bnav-item" data-goto="0">Couverture</button>
   <div class="bnav-sep"></div>
-  <button class="bnav-item" data-goto="1">Index</button>
+  <button class="bnav-item" data-goto="1">Vue d'ensemble</button>
   <div class="bnav-sep"></div>
-  <button class="bnav-item" data-goto="3">Vue d'ensemble</button>
+  <button class="bnav-item" data-goto="3">Index</button>
   <div class="bnav-sep"></div>
-  <button class="bnav-item" data-chapter="battle" data-goto="8">I. Battle</button>
+  <button class="bnav-item" data-chapter="battle" data-goto="7">I. Battle</button>
   <div class="bnav-sep"></div>
-  <button class="bnav-item" data-chapter="core" data-goto="16">II. Core</button>
+  <button class="bnav-item" data-chapter="core" data-goto="15">II. Core</button>
   <div class="bnav-sep"></div>
-  <button class="bnav-item" data-chapter="camp" data-goto="20">III. Camp</button>
+  <button class="bnav-item" data-chapter="camp" data-goto="19">III. Camp</button>
   <div class="bnav-sep"></div>
-  <button class="bnav-item" data-chapter="ui" data-goto="24">IV. UI</button>
+  <button class="bnav-item" data-chapter="ui" data-goto="23">IV. UI</button>
   <div class="bnav-sep"></div>
-  <button class="bnav-item" data-chapter="world" data-goto="28">V. World</button>
+  <button class="bnav-item" data-chapter="world" data-goto="27">V. World</button>
   <div class="bnav-sep"></div>
-  <button class="bnav-item" data-chapter="helpers" data-goto="32">VI. Helpers</button>
+  <button class="bnav-item" data-chapter="helpers" data-goto="31">VI. Helpers</button>
   <div class="bnav-sep"></div>
-  <span class="bnav-page" id="page-indicator">&mdash; 0 / 36 &mdash;</span>
+  <button class="bnav-item" data-chapter="git" data-goto="35">VII. Git</button>
+  <div class="bnav-sep"></div>
+  <span class="bnav-page" id="page-indicator">&mdash; 0 / 38 &mdash;</span>
 </nav>
 
 <!-- Pitch panel — outside the book, fixed left -->
@@ -518,12 +535,12 @@ code { background: rgba(10,8,5,0.4); border: 1px solid var(--border-ornament); p
       <div class="stat-box"><span class="stat-value" data-target="6">0</span><span class="stat-label">&#127758; World</span></div>
       <div class="stat-box"><span class="stat-value" data-target="11">0</span><span class="stat-label">&#128295; Helpers</span></div>
     </div>
-    <span class="back-to-index" data-goto="5">◂ Index</span>
+    <span class="back-to-index" data-goto="3">◂ Index</span>
     <div class="page-footer">&mdash; 1 &mdash;</div>
   </div>
 </div>
 
-<!-- PAGE 4 : DIAGRAMME ARCHITECTURE -->
+<!-- PAGE 2 : DIAGRAMME ARCHITECTURE -->
 <div class="grimoire-page">
   <div class="page-inner">
     <div class="page-header">Vue d'ensemble</div>
@@ -564,7 +581,71 @@ code { background: rgba(10,8,5,0.4); border: 1px solid var(--border-ornament); p
     style Subworld fill:#083344,stroke:#00b4d8,stroke-width:1px,color:#67e8f9
     style CameraRig fill:#083344,stroke:#00b4d8,stroke-width:1px,color:#67e8f9">Chargement du diagramme...</div>
     </div>
-    <span class="back-to-index" data-goto="1">◂ Index</span>
+    <span class="back-to-index" data-goto="3">◂ Index</span>
+    <div class="page-footer">&mdash; 2 &mdash;</div>
+  </div>
+</div>
+
+<!-- PAGE 3 : TABLE DES MATIÈRES (1/2) -->
+<div class="grimoire-page">
+  <div class="page-inner">
+    <div class="page-header">Index</div>
+    <h2 style="font-family:'Cinzel';font-size:1.15rem;color:var(--text-gold);text-align:center;margin-bottom:10px">Table des Mati&egrave;res</h2>
+    <div class="sep-ornate" style="width:40%;margin-bottom:10px"></div>
+    <div class="toc-chapter-header">Pr&eacute;ambule</div>
+    <div class="toc-entry" data-goto="1"><span class="toc-label">Vue d'ensemble &mdash; Statistiques</span><span class="toc-dots"></span><span class="toc-page-num">1</span></div>
+    <div class="toc-entry" data-goto="2"><span class="toc-label">Vue d'ensemble &mdash; Architecture</span><span class="toc-dots"></span><span class="toc-page-num">2</span></div>
+    <div class="toc-entry" data-goto="5"><span class="toc-label">Changements R&eacute;cents</span><span class="toc-dots"></span><span class="toc-page-num">5</span></div>
+    <div class="toc-entry" data-goto="6"><span class="toc-label">Cr&eacute;dits</span><span class="toc-dots"></span><span class="toc-page-num">6</span></div>
+    <div class="toc-chapter-header" style="color:var(--accent-battle-light)">I. Battle</div>
+    <div class="toc-entry" data-goto="7"><span class="toc-label">Titre &amp; Hi&eacute;rarchie Abilities</span><span class="toc-dots"></span><span class="toc-page-num">7</span></div>
+    <div class="toc-entry" data-goto="8"><span class="toc-label">Machine &agrave; &eacute;tats &amp; Pipeline</span><span class="toc-dots"></span><span class="toc-page-num">8</span></div>
+    <div class="toc-entry" data-goto="9"><span class="toc-label">BattleInstance</span><span class="toc-dots"></span><span class="toc-page-num">9</span></div>
+    <div class="toc-entry" data-goto="10"><span class="toc-label">BattlePawn</span><span class="toc-dots"></span><span class="toc-page-num">10</span></div>
+    <div class="toc-entry" data-goto="11"><span class="toc-label">BaseAbility, Orchestrator, Packets</span><span class="toc-dots"></span><span class="toc-page-num">11</span></div>
+    <div class="toc-entry" data-goto="12"><span class="toc-label">StatusEffect / StatusController</span><span class="toc-dots"></span><span class="toc-page-num">12</span></div>
+    <div class="toc-entry" data-goto="13"><span class="toc-label">Equipment, Pathfinder, Movement</span><span class="toc-dots"></span><span class="toc-page-num">13</span></div>
+    <div class="toc-entry" data-goto="14"><span class="toc-label">EnemyAI, Battle States</span><span class="toc-dots"></span><span class="toc-page-num">14</span></div>
+    <div class="toc-chapter-header" style="color:var(--accent-core-light)">II. Core</div>
+    <div class="toc-entry" data-goto="15"><span class="toc-label">Pr&eacute;sentation &mdash; Core</span><span class="toc-dots"></span><span class="toc-page-num">15</span></div>
+    <div class="toc-entry" data-goto="16"><span class="toc-label">Game, GameState, Battle node</span><span class="toc-dots"></span><span class="toc-page-num">16</span></div>
+    <div class="toc-entry" data-goto="17"><span class="toc-label">TeamManager, CharacterData, WorldMap</span><span class="toc-dots"></span><span class="toc-page-num">17</span></div>
+    <div class="toc-entry" data-goto="18"><span class="toc-label">ArtifactData, GameProgress</span><span class="toc-dots"></span><span class="toc-page-num">18</span></div>
+    <div class="page-footer">&mdash; 3 &mdash;</div>
+  </div>
+</div>
+
+<!-- PAGE 4 : TABLE DES MATIÈRES (2/2) -->
+<div class="grimoire-page">
+  <div class="page-inner">
+    <div class="page-header">Index</div>
+    <h2 style="font-family:'Cinzel';font-size:1.15rem;color:var(--text-gold);text-align:center;margin-bottom:10px">Table des Mati&egrave;res <span style="font-size:0.8rem;color:var(--text-cream-muted)">(suite)</span></h2>
+    <div class="sep-ornate" style="width:40%;margin-bottom:10px"></div>
+    <div class="toc-chapter-header" style="color:var(--accent-camp-light)">III. Camp</div>
+    <div class="toc-entry" data-goto="19"><span class="toc-label">Pr&eacute;sentation &mdash; Camp</span><span class="toc-dots"></span><span class="toc-page-num">19</span></div>
+    <div class="toc-entry" data-goto="20"><span class="toc-label">CampController, CampCharacter</span><span class="toc-dots"></span><span class="toc-page-num">20</span></div>
+    <div class="toc-entry" data-goto="21"><span class="toc-label">CampInteractable</span><span class="toc-dots"></span><span class="toc-page-num">21</span></div>
+    <div class="toc-entry" data-goto="22"><span class="toc-label">BarracksUI</span><span class="toc-dots"></span><span class="toc-page-num">22</span></div>
+    <div class="toc-chapter-header" style="color:var(--accent-ui-light)">IV. UI</div>
+    <div class="toc-entry" data-goto="23"><span class="toc-label">Pr&eacute;sentation &mdash; UI</span><span class="toc-dots"></span><span class="toc-page-num">23</span></div>
+    <div class="toc-entry" data-goto="24"><span class="toc-label">BattleUI, PlayerTurnUI</span><span class="toc-dots"></span><span class="toc-page-num">24</span></div>
+    <div class="toc-entry" data-goto="25"><span class="toc-label">FloatingText, EscapeMenu, MainMenu</span><span class="toc-dots"></span><span class="toc-page-num">25</span></div>
+    <div class="toc-entry" data-goto="26"><span class="toc-label">BtnBattleStarter, Layers</span><span class="toc-dots"></span><span class="toc-page-num">26</span></div>
+    <div class="toc-chapter-header" style="color:var(--accent-world-light)">V. World</div>
+    <div class="toc-entry" data-goto="27"><span class="toc-label">Pr&eacute;sentation &mdash; World</span><span class="toc-dots"></span><span class="toc-page-num">27</span></div>
+    <div class="toc-entry" data-goto="28"><span class="toc-label">Subworld, SubworldChunk</span><span class="toc-dots"></span><span class="toc-page-num">28</span></div>
+    <div class="toc-entry" data-goto="29"><span class="toc-label">SubworldGenerator, PoissonDisk, CameraRig</span><span class="toc-dots"></span><span class="toc-page-num">29</span></div>
+    <div class="toc-entry" data-goto="30"><span class="toc-label">TerrainCollider, Mesher, WorldGen</span><span class="toc-dots"></span><span class="toc-page-num">30</span></div>
+    <div class="toc-chapter-header" style="color:var(--accent-helpers-light)">VI. Helpers &amp; Misc</div>
+    <div class="toc-entry" data-goto="31"><span class="toc-label">Pr&eacute;sentation &mdash; Helpers &amp; Misc</span><span class="toc-dots"></span><span class="toc-page-num">31</span></div>
+    <div class="toc-entry" data-goto="32"><span class="toc-label">ImmediateRenderer, Raycaster, DBs</span><span class="toc-dots"></span><span class="toc-page-num">32</span></div>
+    <div class="toc-entry" data-goto="33"><span class="toc-label">ShapeBuilder, VectorHelpers</span><span class="toc-dots"></span><span class="toc-page-num">33</span></div>
+    <div class="toc-entry" data-goto="34"><span class="toc-label">CameraHelpers, Transform, Names</span><span class="toc-dots"></span><span class="toc-page-num">34</span></div>
+    <div class="toc-chapter-header" style="color:var(--accent-git-light)">VII. Git &amp; Deploy</div>
+    <div class="toc-entry" data-goto="35"><span class="toc-label">Pr&eacute;sentation &mdash; Git &amp; Deploy</span><span class="toc-dots"></span><span class="toc-page-num">35</span></div>
+    <div class="toc-entry" data-goto="36"><span class="toc-label">Workflow &amp; D&eacute;ploiement</span><span class="toc-dots"></span><span class="toc-page-num">36</span></div>
+    <div style="margin-top:10px"></div>
+    <div class="toc-entry" data-goto="37"><span class="toc-label">Colophon</span><span class="toc-dots"></span><span class="toc-page-num">37</span></div>
     <div class="page-footer">&mdash; 4 &mdash;</div>
   </div>
 </div>
@@ -575,22 +656,23 @@ code { background: rgba(10,8,5,0.4); border: 1px solid var(--border-ornament); p
     <div class="page-header">Changements R&eacute;cents</div>
     <h2 style="font-family:'Cinzel';font-size:1.25rem;color:var(--text-gold);margin-bottom:12px">Derniers Commits</h2>
     <div class="sep-simple"></div>
+    <div class="change-item"><span class="hash">3a08740</span><span class="msg">Merge branch 'master'</span></div>
+    <div class="change-item"><span class="hash">023988e</span><span class="msg">blender UV unwrap script</span></div>
+    <div class="change-item"><span class="hash">ae22371</span><span class="msg">bush in MeshDB</span></div>
+    <div class="change-item"><span class="hash">fc91d20</span><span class="msg">spawn bushes on terrain</span></div>
+    <div class="change-item"><span class="hash">9a7d547</span><span class="msg">bushes ???</span></div>
+    <div class="change-item"><span class="hash">73391ef</span><span class="msg">source files</span></div>
+    <div class="change-item"><span class="hash">7f96f21</span><span class="msg">doc v1</span></div>
+    <div class="change-item"><span class="hash">64f7e7b</span><span class="msg">fix: ajout de index.html et doctech_template.html</span></div>
+    <div class="change-item"><span class="hash">92bfe65</span><span class="msg">feat: d&eacute;ploiement auto documentation GitHub Pages</span></div>
+    <div class="change-item"><span class="hash">020df0b</span><span class="msg">Fix floating text error</span></div>
+    <div class="change-item"><span class="hash">8e78880</span><span class="msg">fix tile model</span></div>
+    <div class="change-item"><span class="hash">b71ebae</span><span class="msg">Visual Stuff Again</span></div>
+    <div class="change-item"><span class="hash">d0ccbca</span><span class="msg">Merge branch 'master'</span></div>
+    <div class="change-item"><span class="hash">d06fdc9</span><span class="msg">Visual stuff</span></div>
     <div class="change-item"><span class="hash">3bfaeec</span><span class="msg">HUD panel player</span></div>
     <div class="change-item"><span class="hash">493ef66</span><span class="msg">Ui v2 proto barrack</span></div>
-    <div class="change-item"><span class="hash">1216700</span><span class="msg">floating text heal damage and miss</span></div>
-    <div class="change-item"><span class="hash">ceb074e</span><span class="msg">Pathfind around other entities</span></div>
-    <div class="change-item"><span class="hash">77728d7</span><span class="msg">Rename some thing, Fix some bugs</span></div>
-    <div class="change-item"><span class="hash">317a11b</span><span class="msg">Doc equipment system</span></div>
-    <div class="change-item"><span class="hash">78318a2</span><span class="msg">Add equipment system + Example Equipments</span></div>
-    <div class="change-item"><span class="hash">f3f112e</span><span class="msg">Ability system doc</span></div>
-    <div class="change-item"><span class="hash">49399d7</span><span class="msg">Big update : Ability System</span></div>
-    <div class="change-item"><span class="hash">5c68460</span><span class="msg">Base enemy turn logic</span></div>
-    <div class="change-item"><span class="hash">69349bb</span><span class="msg">Fixup bug in movement code</span></div>
-    <div class="change-item"><span class="hash">ab0aa82</span><span class="msg">Link gameplay + team + UI</span></div>
-    <div class="change-item"><span class="hash">7c0d267</span><span class="msg">UI V1 Artefact / Competence + nom</span></div>
-    <div class="change-item"><span class="hash">3e4dc70</span><span class="msg">Team Manager + Artifact + Ability</span></div>
-    <div class="change-item"><span class="hash">599bcdc</span><span class="msg">World map / Sprite Character / Pathfinding</span></div>
-    <span class="back-to-index" data-goto="1">◂ Index</span>
+    <span class="back-to-index" data-goto="3">◂ Index</span>
     <div class="page-footer">&mdash; 5 &mdash;</div>
   </div>
 </div>
@@ -603,15 +685,15 @@ code { background: rgba(10,8,5,0.4); border: 1px solid var(--border-ornament); p
       <h3 style="font-family:'Cinzel';font-size:1.15rem;color:var(--text-gold);margin-bottom:15px">G&eacute;n&eacute;r&eacute; par DocTech</h3>
       <div class="sep-ornate" style="width:40%"></div>
       <p style="font-size:1rem;color:var(--text-cream-muted);margin-top:15px;font-style:italic">Claude Code Skill<br>Grimoire Edition</p>
-      <p style="font-family:'JetBrains Mono';font-size:0.85rem;color:var(--text-cream-muted);margin-top:10px">3bfaeec</p>
+      <p style="font-family:'JetBrains Mono';font-size:0.85rem;color:var(--text-cream-muted);margin-top:10px">3a08740</p>
     </div>
-    <span class="back-to-index" data-goto="1">◂ Index</span>
+    <span class="back-to-index" data-goto="3">◂ Index</span>
     <div class="page-footer">&mdash; 6 &mdash;</div>
   </div>
 </div>
 
 <!-- ====== CHAPITRE I : BATTLE (7-14) ====== -->
-<!-- PAGE 7 : Titre + Diagramme Abilities -->
+<!-- PAGE 7 : Titre chapitre + Diagramme Abilities -->
 <div class="grimoire-page">
   <div class="page-inner">
     <div class="chapter-title-page" style="height:auto;padding:15px 0">
@@ -668,7 +750,7 @@ code { background: rgba(10,8,5,0.4); border: 1px solid var(--border-ornament); p
     style ForcePush fill:#1a1a2e,stroke:#4b5563,stroke-width:1px,color:#9ca3af,stroke-dasharray:5 5
     style Cleanse fill:#1a1a2e,stroke:#4b5563,stroke-width:1px,color:#9ca3af,stroke-dasharray:5 5">Chargement...</div>
     </div>
-    <span class="back-to-index" data-goto="1">◂ Index</span>
+    <span class="back-to-index" data-goto="3">◂ Index</span>
     <div class="page-footer">&mdash; 7 &mdash;</div>
   </div>
 </div>
@@ -701,7 +783,7 @@ code { background: rgba(10,8,5,0.4); border: 1px solid var(--border-ornament); p
     style OnAfter fill:#172554,stroke:#3498db,stroke-width:2px,color:#93c5fd
     style Target fill:#1e1b4b,stroke:#9b59b6,stroke-width:2px,color:#c4b5fd">Chargement...</div>
     </div>
-    <span class="back-to-index" data-goto="1">◂ Index</span>
+    <span class="back-to-index" data-goto="3">◂ Index</span>
     <div class="page-footer">&mdash; 8 &mdash;</div>
   </div>
 </div>
@@ -739,9 +821,16 @@ code { background: rgba(10,8,5,0.4); border: 1px solid var(--border-ornament); p
 <span class="kw">var</span> path = <span class="type">PathfinderOK</span>.<span class="fn">PathfindDumb</span>&lt;<span class="type">NavNode</span>&gt;(
     navGraph, startCell, destCell);
 battle.<span class="fn">MovePawn</span>(pawn, path);</pre>
+        <h4>Explications du code</h4>
+        <div class="code-explanation">
+          <p><strong>Pattern : Facade</strong> &mdash; BattleInstance est le point d'entr&eacute;e unique pour toutes les op&eacute;rations de combat (d&eacute;placement, d&eacute;g&acirc;ts, soins, t&eacute;l&eacute;portation). Les states et l'UI n'interagissent jamais directement avec les pawns ou le terrain &mdash; tout passe par cette fa&ccedil;ade, simplifiant le couplage.</p>
+          <p><strong>Pattern : State Machine (IBattleState)</strong> &mdash; La bataille d&eacute;l&egrave;gue sa logique &agrave; des &eacute;tats interchangeables (Positioning, PlayerTurn, EnemyTurn). Chaque &eacute;tat contr&ocirc;le l'UI, les inputs et la progression &mdash; le passage d'un &eacute;tat &agrave; l'autre est g&eacute;r&eacute; par BattleInstance sans if/else massifs.</p>
+          <p><strong>API Godot : partial class</strong> &mdash; Requis par le source generator Godot 4 C#. Permet aussi de d&eacute;couper la classe en BattleInstanceMovement et BattleInstanceActions pour organiser le code sans h&eacute;ritage.</p>
+          <p><strong>Architecture</strong> &mdash; Cr&eacute;&eacute; par le noeud Battle (sc&egrave;ne), consomm&eacute; par tous les states, l'UI et l'IA. Poss&egrave;de les r&eacute;f&eacute;rences au terrain (Subworld), au graphe de navigation et &agrave; la liste des pawns.</p>
+        </div>
       </div>
     </div>
-    <span class="back-to-index" data-goto="1">◂ Index</span>
+    <span class="back-to-index" data-goto="3">◂ Index</span>
     <div class="page-footer">&mdash; 9 &mdash;</div>
   </div>
 </div>
@@ -785,9 +874,16 @@ pawn.OnBeforeTakeDamage += (packet) =&gt; {
 };
 <span class="cmt">// D&eacute;placer le pion sur la grille</span>
 pawn.<span class="fn">RequestMoveAlongPath</span>(path);</pre>
+        <h4>Explications du code</h4>
+        <div class="code-explanation">
+          <p><strong>Pattern : Observer / Event Pipeline (16 events)</strong> &mdash; BattlePawn expose 16 &eacute;v&eacute;nements Action&lt;T&gt; (OnBeforeDealDamage, OnBeforeTakeDamage, etc.) formant un pipeline d'interception. Les &eacute;quipements et statuts s'abonnent pour modifier les paquets AVANT ex&eacute;cution &mdash; d&eacute;couplage total source/modificateur/cible.</p>
+          <p><strong>Pattern : Composition</strong> &mdash; Au lieu d'h&eacute;riter de sous-classes sp&eacute;cialis&eacute;es, BattlePawn compose EquipmentController, StatusController et une liste d'AbilityRefs. Chaque composant g&egrave;re son domaine ind&eacute;pendamment.</p>
+          <p><strong>C# : Action&lt;T&gt; delegates</strong> &mdash; Utilis&eacute;s au lieu des signaux Godot pour les &eacute;v&eacute;nements internes de combat. Plus l&eacute;gers (pas de marshalling GDScript), typesafe, et permettent la modification in-place du paquet.</p>
+          <p><strong>Architecture</strong> &mdash; Cr&eacute;&eacute; par BattleInstance via CharacterData. Consomm&eacute; par les states (PlayerTurn, EnemyTurn), l'UI (PlayerTurnUI) et le syst&egrave;me d'IA.</p>
+        </div>
       </div>
     </div>
-    <span class="back-to-index" data-goto="1">◂ Index</span>
+    <span class="back-to-index" data-goto="3">◂ Index</span>
     <div class="page-footer">&mdash; 10 &mdash;</div>
   </div>
 </div>
@@ -824,6 +920,12 @@ pawn.<span class="fn">RequestMoveAlongPath</span>(path);</pre>
     <span class="kw">return</span> b.<span class="fn">Collapse</span>().cells;
   }
 }</pre>
+        <h4>Explications du code</h4>
+        <div class="code-explanation">
+          <p><strong>Pattern : Template Method</strong> &mdash; BaseAbility d&eacute;finit le squelette d'une capacit&eacute; (port&eacute;e, zone d'effet, ex&eacute;cution) via des m&eacute;thodes abstraites. Chaque aptitude concr&egrave;te (BouleDeFeu, Soin, etc.) impl&eacute;mente uniquement les d&eacute;tails sp&eacute;cifiques sans r&eacute;&eacute;crire la logique commune.</p>
+          <p><strong>Pattern : Strategy</strong> &mdash; Chaque aptitude est interchangeable via la r&eacute;f&eacute;rence BaseAbility. Le syst&egrave;me de combat ne conna&icirc;t que l'interface abstraite &mdash; l'ajout d'une nouvelle aptitude ne n&eacute;cessite aucune modification du code existant.</p>
+          <p><strong>Architecture</strong> &mdash; Stock&eacute;e dans CharacterData, r&eacute;f&eacute;renc&eacute;e par BattlePawn.AbilityRefs. Ex&eacute;cut&eacute;e par StatePlayerTurn (joueur) ou EnemyAISystem (IA). Utilise ShapeBuilder pour d&eacute;finir les zones.</p>
+        </div>
       </div>
     </div>
     <div class="grimoire-accordion" data-system="battle">
@@ -836,6 +938,11 @@ pawn.<span class="fn">RequestMoveAlongPath</span>(path);</pre>
           <li><code>BattleTurn GetNextTurn()</code></li>
           <li><code>void PushTurnOverride(BattleTurn)</code></li>
         </ul>
+        <h4>Explications du code</h4>
+        <div class="code-explanation">
+          <p><strong>Pattern : Stack-based Override</strong> &mdash; L'alternance standard (Joueur &harr; Ennemi) peut &ecirc;tre court-circuit&eacute;e via PushTurnOverride, qui empile un tour sp&eacute;cial. Permet des m&eacute;caniques comme &laquo; tour bonus &raquo; ou &laquo; contre-attaque &raquo; sans modifier la boucle principale.</p>
+          <p><strong>Architecture</strong> &mdash; Consomm&eacute; par BattleInstance pour d&eacute;terminer quel state activer apr&egrave;s chaque tour. Isol&eacute; de la logique de combat elle-m&ecirc;me.</p>
+        </div>
       </div>
     </div>
     <div class="grimoire-accordion" data-system="battle">
@@ -849,9 +956,14 @@ pawn.<span class="fn">RequestMoveAlongPath</span>(path);</pre>
           <li><code>DamageType DamageType</code></li>
           <li><code>bool IsCancelled</code></li>
         </ul>
+        <h4>Explications du code</h4>
+        <div class="code-explanation">
+          <p><strong>Pattern : Data Transfer Object (DTO) mutable</strong> &mdash; Les paquets encapsulent une intention d'action (d&eacute;g&acirc;ts ou soin) avec source, cible et montant. La propri&eacute;t&eacute; IsCancelled et FinalAmount permettent aux &eacute;v&eacute;nements du pipeline de modifier ou annuler l'action AVANT son ex&eacute;cution.</p>
+          <p><strong>Pattern : Interceptor/Pipeline</strong> &mdash; Le paquet traverse les 16 events de BattlePawn (OnBeforeDealDamage &rarr; OnBeforeTakeDamage &rarr; application). Chaque abonn&eacute; (statuts, &eacute;quipements) peut modifier FinalAmount ou annuler, sans conna&icirc;tre les autres intercepteurs.</p>
+        </div>
       </div>
     </div>
-    <span class="back-to-index" data-goto="1">◂ Index</span>
+    <span class="back-to-index" data-goto="3">◂ Index</span>
     <div class="page-footer">&mdash; 11 &mdash;</div>
   </div>
 </div>
@@ -883,9 +995,15 @@ target.StatusController.<span class="fn">AddEffect</span>(poison, battle);
 <span class="cmt">// V&eacute;rifier si le pion peut bouger</span>
 <span class="kw">if</span> (pawn.StatusController.<span class="fn">CanMove</span>())
     pawn.<span class="fn">RequestMoveAlongPath</span>(path);</pre>
+        <h4>Explications du code</h4>
+        <div class="code-explanation">
+          <p><strong>Pattern : Template Method + Strategy</strong> &mdash; StatusEffect est une classe abstraite dont chaque sous-classe (Poison, Stun, Buff) impl&eacute;mente ses propres r&egrave;gles d'empilement et de tick. Le StatusController it&egrave;re sur tous les effets sans conna&icirc;tre leurs types concrets.</p>
+          <p><strong>Pattern : Tag-based Filtering</strong> &mdash; RemoveEffectsByTag permet de purger des cat&eacute;gories enti&egrave;res d'effets (&laquo; Debuff &raquo;, &laquo; DoT &raquo;) sans r&eacute;f&eacute;rencer les types concrets &mdash; extensible sans modifier le controller.</p>
+          <p><strong>Architecture</strong> &mdash; StatusController est un composant de BattlePawn. Appel&eacute; par BattleInstance lors des d&eacute;buts/fins de tour (ProcessTurnStart/End). Les aptitudes cr&eacute;ent et appliquent les effets.</p>
+        </div>
       </div>
     </div>
-    <span class="back-to-index" data-goto="1">◂ Index</span>
+    <span class="back-to-index" data-goto="3">◂ Index</span>
     <div class="page-footer">&mdash; 12 &mdash;</div>
   </div>
 </div>
@@ -916,6 +1034,12 @@ target.StatusController.<span class="fn">AddEffect</span>(poison, battle);
 }
 <span class="cmt">// &Eacute;quiper via le controller</span>
 pawn.EquipmentController.<span class="fn">Equip</span>(sword);</pre>
+        <h4>Explications du code</h4>
+        <div class="code-explanation">
+          <p><strong>Pattern : Observer (abonnement aux events du pawn)</strong> &mdash; Chaque &eacute;quipement s'abonne aux &eacute;v&eacute;nements du BattlePawn (OnBeforeDealDamage, OnBeforeMove, etc.) lors de OnEquip et se d&eacute;sabonne lors de OnUnequip. Permet d'ajouter des comportements sans modifier le pawn.</p>
+          <p><strong>Pattern : Open/Closed Principle</strong> &mdash; Nouveau type d'&eacute;quipement = nouvelle sous-classe de BaseEquipment. Aucune modification du controller ou du pawn n&eacute;cessaire &mdash; le syst&egrave;me est ouvert &agrave; l'extension, ferm&eacute; &agrave; la modification.</p>
+          <p><strong>Architecture</strong> &mdash; EquipmentController est un composant de BattlePawn. Les donn&eacute;es d'&eacute;quipement viennent de CharacterData, configur&eacute;es dans BarracksUI (caserne).</p>
+        </div>
       </div>
     </div>
     <div class="grimoire-accordion" data-system="battle">
@@ -928,6 +1052,12 @@ pawn.EquipmentController.<span class="fn">Equip</span>(sword);</pre>
           <li><code>static bool IsPositionReachable&lt;T&gt;(...)</code></li>
           <li><code>static List&lt;Vector2I&gt; GetAllReachableCells(...)</code></li>
         </ul>
+        <h4>Explications du code</h4>
+        <div class="code-explanation">
+          <p><strong>Pattern : Algorithmes g&eacute;n&eacute;riques (BFS / A*)</strong> &mdash; PathfindDumb utilise BFS (sans heuristique) pour les chemins courts sur grille, tandis que GetAllReachableCells calcule toutes les cellules accessibles dans un budget de PM donn&eacute;. La g&eacute;n&eacute;ricit&eacute; &lt;T&gt; permet de fonctionner sur diff&eacute;rents types de graphes.</p>
+          <p><strong>C# : [MethodImpl(AggressiveInlining)]</strong> &mdash; Appliqu&eacute; sur les m&eacute;thodes chaudes du pathfinding pour r&eacute;duire l'overhead des appels de fonction lors du parcours de milliers de noeuds.</p>
+          <p><strong>Architecture</strong> &mdash; Utilis&eacute; par BattleInstance (MovePawn), StatePlayerTurn (pr&eacute;visualisation de mouvement) et EnemyAISystem (planification). Op&egrave;re sur le NavGraphAdvanced du Subworld.</p>
+        </div>
       </div>
     </div>
     <div class="grimoire-accordion" data-system="battle">
@@ -940,9 +1070,14 @@ pawn.EquipmentController.<span class="fn">Equip</span>(sword);</pre>
           <li><code>void BeginFollowPath(List&lt;Vector2I&gt;)</code></li>
           <li><code>void StopOngoingMovement()</code></li>
         </ul>
+        <h4>Explications du code</h4>
+        <div class="code-explanation">
+          <p><strong>Pattern : Coroutine-like Update</strong> &mdash; Update(dt) retourne un bool&eacute;en indiquant si le mouvement est termin&eacute;, permettant au state de la bataille de poll chaque frame sans callback ni coroutine. Approche id&eacute;ale pour les animations frame-by-frame dans Godot.</p>
+          <p><strong>API Godot : interpolation de position</strong> &mdash; Anime le Node3D le long du chemin de cellules en interpolant GlobalPosition entre chaque point, avec conversion cellule &rarr; position monde via VectorHelpers.</p>
+        </div>
       </div>
     </div>
-    <span class="back-to-index" data-goto="1">◂ Index</span>
+    <span class="back-to-index" data-goto="3">◂ Index</span>
     <div class="page-footer">&mdash; 13 &mdash;</div>
   </div>
 </div>
@@ -960,6 +1095,12 @@ pawn.EquipmentController.<span class="fn">Equip</span>(sword);</pre>
           <li><code>TurnPlan CalculateBestTurn(BattlePawn)</code></li>
           <li><code>void ExecuteTurnPlan(BattlePawn, TurnPlan)</code></li>
         </ul>
+        <h4>Explications du code</h4>
+        <div class="code-explanation">
+          <p><strong>Pattern : Minimax simplifi&eacute;</strong> &mdash; L'IA &eacute;value les actions possibles (d&eacute;placement + aptitude) via une fonction heuristique (proximit&eacute; cible, d&eacute;g&acirc;ts potentiels, survie) et choisit le plan avec le meilleur score. Simplifi&eacute; car la profondeur est limit&eacute;e &agrave; 1 tour.</p>
+          <p><strong>Pattern : Memento (TurnPlan)</strong> &mdash; Le r&eacute;sultat du calcul est encapsul&eacute; dans un TurnPlan immutable, s&eacute;parant la phase de d&eacute;cision (CalculateBestTurn) de la phase d'ex&eacute;cution (ExecuteTurnPlan).</p>
+          <p><strong>Architecture</strong> &mdash; Appel&eacute; par StateEnemyTurn pour chaque pion ennemi. Consomme PathfinderOK et BaseAbility pour &eacute;valuer les options.</p>
+        </div>
       </div>
     </div>
     <div class="grimoire-accordion" data-system="battle">
@@ -973,14 +1114,21 @@ pawn.EquipmentController.<span class="fn">Equip</span>(sword);</pre>
           <li><code>void OnExitState()</code></li>
           <li><code>bool IsStateFinished(float _dt)</code></li>
         </ul>
+        <h4>Explications du code</h4>
+        <div class="code-explanation">
+          <p><strong>Pattern : State (IBattleState)</strong> &mdash; Chaque phase du combat impl&eacute;mente la m&ecirc;me interface. BattleInstance d&eacute;l&egrave;gue Begin/Process/Exit sans savoir quel &eacute;tat est actif &mdash; ajout d'une nouvelle phase = nouvelle classe, z&eacute;ro modification du code existant.</p>
+          <p><strong>Pattern : Sub-State Machine (StatePlayerTurn)</strong> &mdash; Le tour du joueur contient lui-m&ecirc;me une pile de sous-&eacute;tats (s&eacute;lection pion, s&eacute;lection aptitude, ciblage, confirmation) g&eacute;r&eacute;e via une Stack interne, permettant l'annulation en &laquo; d&eacute;pilant &raquo;.</p>
+          <p><strong>Architecture</strong> &mdash; Les states sont cr&eacute;&eacute;s par BattleInstance. PlayerTurn contr&ocirc;le PlayerTurnUI, EnemyTurn d&eacute;l&egrave;gue &agrave; EnemyAISystem, Positioning g&egrave;re le placement initial.</p>
+        </div>
       </div>
     </div>
-    <span class="back-to-index" data-goto="1">◂ Index</span>
+    <span class="back-to-index" data-goto="3">◂ Index</span>
     <div class="page-footer">&mdash; 14 &mdash;</div>
   </div>
 </div>
 
 <!-- ====== CHAPITRE II : CORE (15-18) ====== -->
+<!-- PAGE 15 : Titre chapitre Core -->
 <div class="grimoire-page">
   <div class="page-inner">
     <div class="chapter-title-page">
@@ -989,7 +1137,7 @@ pawn.EquipmentController.<span class="fn">Equip</span>(sword);</pre>
       <div class="sep-chapter"></div>
       <p class="chapter-desc">Socle fondamental du jeu. Boucle principale et machine &agrave; &eacute;tats globale, singleton Game, gestion d'&eacute;quipe avec aptitudes et artefacts, donn&eacute;es de personnage, et carte du monde en graphe de noeuds.</p>
     </div>
-    <span class="back-to-index" data-goto="1">◂ Index</span>
+    <span class="back-to-index" data-goto="3">◂ Index</span>
     <div class="page-footer">&mdash; 15 &mdash;</div>
   </div>
 </div>
@@ -1020,12 +1168,23 @@ pawn.EquipmentController.<span class="fn">Equip</span>(sword);</pre>
     <span class="kw">if</span> (state == <span class="type">GameState</span>.Camp)
         <span class="type">TeamManager</span>.<span class="fn">Initialize</span>();
 };</pre>
+        <h4>Explications du code</h4>
+        <div class="code-explanation">
+          <p><strong>Pattern : Singleton (static)</strong> &mdash; Game est enti&egrave;rement statique &mdash; pas d'instance, acc&egrave;s global via Game.RequestChangeGameState(). &Eacute;vite l'injection de d&eacute;pendances dans un jeu o&ugrave; un seul &eacute;tat global existe &agrave; la fois.</p>
+          <p><strong>Pattern : State Machine + Observer</strong> &mdash; L'&eacute;v&eacute;nement Action&lt;GameState&gt; onGameStateChanged notifie tous les abonn&eacute;s (UI, musique, syst&egrave;mes) lors d'un changement d'&eacute;tat. Le d&eacute;couplage permet d'ajouter des r&eacute;actions sans modifier Game.</p>
+          <p><strong>API Godot : PackedScene + instantiation</strong> &mdash; Charge et instancie les sc&egrave;nes (Camp, Battle, WorldMap) dynamiquement via PackedScene.Instantiate(), d&eacute;truisant la sc&egrave;ne pr&eacute;c&eacute;dente avec QueueFree().</p>
+          <p><strong>Architecture</strong> &mdash; Point d'entr&eacute;e du jeu. Tous les syst&egrave;mes (Battle, Camp, UI) d&eacute;pendent de Game pour les transitions. Poss&egrave;de les r&eacute;f&eacute;rences aux PackedScene des personnages.</p>
+        </div>
       </div>
     </div>
     <div class="grimoire-accordion" data-system="core">
       <button class="accordion-header" aria-expanded="false"><span class="accordion-icon">&#9656;</span><span class="accordion-title">GameState (enum)</span><span class="accordion-badge">enum</span></button>
       <div class="accordion-body">
         <p>&Eacute;tats de jeu : None, MainMenu, WorldMap, Camp, Battle, Exploration.</p>
+        <h4>Explications du code</h4>
+        <div class="code-explanation">
+          <p><strong>C# : enum simple</strong> &mdash; D&eacute;finit les &eacute;tats possibles du jeu. Utilis&eacute; par Game pour le switch de sc&egrave;nes et par l'UI (EscapeMenu) pour d&eacute;terminer les options de navigation disponibles.</p>
+        </div>
       </div>
     </div>
     <div class="grimoire-accordion" data-system="core">
@@ -1037,9 +1196,14 @@ pawn.EquipmentController.<span class="fn">Equip</span>(sword);</pre>
           <li><code>static void RequestStartBattle(BattleDefinition)</code></li>
           <li><code>void GenTerrain()</code></li>
         </ul>
+        <h4>Explications du code</h4>
+        <div class="code-explanation">
+          <p><strong>Pattern : Factory / Bootstrapper</strong> &mdash; Le noeud Battle orchestre la cr&eacute;ation d'une bataille compl&egrave;te : g&eacute;n&eacute;ration du terrain, instanciation du BattleInstance, configuration du curseur et de l'UI. C'est le point d'entr&eacute;e de la sc&egrave;ne bataille dans l'arbre Godot.</p>
+          <p><strong>API Godot : _Ready() + SceneTree</strong> &mdash; La g&eacute;n&eacute;ration se d&eacute;clenche dans _Ready() apr&egrave;s ajout &agrave; l'arbre de sc&egrave;ne. RequestStartBattle est statique pour &ecirc;tre appel&eacute; depuis n'importe o&ugrave; (WorldMap, BtnBattleStarter).</p>
+        </div>
       </div>
     </div>
-    <span class="back-to-index" data-goto="1">◂ Index</span>
+    <span class="back-to-index" data-goto="3">◂ Index</span>
     <div class="page-footer">&mdash; 16 &mdash;</div>
   </div>
 </div>
@@ -1060,6 +1224,11 @@ pawn.EquipmentController.<span class="fn">Equip</span>(sword);</pre>
         </ul>
         <h4>Propri&eacute;t&eacute;s</h4>
         <ul><li><code>static List&lt;CharacterData&gt; Team { get; }</code></li></ul>
+        <h4>Explications du code</h4>
+        <div class="code-explanation">
+          <p><strong>Pattern : Static Service</strong> &mdash; TeamManager est enti&egrave;rement statique, servant de registre global pour l'&eacute;quipe de 4 personnages. Les aptitudes et artefacts sont configur&eacute;s via indices (personnage, slot), avec validation d&eacute;fensive des bornes.</p>
+          <p><strong>Architecture</strong> &mdash; Initialis&eacute; par Game lors de la transition vers Camp. Consomm&eacute; par BarracksUI (&eacute;dition) et BattleInstance (spawn des pawns avec les donn&eacute;es de l'&eacute;quipe).</p>
+        </div>
       </div>
     </div>
     <div class="grimoire-accordion" data-system="core">
@@ -1074,6 +1243,11 @@ pawn.EquipmentController.<span class="fn">Equip</span>(sword);</pre>
           <li><code>ArtifactData[] ArtifactSlots</code></li>
           <li><code>Color ClassColor { get; }</code></li>
         </ul>
+        <h4>Explications du code</h4>
+        <div class="code-explanation">
+          <p><strong>Pattern : DTO (Data Transfer Object)</strong> &mdash; CharacterData est un conteneur de donn&eacute;es pur (nom, stats, aptitudes, artefacts) sans logique m&eacute;tier. Transport&eacute; entre TeamManager, BarracksUI et BattlePawn.</p>
+          <p><strong>C# : switch expression (C# 8+)</strong> &mdash; ClassColor utilise une switch expression pour mapper chaque classe de personnage &agrave; une couleur, rempla&ccedil;ant un bloc if/else verbeux par une expression compacte.</p>
+        </div>
       </div>
     </div>
     <div class="grimoire-accordion" data-system="core">
@@ -1082,9 +1256,14 @@ pawn.EquipmentController.<span class="fn">Equip</span>(sword);</pre>
         <p>Carte du monde 2D ; graphe d'adjacence, d&eacute;placement BFS + Tween, d&eacute;clenchement batailles.</p>
         <h4>M&eacute;thodes</h4>
         <ul><li><code>void BeginBattle()</code></li></ul>
+        <h4>Explications du code</h4>
+        <div class="code-explanation">
+          <p><strong>Pattern : Graphe d'adjacence depuis Line2D</strong> &mdash; La carte du monde est construite en parsant les noeuds enfants Line2D de la sc&egrave;ne Godot. Chaque connexion entre deux points cr&eacute;e une ar&ecirc;te dans le graphe, permettant de modifier la carte visuellement dans l'&eacute;diteur.</p>
+          <p><strong>API Godot : Tween chaining</strong> &mdash; Le d&eacute;placement du jeton joueur entre les noeuds utilise une cha&icirc;ne de Tweens s&eacute;quentiels (un par ar&ecirc;te du chemin BFS), avec callback final pour d&eacute;clencher la bataille ou l'interaction.</p>
+        </div>
       </div>
     </div>
-    <span class="back-to-index" data-goto="1">◂ Index</span>
+    <span class="back-to-index" data-goto="3">◂ Index</span>
     <div class="page-footer">&mdash; 17 &mdash;</div>
   </div>
 </div>
@@ -1102,20 +1281,29 @@ pawn.EquipmentController.<span class="fn">Equip</span>(sword);</pre>
           <li><code>string Name</code></li>
           <li><code>string Description</code></li>
         </ul>
+        <h4>Explications du code</h4>
+        <div class="code-explanation">
+          <p><strong>Pattern : DTO simple</strong> &mdash; Conteneur de donn&eacute;es minimal (nom + description). Destin&eacute; &agrave; &ecirc;tre &eacute;tendu avec des effets passifs via le m&ecirc;me syst&egrave;me d'events que les &eacute;quipements.</p>
+        </div>
       </div>
     </div>
     <div class="grimoire-accordion" data-system="core">
       <button class="accordion-header" aria-expanded="false"><span class="accordion-icon">&#9656;</span><span class="accordion-title">GameProgress</span><span class="accordion-badge">data</span></button>
       <div class="accordion-body">
         <p>Progression de la partie : niveaux compl&eacute;t&eacute;s et &eacute;tats de jeu via dictionnaires priv&eacute;s.</p>
+        <h4>Explications du code</h4>
+        <div class="code-explanation">
+          <p><strong>Pattern : Repository / Data Store</strong> &mdash; Encapsule l'&eacute;tat de progression (niveaux termin&eacute;s, drapeaux) dans des dictionnaires priv&eacute;s, pr&ecirc;t pour la s&eacute;rialisation JSON lors d'une future sauvegarde.</p>
+        </div>
       </div>
     </div>
-    <span class="back-to-index" data-goto="1">◂ Index</span>
+    <span class="back-to-index" data-goto="3">◂ Index</span>
     <div class="page-footer">&mdash; 18 &mdash;</div>
   </div>
 </div>
 
 <!-- ====== CHAPITRE III : CAMP (19-22) ====== -->
+<!-- PAGE 19 : Titre chapitre Camp -->
 <div class="grimoire-page">
   <div class="page-inner">
     <div class="chapter-title-page">
@@ -1124,7 +1312,7 @@ pawn.EquipmentController.<span class="fn">Equip</span>(sword);</pre>
       <div class="sep-chapter"></div>
       <p class="chapter-desc">Zone de repos entre les batailles. Navigation 3D libre du personnage, objets interactifs dans l'environnement, et caserne pour la gestion de l'&eacute;quipe et la pr&eacute;paration strat&eacute;gique.</p>
     </div>
-    <span class="back-to-index" data-goto="1">◂ Index</span>
+    <span class="back-to-index" data-goto="3">◂ Index</span>
     <div class="page-footer">&mdash; 19 &mdash;</div>
   </div>
 </div>
@@ -1144,6 +1332,12 @@ pawn.EquipmentController.<span class="fn">Equip</span>(sword);</pre>
           <li><code>CampInteractable barracks</code></li>
           <li><code>BarracksUI barracksUI</code></li>
         </ul>
+        <h4>Explications du code</h4>
+        <div class="code-explanation">
+          <p><strong>Pattern : Mediator</strong> &mdash; CampController coordonne le personnage, les objets interactifs et l'UI sans qu'ils se connaissent mutuellement. Le clic sol d&eacute;place le personnage, la proximit&eacute; d'un interactable d&eacute;clenche l'invite, et l'interaction ouvre l'UI correspondante.</p>
+          <p><strong>API Godot : _UnhandledInput</strong> &mdash; Utilise _UnhandledInput au lieu de _Input pour ne r&eacute;agir qu'aux clics non consomm&eacute;s par l'UI (boutons, menus). Permet &agrave; l'UI d'avoir priorit&eacute; sur les interactions monde.</p>
+          <p><strong>API Godot : [Export] + NavigationRegion3D</strong> &mdash; Les r&eacute;f&eacute;rences aux noeuds enfants sont expos&eacute;es via [Export] pour configuration dans l'&eacute;diteur, &eacute;vitant les GetNode&lt;T&gt;() fragiles.</p>
+        </div>
       </div>
     </div>
     <div class="grimoire-accordion" data-system="camp">
@@ -1152,9 +1346,14 @@ pawn.EquipmentController.<span class="fn">Equip</span>(sword);</pre>
         <p>Personnage camp ; se d&eacute;place via NavigationAgent3D vers une destination.</p>
         <h4>M&eacute;thodes</h4>
         <ul><li><code>void SetDestination(Vector3 target)</code></li></ul>
+        <h4>Explications du code</h4>
+        <div class="code-explanation">
+          <p><strong>API Godot : NavigationAgent3D</strong> &mdash; D&eacute;l&egrave;gue tout le pathfinding 3D au syst&egrave;me de navigation int&eacute;gr&eacute; de Godot. SetDestination met &agrave; jour la cible du NavigationAgent, et _PhysicsProcess interpole la position chaque frame.</p>
+          <p><strong>Architecture</strong> &mdash; Contr&ocirc;l&eacute; exclusivement par CampController. Le personnage n'a pas de logique propre &mdash; il re&ccedil;oit une destination et s'y d&eacute;place.</p>
+        </div>
       </div>
     </div>
-    <span class="back-to-index" data-goto="1">◂ Index</span>
+    <span class="back-to-index" data-goto="3">◂ Index</span>
     <div class="page-footer">&mdash; 20 &mdash;</div>
   </div>
 </div>
@@ -1170,9 +1369,14 @@ pawn.EquipmentController.<span class="fn">Equip</span>(sword);</pre>
         <ul><li><code>bool TryInteract()</code></li></ul>
         <h4>Signaux</h4>
         <ul><li><code>[Signal] InteractedEventHandler()</code></li></ul>
+        <h4>Explications du code</h4>
+        <div class="code-explanation">
+          <p><strong>Pattern : Observer via Signal Godot</strong> &mdash; Le signal Interacted d&eacute;couple l'objet interactable du controller. N'importe quel syst&egrave;me peut s'abonner pour r&eacute;agir &agrave; l'interaction sans modifier CampInteractable.</p>
+          <p><strong>API Godot : Area3D (d&eacute;tection de proximit&eacute;)</strong> &mdash; Un Area3D enfant d&eacute;tecte l'entr&eacute;e/sortie du joueur via BodyEntered/BodyExited. L'invite d'interaction (Label3D) n'appara&icirc;t que lorsque le joueur est dans la zone.</p>
+        </div>
       </div>
     </div>
-    <span class="back-to-index" data-goto="1">◂ Index</span>
+    <span class="back-to-index" data-goto="3">◂ Index</span>
     <div class="page-footer">&mdash; 21 &mdash;</div>
   </div>
 </div>
@@ -1189,14 +1393,21 @@ pawn.EquipmentController.<span class="fn">Equip</span>(sword);</pre>
           <li><code>void Open()</code></li>
           <li><code>void Close()</code></li>
         </ul>
+        <h4>Explications du code</h4>
+        <div class="code-explanation">
+          <p><strong>Pattern : Two-View State Machine</strong> &mdash; L'UI bascule entre deux vues : liste des h&eacute;ros (cartes) et d&eacute;tail d'un h&eacute;ros (stats, aptitudes, artefacts). Le clic sur une carte transitionne vers le d&eacute;tail, un bouton retour revient &agrave; la liste.</p>
+          <p><strong>C# : closure capture pour &eacute;v&eacute;nements boutons</strong> &mdash; Les boutons de h&eacute;ros sont g&eacute;n&eacute;r&eacute;s dynamiquement avec capture de l'index dans une closure (btn.Pressed += () =&gt; SelectHero(i)), liant l'UI aux donn&eacute;es sans r&eacute;f&eacute;rences directes.</p>
+          <p><strong>Architecture</strong> &mdash; Ouverte par CampController via le signal de CampInteractable (caserne). Lit et modifie les donn&eacute;es de TeamManager.</p>
+        </div>
       </div>
     </div>
-    <span class="back-to-index" data-goto="1">◂ Index</span>
+    <span class="back-to-index" data-goto="3">◂ Index</span>
     <div class="page-footer">&mdash; 22 &mdash;</div>
   </div>
 </div>
 
 <!-- ====== CHAPITRE IV : UI (23-26) ====== -->
+<!-- PAGE 23 : Titre chapitre UI -->
 <div class="grimoire-page">
   <div class="page-inner">
     <div class="chapter-title-page">
@@ -1205,7 +1416,7 @@ pawn.EquipmentController.<span class="fn">Equip</span>(sword);</pre>
       <div class="sep-chapter"></div>
       <p class="chapter-desc">Interface utilisateur multicouche. Couches exclusives par phase de jeu, HUD de bataille avec stats et aptitudes, textes flottants 3D pour les retours visuels, et menus de navigation entre sc&egrave;nes.</p>
     </div>
-    <span class="back-to-index" data-goto="1">◂ Index</span>
+    <span class="back-to-index" data-goto="3">◂ Index</span>
     <div class="page-footer">&mdash; 23 &mdash;</div>
   </div>
 </div>
@@ -1231,6 +1442,12 @@ pawn.EquipmentController.<span class="fn">Equip</span>(sword);</pre>
     ui.OnAbilitySelected += <span class="fn">OnAbilitySelected</span>;
     ui.OnEndTurnRequested += <span class="fn">OnEndTurn</span>;
 }</pre>
+        <h4>Explications du code</h4>
+        <div class="code-explanation">
+          <p><strong>Pattern : Layer Manager (Dictionary&lt;Type, IBattleUILayer&gt;)</strong> &mdash; Les couches UI sont stock&eacute;es par type dans un dictionnaire. SetVisibleLayer&lt;T&gt; active une seule couche et d&eacute;sactive les autres, garantissant l'exclusivit&eacute; mutuelle sans switch/case.</p>
+          <p><strong>C# : M&eacute;thode g&eacute;n&eacute;rique avec contrainte duale</strong> &mdash; SetVisibleLayer&lt;T&gt;() utilise une contrainte g&eacute;n&eacute;rique (where T : Control, IBattleUILayer) pour combiner typage fort et interface, permettant le cast s&ucirc;r et l'acc&egrave;s aux propri&eacute;t&eacute;s Control.</p>
+          <p><strong>Architecture</strong> &mdash; Cr&eacute;&eacute; par le noeud Battle, consomm&eacute; par chaque IBattleState pour afficher la couche UI correspondante &agrave; la phase en cours.</p>
+        </div>
       </div>
     </div>
     <div class="grimoire-accordion" data-system="ui">
@@ -1258,9 +1475,15 @@ pawn.EquipmentController.<span class="fn">Equip</span>(sword);</pre>
       pawn.<span class="fn">SetAbilityPreviewing</span>(id);
   abilityContainer.<span class="fn">AddChild</span>(btn);
 }</pre>
+        <h4>Explications du code</h4>
+        <div class="code-explanation">
+          <p><strong>Pattern : G&eacute;n&eacute;ration dynamique de boutons</strong> &mdash; ReInitialize d&eacute;truit les anciens boutons et en cr&eacute;e de nouveaux pour chaque aptitude du pion actif. Les callbacks sont branch&eacute;s via closures capturant l'index de l'aptitude.</p>
+          <p><strong>C# : Gestion des abonnements (subscribe/cleanup)</strong> &mdash; Les &eacute;v&eacute;nements Action (OnAbilitySelected, OnEndTurnRequested) sont r&eacute;initialis&eacute;s &agrave; chaque ReInitialize pour &eacute;viter les fuites de callbacks accumul&eacute;s.</p>
+          <p><strong>Architecture</strong> &mdash; Activ&eacute;e par BattleUI.SetVisibleLayer depuis StatePlayerTurn. Communique en retour via ses &eacute;v&eacute;nements Action pour d&eacute;coupler l'UI de la logique d'&eacute;tat.</p>
+        </div>
       </div>
     </div>
-    <span class="back-to-index" data-goto="1">◂ Index</span>
+    <span class="back-to-index" data-goto="3">◂ Index</span>
     <div class="page-footer">&mdash; 24 &mdash;</div>
   </div>
 </div>
@@ -1269,11 +1492,33 @@ pawn.EquipmentController.<span class="fn">Equip</span>(sword);</pre>
   <div class="page-inner">
     <div class="page-header">UI</div>
     <div class="grimoire-accordion" data-system="ui">
-      <button class="accordion-header" aria-expanded="false"><span class="accordion-icon">&#9656;</span><span class="accordion-title">FloatingText</span><span class="accordion-badge">1 m&eacute;thode</span></button>
+      <button class="accordion-header" aria-expanded="false"><span class="accordion-icon">&#9656;</span><span class="accordion-title">FloatingText</span><span class="accordion-badge">static</span></button>
       <div class="accordion-body">
-        <p>Textes flottants 3D (d&eacute;g&acirc;ts, soins, miss) avec animation mont&eacute;e + fondu.</p>
+        <p>Classe utilitaire statique pour g&eacute;n&eacute;rer des textes flottants 3D (d&eacute;g&acirc;ts, soins) avec animation de mont&eacute;e et fade-out via le syst&egrave;me Tween de Godot.</p>
         <h4>M&eacute;thodes</h4>
-        <ul><li><code>static void Spawn(Node, Vector3, string, Color, float, float)</code></li></ul>
+        <ul><li><code>static void Spawn(Node parent, Vector3 worldPos, string text, Color color, float duration = 2f, float riseHeight = 1.5f)</code></li></ul>
+        <h4>Constantes</h4>
+        <ul>
+          <li><code>static readonly Color DamageColor = new Color(1, 0.2f, 0.2f)</code></li>
+          <li><code>static readonly Color HealColor = new Color(0.2f, 1, 0.2f)</code></li>
+        </ul>
+        <h4>Exemple d'usage</h4>
+        <pre class="code-block"><span class="cmt">// Afficher un texte de d&eacute;g&acirc;ts au-dessus du pion</span>
+<span class="type">FloatingText</span>.<span class="fn">Spawn</span>(
+    parent: battleNode,
+    worldPos: pawn.GlobalPosition + <span class="type">Vector3</span>.Up,
+    text: <span class="str">"-25"</span>,
+    color: <span class="type">FloatingText</span>.DamageColor
+);
+<span class="cmt">// Afficher un soin</span>
+<span class="type">FloatingText</span>.<span class="fn">Spawn</span>(
+    battleNode, pawn.GlobalPosition + <span class="type">Vector3</span>.Up,
+    <span class="str">"+10"</span>, <span class="type">FloatingText</span>.HealColor);</pre>
+        <h4>Explications du code</h4>
+        <div class="code-explanation">
+          <p><strong>Pattern : Factory Method (static Spawn)</strong> &mdash; Encapsule la cr&eacute;ation et configuration complexe d'un Label3D (billboard, outline, taille pixel) avec son animation dans un seul appel, &eacute;vitant la duplication de code partout o&ugrave; un texte flottant est n&eacute;cessaire.</p>
+          <p><strong>Pattern : Tween Pipeline (CreateTween + SetParallel)</strong> &mdash; Utilise le syst&egrave;me Tween natif de Godot pour orchestrer des animations parall&egrave;les (mont&eacute;e verticale + fondu alpha) suivies d'un callback de nettoyage (QueueFree), rempla&ccedil;ant le besoin d'une boucle _Process() manuelle.</p>
+        </div>
       </div>
     </div>
     <div class="grimoire-accordion" data-system="ui">
@@ -1287,6 +1532,11 @@ pawn.EquipmentController.<span class="fn">Equip</span>(sword);</pre>
           <li><code>void GoToCamp()</code></li>
           <li><code>void OnQuitRequest()</code></li>
         </ul>
+        <h4>Explications du code</h4>
+        <div class="code-explanation">
+          <p><strong>API Godot : _UnhandledInput (Escape)</strong> &mdash; Capture la touche Escape via _UnhandledInput pour ouvrir/fermer le menu sans interf&eacute;rer avec les autres UI. Les options de navigation d&eacute;pendent du GameState courant (pas de &laquo; retour au camp &raquo; depuis le menu principal).</p>
+          <p><strong>Architecture</strong> &mdash; Appelle Game.RequestChangeGameState() pour les transitions. Pr&eacute;sent dans toutes les sc&egrave;nes comme overlay permanent.</p>
+        </div>
       </div>
     </div>
     <div class="grimoire-accordion" data-system="ui">
@@ -1295,9 +1545,13 @@ pawn.EquipmentController.<span class="fn">Equip</span>(sword);</pre>
         <p>Menu principal ; d&eacute;marre la partie vers Camp.</p>
         <h4>M&eacute;thodes</h4>
         <ul><li><code>void StartGame()</code></li></ul>
+        <h4>Explications du code</h4>
+        <div class="code-explanation">
+          <p><strong>Architecture</strong> &mdash; Point d'entr&eacute;e minimal : un bouton d&eacute;clenche Game.RequestChangeGameState(Camp), initiant le flux de jeu. La simplicit&eacute; est voulue &mdash; pas de s&eacute;lection de sauvegarde ni d'options pour l'instant.</p>
+        </div>
       </div>
     </div>
-    <span class="back-to-index" data-goto="1">◂ Index</span>
+    <span class="back-to-index" data-goto="3">◂ Index</span>
     <div class="page-footer">&mdash; 25 &mdash;</div>
   </div>
 </div>
@@ -1314,20 +1568,31 @@ pawn.EquipmentController.<span class="fn">Equip</span>(sword);</pre>
           <li><code>void TriggerBattle()</code></li>
           <li><code>BattleDefinition GetBattleDefinition()</code></li>
         </ul>
+        <h4>Explications du code</h4>
+        <div class="code-explanation">
+          <p><strong>Pattern : Bridge (UI &rarr; Battle)</strong> &mdash; Fait le pont entre l'interface WorldMap et le syst&egrave;me de combat. Encapsule une BattleDefinition (ennemis, terrain, difficult&eacute;) et d&eacute;clenche Battle.RequestStartBattle() au clic.</p>
+          <p><strong>API Godot : [Export] BattleDefinition</strong> &mdash; La d&eacute;finition de bataille est configur&eacute;e dans l'&eacute;diteur via [Export], permettant aux level designers de param&eacute;trer chaque noeud de la carte sans code.</p>
+        </div>
       </div>
     </div>
     <div class="grimoire-accordion" data-system="ui">
       <button class="accordion-header" aria-expanded="false"><span class="accordion-icon">&#9656;</span><span class="accordion-title">IBattleUILayer / PositioningUI / EnemyTurnUI</span><span class="accordion-badge">interface</span></button>
       <div class="accordion-body">
         <p>Interface marqueur et couches sp&eacute;cifiques par phase. PositioningUI et EnemyTurnUI sont des placeholders. AbilityButton est un bouton sp&eacute;cialis&eacute;.</p>
+        <h4>Explications du code</h4>
+        <div class="code-explanation">
+          <p><strong>Pattern : Marker Interface + Strategy</strong> &mdash; IBattleUILayer est une interface vide servant de marqueur de type pour le registre de BattleUI. Chaque couche impl&eacute;mente sa propre logique d'affichage &mdash; le syst&egrave;me est extensible sans modifier BattleUI.</p>
+          <p><strong>Architecture</strong> &mdash; PositioningUI et EnemyTurnUI sont des placeholders pr&ecirc;ts &agrave; recevoir des fonctionnalit&eacute;s (placement drag&amp;drop, indicateur de r&eacute;flexion IA). AbilityButton est un Control sp&eacute;cialis&eacute; g&eacute;n&eacute;r&eacute; par PlayerTurnUI.</p>
+        </div>
       </div>
     </div>
-    <span class="back-to-index" data-goto="1">◂ Index</span>
+    <span class="back-to-index" data-goto="3">◂ Index</span>
     <div class="page-footer">&mdash; 26 &mdash;</div>
   </div>
 </div>
 
 <!-- ====== CHAPITRE V : WORLD (27-30) ====== -->
+<!-- PAGE 27 : Titre chapitre World -->
 <div class="grimoire-page">
   <div class="page-inner">
     <div class="chapter-title-page">
@@ -1336,7 +1601,7 @@ pawn.EquipmentController.<span class="fn">Equip</span>(sword);</pre>
       <div class="sep-chapter"></div>
       <p class="chapter-desc">Construction du monde de jeu. G&eacute;n&eacute;ration proc&eacute;durale de terrain par chunks via heightmaps, graphe de navigation avanc&eacute;, cam&eacute;ra isom&eacute;trique avec drag et rotation, et maillage optimis&eacute; par greedy mesh.</p>
     </div>
-    <span class="back-to-index" data-goto="1">◂ Index</span>
+    <span class="back-to-index" data-goto="3">◂ Index</span>
     <div class="page-footer">&mdash; 27 &mdash;</div>
   </div>
 </div>
@@ -1365,6 +1630,12 @@ pawn.EquipmentController.<span class="fn">Equip</span>(sword);</pre>
     <span class="kw">float</span> h = world.<span class="fn">GetHeightAtWorldPos</span>(wp);
     world.<span class="fn">SetHeightAtWorldPos</span>(wp, h + <span class="num">2f</span>);
   }</pre>
+        <h4>Explications du code</h4>
+        <div class="code-explanation">
+          <p><strong>Pattern : Facade pour acc&egrave;s chunks</strong> &mdash; Subworld masque la complexit&eacute; du d&eacute;coupage en chunks derri&egrave;re une interface unifi&eacute;e. GetHeightAtWorldPos convertit automatiquement les coordonn&eacute;es monde en indices chunk + offset local, transparents pour l'appelant.</p>
+          <p><strong>Pattern : Coordinate Mapping</strong> &mdash; Trois syst&egrave;mes de coordonn&eacute;es coexistent (monde 3D, cellule 2D, chunk local). Subworld centralise les conversions, &eacute;vitant la duplication de la logique de mapping partout dans le code.</p>
+          <p><strong>Architecture</strong> &mdash; Cr&eacute;&eacute; par SubworldGenerator. Consomm&eacute; par BattleInstance (terrain de combat), PathfinderOK (navigation) et CameraRig (hauteur terrain sous la souris).</p>
+        </div>
       </div>
     </div>
     <div class="grimoire-accordion" data-system="world">
@@ -1378,9 +1649,14 @@ pawn.EquipmentController.<span class="fn">Equip</span>(sword);</pre>
           <li><code>float[] heights</code></li>
           <li><code>const int CHUNK_SIZE = 16</code></li>
         </ul>
+        <h4>Explications du code</h4>
+        <div class="code-explanation">
+          <p><strong>Pattern : Data Container (tableau fixe)</strong> &mdash; Le chunk stocke un tableau float[] de 16&times;16 hauteurs, acc&eacute;d&eacute; par index plat (y * CHUNK_SIZE + x). Format compact pour la s&eacute;rialisation et le passage au GPU via MultiMesh.</p>
+          <p><strong>API Godot : MultiMeshInstance3D</strong> &mdash; Le terrain d'un chunk est rendu en un seul draw call via MultiMesh, chaque tuile &eacute;tant une instance positionn&eacute;e &agrave; sa hauteur. Performance critique pour des centaines de tuiles.</p>
+        </div>
       </div>
     </div>
-    <span class="back-to-index" data-goto="1">◂ Index</span>
+    <span class="back-to-index" data-goto="3">◂ Index</span>
     <div class="page-footer">&mdash; 28 &mdash;</div>
   </div>
 </div>
@@ -1389,20 +1665,64 @@ pawn.EquipmentController.<span class="fn">Equip</span>(sword);</pre>
   <div class="page-inner">
     <div class="page-header">World</div>
     <div class="grimoire-accordion" data-system="world">
-      <button class="accordion-header" aria-expanded="false"><span class="accordion-icon">&#9656;</span><span class="accordion-title">SubworldGenerator</span><span class="accordion-badge">3 m&eacute;thodes</span></button>
+      <button class="accordion-header" aria-expanded="false"><span class="accordion-icon">&#9656;</span><span class="accordion-title">SubworldGenerator</span><span class="accordion-badge">partial &bull; [Tool]</span></button>
       <div class="accordion-body">
-        <p>G&eacute;n&eacute;rateur terrain ; cubique simple et marching cubes, plateaux via Poisson Disk Sampling.</p>
+        <p>G&eacute;n&eacute;rateur de terrain proc&eacute;dural pour les sous-mondes. Supporte plusieurs algorithmes : terrain cubique simple avec hauteurs al&eacute;atoires, marching cubes (exp&eacute;rimental), et terrain bas&eacute; sur bruit Perlin. G&egrave;re la distribution de buissons via Poisson Disk Sampling et le RenderingServer.</p>
+        <h4>H&eacute;ritage</h4>
+        <ul><li><code>Node3D</code></li></ul>
         <h4>M&eacute;thodes</h4>
         <ul>
-          <li><code>void Init(Subworld)</code></li>
+          <li><code>void Init(Subworld _world)</code></li>
+          <li><code>void GatherChildrenChunks()</code></li>
           <li><code>void GenerateSimpleTerrain()</code></li>
           <li><code>void GenerateRoughTerrain()</code></li>
         </ul>
         <h4>Exports</h4>
         <ul>
-          <li><code>int Seed</code></li>
-          <li><code>float NoiseScale, HeightScale</code></li>
+          <li><code>[Export] int Seed</code></li>
+          <li><code>[Export] float NoiseScale = 5.0f</code></li>
+          <li><code>[Export] float HeightScale = 15.0f</code></li>
+          <li><code>[Export] float NoiseScale2 = 5.0f</code></li>
+          <li><code>[Export] float HeightScale2 = 15.0f</code></li>
+          <li><code>[ExportToolButton("Init Terrain")] Callable GenerateTerrainButton</code></li>
         </ul>
+        <h4>Exemple d'usage</h4>
+        <pre class="code-block"><span class="cmt">// G&eacute;n&eacute;rer le terrain depuis l'&eacute;diteur</span>
+<span class="cmt">// 1. Attacher SubworldGenerator &agrave; un Node3D</span>
+<span class="cmt">// 2. Configurer Seed, NoiseScale, HeightScale</span>
+<span class="cmt">// 3. Cliquer "Init Terrain" dans l'inspecteur</span>
+generator.<span class="fn">Init</span>(world);
+generator.<span class="fn">GatherChildrenChunks</span>();
+generator.<span class="fn">GenerateSimpleTerrain</span>();
+<span class="cmt">// Buissons plac&eacute;s automatiquement (7-10 par chunk)</span></pre>
+        <h4>Explications du code</h4>
+        <div class="code-explanation">
+          <p><strong>Pattern : Tool Script ([Tool] + [ExportToolButton])</strong> &mdash; Permet l'ex&eacute;cution du g&eacute;n&eacute;rateur directement dans l'&eacute;diteur Godot via un bouton dans l'inspecteur, sans lancer le jeu. Pattern sp&eacute;cifique &agrave; Godot pour les outils d'&eacute;dition de niveau.</p>
+          <p><strong>Pattern : RenderingServer Direct API</strong> &mdash; Bypass le syst&egrave;me de sc&egrave;ne Godot pour cr&eacute;er des instances de mesh (buissons) directement via le serveur de rendu bas niveau, offrant de meilleures performances pour les &eacute;l&eacute;ments visuels statiques qui n'ont pas besoin d'interactions physiques.</p>
+          <p><strong>Pattern : Poisson Disk Sampling</strong> &mdash; Distribution spatiale uniforme des plateaux de terrain via PoissonDiskSamplingSquare, &eacute;vitant les clusters al&eacute;atoires tout en garantissant une couverture naturelle du monde.</p>
+        </div>
+      </div>
+    </div>
+    <div class="grimoire-accordion" data-system="world">
+      <button class="accordion-header" aria-expanded="false"><span class="accordion-icon">&#9656;</span><span class="accordion-title">PoissonDiskSamplingSquare</span><span class="accordion-badge">algorithme</span></button>
+      <div class="accordion-body">
+        <p>Impl&eacute;mentation de l'algorithme Poisson Disk Sampling pour distribuer des points uniform&eacute;ment dans un espace 2D rectangulaire. Utilis&eacute; par SubworldGenerator pour placer les plateaux de terrain.</p>
+        <h4>M&eacute;thodes</h4>
+        <ul>
+          <li><code>static List&lt;Vector2&gt; Generate(float width, float height, float radius, int k = 30)</code></li>
+        </ul>
+        <h4>Exemple d'usage</h4>
+        <pre class="code-block"><span class="cmt">// Distribuer des points &agrave; au moins 3 unit&eacute;s d'espacement</span>
+<span class="kw">var</span> points = <span class="type">PoissonDiskSamplingSquare</span>.<span class="fn">Generate</span>(
+    <span class="num">16</span>, <span class="num">16</span>, <span class="num">3</span>);
+<span class="cmt">// Utiliser les points pour placer des &eacute;l&eacute;ments</span>
+<span class="kw">foreach</span> (<span class="kw">var</span> p <span class="kw">in</span> points)
+    PlaceElement(<span class="kw">new</span> <span class="type">Vector2I</span>(
+        (<span class="kw">int</span>)p.X, (<span class="kw">int</span>)p.Y));</pre>
+        <h4>Explications du code</h4>
+        <div class="code-explanation">
+          <p><strong>Pattern : Spatial Hashing (grille)</strong> &mdash; Utilise une grille auxiliaire pour acc&eacute;l&eacute;rer la v&eacute;rification de proximit&eacute; des points candidats, r&eacute;duisant la complexit&eacute; de O(n&sup2;) &agrave; O(1) par v&eacute;rification de voisinage dans un rayon 5&times;5 cellules.</p>
+        </div>
       </div>
     </div>
     <div class="grimoire-accordion" data-system="world">
@@ -1415,9 +1735,15 @@ pawn.EquipmentController.<span class="fn">Equip</span>(sword);</pre>
           <li><code>static bool RaycastFromMouse(out RaycastResult, LAYERS_MASKS)</code></li>
           <li><code>void CtxInput(InputEvent)</code></li>
         </ul>
+        <h4>Explications du code</h4>
+        <div class="code-explanation">
+          <p><strong>Pattern : Singleton (static Instance)</strong> &mdash; CameraRig est le seul rig cam&eacute;ra du jeu, accessible statiquement pour les raycasts depuis n'importe quel syst&egrave;me (BattleInstance, UI, IA).</p>
+          <p><strong>Pattern : Snap Rotation (90&deg;)</strong> &mdash; La rotation de la cam&eacute;ra s'effectue par incr&eacute;ments de 90&deg; via Tween, maintenant l'alignement isom&eacute;trique. Un record struct DragState encapsule l'&eacute;tat du drag (position d&eacute;part, en cours, offset) de mani&egrave;re immutable.</p>
+          <p><strong>C# : record struct DragState</strong> &mdash; Type valeur immutable (C# 10) pour capturer l'&eacute;tat de drag sans allocation heap. L&eacute;ger et s&eacute;mantiquement clair.</p>
+        </div>
       </div>
     </div>
-    <span class="back-to-index" data-goto="1">◂ Index</span>
+    <span class="back-to-index" data-goto="3">◂ Index</span>
     <div class="page-footer">&mdash; 29 &mdash;</div>
   </div>
 </div>
@@ -1436,6 +1762,11 @@ pawn.EquipmentController.<span class="fn">Equip</span>(sword);</pre>
           <li><code>static Mesh GenerateMeshGreedy(float[,], bool)</code></li>
           <li><code>static Mesh GenerateMeshSimple(float[,])</code></li>
         </ul>
+        <h4>Explications du code</h4>
+        <div class="code-explanation">
+          <p><strong>Pattern : Greedy Meshing</strong> &mdash; TerrainMesher fusionne les faces adjacentes de m&ecirc;me hauteur en rectangles plus grands, r&eacute;duisant drastiquement le nombre de triangles. Technique classique du voxel rendering (Minecraft).</p>
+          <p><strong>Architecture</strong> &mdash; TerrainColliderGenerator produit les colliders physiques (StaticBody3D) tandis que TerrainMesher g&eacute;n&egrave;re le mesh visuel. Les deux op&egrave;rent sur le m&ecirc;me tableau de hauteurs du SubworldChunk.</p>
+        </div>
       </div>
     </div>
     <div class="grimoire-accordion" data-system="world">
@@ -1448,14 +1779,21 @@ pawn.EquipmentController.<span class="fn">Equip</span>(sword);</pre>
           <li><code>static List&lt;Vector3&gt; GenerateChunkMesh(Span&lt;float&gt;, float)</code></li>
           <li><code>static void GenerateNormals(IList&lt;Vector3&gt;, ...)</code></li>
         </ul>
+        <h4>Explications du code</h4>
+        <div class="code-explanation">
+          <p><strong>Pattern : Marching Cubes</strong> &mdash; Algorithme classique de g&eacute;n&eacute;ration de mesh iso-surface. Chaque cellule 3D est &eacute;valu&eacute;e contre un seuil (isoLevel) via une lookup table de 256 configurations de triangles pr&eacute;calcul&eacute;es.</p>
+          <p><strong>C# : SIMD (System.Numerics.Vector&lt;int&gt;)</strong> &mdash; Les op&eacute;rations sur le buffer de voxels utilisent les instructions SIMD pour traiter plusieurs valeurs en parall&egrave;le, acc&eacute;l&eacute;rant significativement la g&eacute;n&eacute;ration sur les CPU modernes.</p>
+          <p><strong>C# : Span&lt;float&gt;</strong> &mdash; Le buffer de terrain est pass&eacute; en Span pour &eacute;viter les copies de tableaux et permettre le slicing sans allocation. Technique z&eacute;ro-copy essentielle pour les donn&eacute;es volumineuses.</p>
+        </div>
       </div>
     </div>
-    <span class="back-to-index" data-goto="1">◂ Index</span>
+    <span class="back-to-index" data-goto="3">◂ Index</span>
     <div class="page-footer">&mdash; 30 &mdash;</div>
   </div>
 </div>
 
 <!-- ====== CHAPITRE VI : HELPERS (31-34) ====== -->
+<!-- PAGE 31 : Titre chapitre Helpers -->
 <div class="grimoire-page">
   <div class="page-inner">
     <div class="chapter-title-page">
@@ -1464,7 +1802,7 @@ pawn.EquipmentController.<span class="fn">Equip</span>(sword);</pre>
       <div class="sep-chapter"></div>
       <p class="chapter-desc">Outils et utilitaires transversaux. Rendu imm&eacute;diat via RenderingServer, raycast physique, bases de donn&eacute;es de ressources par r&eacute;flexion, constructeur de zones d'effet, et extensions de vecteurs et transformations.</p>
     </div>
-    <span class="back-to-index" data-goto="1">◂ Index</span>
+    <span class="back-to-index" data-goto="3">◂ Index</span>
     <div class="page-footer">&mdash; 31 &mdash;</div>
   </div>
 </div>
@@ -1492,6 +1830,12 @@ pawn.EquipmentController.<span class="fn">Equip</span>(sword);</pre>
         isTemp: <span class="kw">true</span>);
 <span class="cmt">// Nettoyer apr&egrave;s annulation</span>
 renderer.<span class="fn">ClearTemps</span>();</pre>
+        <h4>Explications du code</h4>
+        <div class="code-explanation">
+          <p><strong>Pattern : RenderingServer Direct API</strong> &mdash; Bypass complet du SceneTree : les instances de mesh sont cr&eacute;&eacute;es directement via RenderingServer.InstanceCreate(), &eacute;vitant l'overhead des Node3D pour des centaines de cellules de surbrillance. Ordres de grandeur plus rapide.</p>
+          <p><strong>Pattern : Material Caching par couleur</strong> &mdash; Les mat&eacute;riaux sont mis en cache dans un Dictionary&lt;Color, Rid&gt;. M&ecirc;me couleur = m&ecirc;me mat&eacute;riau r&eacute;utilis&eacute;, &eacute;vitant la cr&eacute;ation redondante de ressources GPU.</p>
+          <p><strong>Pattern : Lazy Instance Creation</strong> &mdash; L'instance RenderingServer n'est cr&eacute;&eacute;e qu'au premier appel, puis r&eacute;utilis&eacute;e. ClearTemps lib&egrave;re uniquement les instances temporaires (hover), pr&eacute;servant les persistantes (s&eacute;lection).</p>
+        </div>
       </div>
     </div>
     <div class="grimoire-accordion" data-system="helpers">
@@ -1504,6 +1848,12 @@ renderer.<span class="fn">ClearTemps</span>();</pre>
           <li><code>static RaycastResult DoRaycastWorld(Vector3, Vector3, float, LAYERS_MASKS)</code></li>
           <li><code>static RaycastResult DoRaycastWorld(Vector3, Vector3, LAYERS_MASKS)</code></li>
         </ul>
+        <h4>Explications du code</h4>
+        <div class="code-explanation">
+          <p><strong>Pattern : Singleton avec param&egrave;tres cach&eacute;s</strong> &mdash; L'espace physique (Rid) est stock&eacute; une seule fois via SetSpace(). Les raycasts suivants n'ont plus besoin de le sp&eacute;cifier, simplifiant l'API pour les appelants.</p>
+          <p><strong>API Godot : PhysicsServer3D direct</strong> &mdash; Utilise PhysicsDirectSpaceState3D au lieu de RayCast3D node pour effectuer des raycasts sans ajouter de noeud &agrave; la sc&egrave;ne. Essentiel pour les requ&ecirc;tes ponctuelles (clic souris, IA).</p>
+          <p><strong>C# : LAYERS_MASKS (enum flags/bitmask)</strong> &mdash; Le filtrage par couche physique utilise un bitmask pour s&eacute;lectionner pr&eacute;cis&eacute;ment quels colliders tester (terrain, pawns, interactables).</p>
+        </div>
       </div>
     </div>
     <div class="grimoire-accordion" data-system="helpers">
@@ -1515,6 +1865,11 @@ renderer.<span class="fn">ClearTemps</span>();</pre>
           <li><code>static BaseAbility GetAbilityByName(string)</code></li>
           <li><code>static TBaseClass[] CreateInstancesOfDerivedClasses&lt;TBaseClass&gt;()</code></li>
         </ul>
+        <h4>Explications du code</h4>
+        <div class="code-explanation">
+          <p><strong>C# : R&eacute;flexion (Assembly scanning)</strong> &mdash; CreateInstancesOfDerivedClasses&lt;T&gt;() parcourt l'assembly pour trouver toutes les sous-classes de T, les instancie par r&eacute;flexion et les indexe par nom. Ajout d'une nouvelle aptitude = z&eacute;ro modification du registre.</p>
+          <p><strong>Pattern : Service Locator</strong> &mdash; GetAbilityByName() sert de locator : n'importe quel syst&egrave;me peut r&eacute;cup&eacute;rer une aptitude par son nom sans conna&icirc;tre son type concret.</p>
+        </div>
       </div>
     </div>
     <div class="grimoire-accordion" data-system="helpers">
@@ -1523,9 +1878,13 @@ renderer.<span class="fn">ClearTemps</span>();</pre>
         <p>BDD meshes ; dictionnaire nom&rarr;Mesh avec recherche statique.</p>
         <h4>M&eacute;thodes</h4>
         <ul><li><code>static Mesh GetMeshByName(string)</code></li></ul>
+        <h4>Explications du code</h4>
+        <div class="code-explanation">
+          <p><strong>Pattern : Registry (Dictionary&lt;string, Mesh&gt;)</strong> &mdash; Les meshes sont index&eacute;s par nom dans un dictionnaire statique, permettant l'acc&egrave;s O(1). Les entr&eacute;es sont ajout&eacute;es manuellement &mdash; pourrait &ecirc;tre automatis&eacute; par r&eacute;flexion comme AbilityDB.</p>
+        </div>
       </div>
     </div>
-    <span class="back-to-index" data-goto="1">◂ Index</span>
+    <span class="back-to-index" data-goto="3">◂ Index</span>
     <div class="page-footer">&mdash; 32 &mdash;</div>
   </div>
 </div>
@@ -1546,6 +1905,12 @@ renderer.<span class="fn">ClearTemps</span>();</pre>
           <li><code>int AddSquare(int, int, int)</code></li>
           <li><code>int AddLine(int, int, int, int)</code></li>
         </ul>
+        <h4>Explications du code</h4>
+        <div class="code-explanation">
+          <p><strong>Pattern : Builder avec Stack</strong> &mdash; ShapeBuilder empile des formes (croix, splat, carr&eacute;, ligne) via des appels cha&icirc;n&eacute;s. Collapse() fusionne la pile en un AOEShape final via LINQ Union. CollapseSubstract() soustrait la derni&egrave;re forme (exclure soi-m&ecirc;me de la port&eacute;e).</p>
+          <p><strong>C# : LINQ Union/Except</strong> &mdash; Les op&eacute;rations ensemblistes (union de formes, soustraction) utilisent LINQ pour combiner les listes de cellules sans boucles manuelles, garantissant l'absence de doublons.</p>
+          <p><strong>Architecture</strong> &mdash; Utilis&eacute; par toutes les aptitudes (BaseAbility.GetCastArea/GetEffectArea) pour d&eacute;finir les zones de port&eacute;e et d'effet de mani&egrave;re d&eacute;clarative.</p>
+        </div>
       </div>
     </div>
     <div class="grimoire-accordion" data-system="helpers">
@@ -1558,9 +1923,14 @@ renderer.<span class="fn">ClearTemps</span>();</pre>
           <li><code>static Vector3 GetWorldPosOfCell(this Vector2I, Subworld)</code></li>
           <li><code>static Vector2I GetCellPosOfPos2D(this Vector3)</code></li>
         </ul>
+        <h4>Explications du code</h4>
+        <div class="code-explanation">
+          <p><strong>C# : Extension methods</strong> &mdash; Ajoutent des m&eacute;thodes de conversion directement sur Vector3 et Vector2I, permettant d'&eacute;crire pos.GetCellPosOfPos(world) au lieu de VectorHelpers.GetCellPosOfPos(pos, world). Syntaxe fluide sans modifier les types Godot.</p>
+          <p><strong>Architecture</strong> &mdash; Centralise la logique de conversion position monde &harr; cellule grille, utilis&eacute;e par BattleInstance, PathfinderOK, ImmediateRenderer et CameraRig.</p>
+        </div>
       </div>
     </div>
-    <span class="back-to-index" data-goto="1">◂ Index</span>
+    <span class="back-to-index" data-goto="3">◂ Index</span>
     <div class="page-footer">&mdash; 33 &mdash;</div>
   </div>
 </div>
@@ -1574,6 +1944,10 @@ renderer.<span class="fn">ClearTemps</span>();</pre>
         <p>Extension Camera3D ; RaycastToGround projette un rayon souris vers Y=0.</p>
         <h4>M&eacute;thodes</h4>
         <ul><li><code>static Vector3 RaycastToGround(this Camera3D)</code></li></ul>
+        <h4>Explications du code</h4>
+        <div class="code-explanation">
+          <p><strong>C# : Extension method + math projection</strong> &mdash; Projette un rayon depuis la souris vers le plan Y=0 par calcul math&eacute;matique (intersection rayon/plan), plus rapide qu'un raycast physique pour le cas simple du sol plat.</p>
+        </div>
       </div>
     </div>
     <div class="grimoire-accordion" data-system="helpers">
@@ -1585,6 +1959,12 @@ renderer.<span class="fn">ClearTemps</span>();</pre>
           <li><code>static void SetTRSAt(this List&lt;float&gt;, Transform3D, int)</code></li>
           <li><code>static ref T GetRef&lt;T&gt;(this List&lt;T&gt;, int)</code></li>
         </ul>
+        <h4>Explications du code</h4>
+        <div class="code-explanation">
+          <p><strong>C# : CollectionsMarshal.AsSpan + Unsafe.As</strong> &mdash; GetRef&lt;T&gt;() acc&egrave;de au buffer interne d'une List&lt;T&gt; par r&eacute;f&eacute;rence via CollectionsMarshal, &eacute;vitant la copie de structs volumineux (Transform3D = 48 octets). Technique z&eacute;ro-copy avanc&eacute;e.</p>
+          <p><strong>C# : ref return</strong> &mdash; Retourne une r&eacute;f&eacute;rence directe vers l'&eacute;l&eacute;ment dans le tableau interne de la List, permettant la modification in-place sans copie ni r&eacute;insertion.</p>
+          <p><strong>Architecture</strong> &mdash; SetTRSAt &eacute;crit les Transform3D dans un buffer float[] pour MultiMesh. Utilis&eacute; par SubworldGenerator et SubworldChunk pour le rendu batch&eacute; du terrain.</p>
+        </div>
       </div>
     </div>
     <div class="grimoire-accordion" data-system="helpers">
@@ -1596,36 +1976,109 @@ renderer.<span class="fn">ClearTemps</span>();</pre>
           <li><code>LEFT_CLICK, RIGHT_CLICK, INTERACT, ESCAPE</code></li>
           <li><code>LEFT, RIGHT, UP, DOWN</code></li>
         </ul>
+        <h4>Explications du code</h4>
+        <div class="code-explanation">
+          <p><strong>Pattern : Constantes centralis&eacute;es</strong> &mdash; Tous les noms d'actions InputMap sont d&eacute;finis en un seul endroit. &Eacute;vite les fautes de frappe dans les cha&icirc;nes litt&eacute;rales (&laquo; left_click &raquo;) et permet le renommage global.</p>
+          <p><strong>API Godot : StringName</strong> &mdash; Les constantes sont de type StringName (pas string) pour &eacute;viter la conversion r&eacute;p&eacute;t&eacute;e string &rarr; StringName &agrave; chaque appel Input.IsActionPressed(). Optimisation Godot pour le hot path des inputs.</p>
+        </div>
       </div>
     </div>
-    <span class="back-to-index" data-goto="1">◂ Index</span>
+    <span class="back-to-index" data-goto="3">◂ Index</span>
     <div class="page-footer">&mdash; 34 &mdash;</div>
   </div>
 </div>
 
-<!-- ====== FIN (36-37) ====== -->
+<!-- ====== CHAPITRE VII : GIT & DEPLOY (35-36) ====== -->
+<!-- PAGE 35 : Titre chapitre Git & Deploy -->
+<div class="grimoire-page">
+  <div class="page-inner">
+    <div class="chapter-title-page">
+      <span class="chapter-numeral">VII</span>
+      <h2 class="chapter-name" style="color:var(--accent-git-light)">Git &amp; Deploy</h2>
+      <div class="sep-chapter"></div>
+      <p class="chapter-desc">Gestion de version et d&eacute;ploiement continu. Workflow GitFlow avec branches structur&eacute;es, conventions de commits, et pipeline de d&eacute;ploiement automatique de la documentation via GitHub Pages.</p>
+    </div>
+    <span class="back-to-index" data-goto="3">◂ Index</span>
+    <div class="page-footer">&mdash; 35 &mdash;</div>
+  </div>
+</div>
+
+<!-- PAGE 36 : Contenu Git & Deploy -->
+<div class="grimoire-page">
+  <div class="page-inner">
+    <div class="page-header">Git &amp; Deploy</div>
+    <h3 style="font-family:'Cinzel';font-size:0.7rem;color:var(--text-gold);margin-bottom:5px">Workflow GitFlow</h3>
+    <div class="mermaid-container" style="padding:5px">
+      <div class="mermaid-pending" data-mermaid-source="graph LR
+    Main[&quot;main&quot;]
+    Dev[&quot;develop&quot;]
+    Feat[&quot;feature/*&quot;]
+    Hot[&quot;hotfix/*&quot;]
+    Rel[&quot;release/*&quot;]
+    Feat --> Dev
+    Dev --> Rel
+    Rel --> Main
+    Hot --> Main
+    Main -.-> Dev
+    style Main fill:#1a6b3c,stroke:#2ecc71,stroke-width:2px,color:#86efac
+    style Dev fill:#1a3a6b,stroke:#3498db,stroke-width:2px,color:#93c5fd
+    style Feat fill:#5b2d8e,stroke:#9b59b6,stroke-width:1px,color:#c4b5fd
+    style Hot fill:#8b1a1a,stroke:#c41e3a,stroke-width:1px,color:#fca5a5
+    style Rel fill:#7a5c1e,stroke:#d4a017,stroke-width:1px,color:#fde68a">Chargement...</div>
+    </div>
+    <h3 style="font-family:'Cinzel';font-size:0.7rem;color:var(--text-gold);margin:6px 0 4px">Commandes essentielles</h3>
+    <pre class="code-block" style="font-size:0.65rem;padding:6px 8px;line-height:1.3"><span class="cmt"># Cr&eacute;er une feature branch</span>
+<span class="fn">git checkout</span> <span class="str">develop</span>
+<span class="fn">git checkout</span> -b <span class="str">feature/nom-feature</span>
+
+<span class="cmt"># Merge feature dans develop</span>
+<span class="fn">git checkout</span> <span class="str">develop</span>
+<span class="fn">git merge</span> <span class="str">--no-ff</span> feature/nom-feature
+
+<span class="cmt"># Hotfix depuis main</span>
+<span class="fn">git checkout</span> -b <span class="str">hotfix/fix-name</span> main</pre>
+    <h3 style="font-family:'Cinzel';font-size:0.7rem;color:var(--text-gold);margin:6px 0 4px">D&eacute;ploiement GitHub Pages</h3>
+    <pre class="code-block" style="font-size:0.65rem;padding:6px 8px;line-height:1.3"><span class="cmt"># .github/workflows/docs.yml</span>
+<span class="type">name</span>: Deploy Docs
+<span class="type">on</span>:
+  <span class="type">push</span>:
+    <span class="type">branches</span>: [<span class="str">main</span>]
+    <span class="type">paths</span>: [<span class="str">'docs/**'</span>]
+<span class="type">jobs</span>:
+  <span class="type">deploy</span>:
+    <span class="type">runs-on</span>: <span class="str">ubuntu-latest</span>
+    <span class="type">steps</span>:
+      - <span class="fn">uses</span>: <span class="str">actions/deploy-pages@v4</span></pre>
+    <span class="back-to-index" data-goto="3">◂ Index</span>
+    <div class="page-footer">&mdash; 36 &mdash;</div>
+  </div>
+</div>
+
+<!-- ====== FIN (37-38) ====== -->
 <div class="grimoire-page">
   <div class="page-inner">
     <div class="colophon">
       <div class="colophon-title">Colophon</div>
       <div class="sep-ornate" style="width:30%"></div>
-      <p class="colophon-line">G&eacute;n&eacute;r&eacute; le 2 mars 2026</p>
-      <p class="colophon-line">Commit : <code>3bfaeec</code></p>
+      <p class="colophon-line">G&eacute;n&eacute;r&eacute; le 2 mars 2026 (incr&eacute;mental)</p>
+      <p class="colophon-line">Commit : <code>3a08740</code></p>
       <p class="colophon-line" style="margin-top:8px">DocTech &mdash; Claude Code Skill</p>
       <p class="colophon-line">Grimoire Edition</p>
       <div class="sep-chapter" style="margin-top:15px;width:40%"></div>
       <p class="colophon-line" style="font-style:italic;font-size:0.7rem;margin-top:10px">&laquo; Le code est po&eacute;sie, le grimoire en est la m&eacute;moire &raquo;</p>
     </div>
-    <span class="back-to-index" data-goto="1">◂ Index</span>
-    <div class="page-footer">&mdash; 35 &mdash;</div>
+    <span class="back-to-index" data-goto="3">◂ Index</span>
+    <div class="page-footer">&mdash; 37 &mdash;</div>
   </div>
 </div>
 
+<!-- PAGE 38 : 4e COUVERTURE -->
 <div class="grimoire-page hard-page" data-density="hard">
   <div class="back-cover">
     <div class="back-cover-ornament">
       <span style="font-size:2rem;color:var(--text-gold)">&#9876;</span>
     </div>
+    <span class="back-to-index" data-goto="3" style="position:absolute;bottom:20px;left:50%;transform:translateX(-50%);color:var(--text-gold);cursor:pointer;font-size:0.8rem">◂ Index</span>
   </div>
 </div>
 
@@ -1690,8 +2143,8 @@ renderer.<span class="fn">ClearTemps</span>();</pre>
   var totalPages = origPages.length;
   var isPortrait = window.innerWidth < 900;
   var pageFlip = new St.PageFlip(grimoireEl, {
-    width: 800, height: 1000, size: 'stretch',
-    minWidth: 400, minHeight: 500, maxWidth: 900, maxHeight: 1100,
+    width: 700, height: 900, size: 'stretch',
+    minWidth: 350, minHeight: 450, maxWidth: 750, maxHeight: 950,
     maxShadowOpacity: 0.5, showCover: true, mobileScrollSupport: false,
     flippingTime: 600, usePortrait: isPortrait, drawShadow: true,
     autoSize: true, startPage: 0,
@@ -1707,6 +2160,7 @@ renderer.<span class="fn">ClearTemps</span>();</pre>
   var prevBtn = document.getElementById('nav-prev');
   var nextBtn = document.getElementById('nav-next');
   var pitchPanel = document.getElementById('pitch-panel');
+  var wrapper = document.getElementById('grimoire-wrapper');
   function getPages() { return grimoireEl.querySelectorAll('.grimoire-page'); }
   function updateUI() {
     var current = pageFlip.getCurrentPageIndex();
@@ -1715,11 +2169,11 @@ renderer.<span class="fn">ClearTemps</span>();</pre>
     nextBtn.classList.toggle('hidden', current >= totalPages - 1);
     // Show pitch only on page 0
     var showPitch = (current === 0);
-    pitchPanel.classList.toggle('hidden', !showPitch);
+    pitchPanel.classList.toggle('visible', showPitch);
     updateBottomNav(current);
     var pagesToRender = [current];
     if (!isPortrait && current + 1 < totalPages) pagesToRender.push(current + 1);
-    if (pagesToRender.indexOf(3) !== -1 || pagesToRender.indexOf(4) !== -1) triggerCounters();
+    if (pagesToRender.indexOf(1) !== -1 || pagesToRender.indexOf(2) !== -1) triggerCounters();
     pagesToRender.forEach(function(idx) {
       var pages = getPages();
       var els = pages[idx] ? pages[idx].querySelectorAll('.fade-in-page') : [];
@@ -1727,7 +2181,17 @@ renderer.<span class="fn">ClearTemps</span>();</pre>
     });
   }
   pageFlip.on('flip', function() { updateUI(); });
+  pageFlip.on('changeState', function(e) {
+    if (e.data === 'flipping') {
+      pitchPanel.classList.remove('visible');
+    }
+  });
+
+  // Show everything once PageFlip has laid out the pages
   updateUI();
+  requestAnimationFrame(function() {
+    wrapper.classList.add('ready');
+  });
 
   // 7. Navigation arrows
   prevBtn.addEventListener('click', function() { pageFlip.flipPrev(); });
@@ -1752,6 +2216,7 @@ renderer.<span class="fn">ClearTemps</span>();</pre>
       e.preventDefault();
       e.stopPropagation();
       pageFlip.turnToPage(p);
+      gotoEl.blur();
     }
   });
 
@@ -1831,28 +2296,8 @@ renderer.<span class="fn">ClearTemps</span>();</pre>
     content.innerHTML = '';
     var clone = svg.cloneNode(true);
     clone.removeAttribute('style');
-    // Keep viewBox but set responsive sizing
-    var vb = clone.getAttribute('viewBox');
-    if (vb) {
-      var parts = vb.split(/[\s,]+/);
-      var vbW = parseFloat(parts[2]) || 600;
-      var vbH = parseFloat(parts[3]) || 400;
-      var ratio = vbW / vbH;
-      // Wide diagrams (flowcharts): use full width
-      // Tall/square diagrams (state machine): limit height
-      if (ratio > 1.5) {
-        clone.setAttribute('width', '100%');
-        clone.removeAttribute('height');
-      } else {
-        clone.removeAttribute('width');
-        clone.setAttribute('height', Math.min(65, 80) + 'vh');
-        clone.style.maxHeight = '65vh';
-        clone.style.width = 'auto';
-      }
-    } else {
-      clone.setAttribute('width', '100%');
-      clone.removeAttribute('height');
-    }
+    clone.removeAttribute('width');
+    clone.removeAttribute('height');
     content.appendChild(clone);
     modal.classList.add('open');
   });

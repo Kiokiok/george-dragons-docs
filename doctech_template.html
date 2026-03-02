@@ -39,6 +39,8 @@
   --accent-world-light: #00b4d8;
   --accent-helpers: #7a5c1e;
   --accent-helpers-light: #d4a017;
+  --accent-git: #2d6a4f;
+  --accent-git-light: #40916c;
   /* Décorations */
   --border-ornament: #4a3728;
   --border-ornament-gold: #8b7340;
@@ -58,8 +60,8 @@ html, body {
   color: var(--text-cream);
   font-family: 'Crimson Text', Georgia, serif;
   line-height: 1.6;
-  min-height: 100vh;
-  overflow-x: hidden;
+  height: 100vh; height: 100dvh;
+  overflow: hidden;
 }
 
 /* --- Scrollbar --- */
@@ -75,15 +77,12 @@ html, body {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
-  padding: 20px;
-  animation: grimoireOpen 1.2s ease-out both;
+  height: calc(100dvh - 42px);
+  padding: 6px 10px 0;
+  opacity: 0;
+  transition: opacity 0.8s ease;
 }
-
-@keyframes grimoireOpen {
-  from { transform: scale(0.95) rotateY(-5deg); opacity: 0.6; }
-  to { transform: scale(1) rotateY(0); opacity: 1; }
-}
+#grimoire-wrapper.ready { opacity: 1; }
 
 /* ============================================
    PAGE STYLES
@@ -450,6 +449,11 @@ html, body {
 [data-system="ui"] .accordion-header { border-left: 3px solid var(--accent-ui-light); }
 [data-system="world"] .accordion-header { border-left: 3px solid var(--accent-world-light); }
 [data-system="helpers"] .accordion-header { border-left: 3px solid var(--accent-helpers-light); }
+[data-system="git"] .accordion-badge { background: var(--accent-git); color: #86efac; }
+[data-system="git"] .accordion-header { border-left: 3px solid var(--accent-git-light); }
+
+/* Code explanation */
+.code-explanation { background: rgba(201,168,76,0.05); border-left: 2px solid var(--text-gold); padding: 8px 12px; margin: 6px 0; }
 
 .accordion-body {
   max-height: 0;
@@ -755,7 +759,7 @@ code {
 </button>
 
 <!-- ====== PAGE INDICATOR ====== -->
-<div id="page-indicator">&mdash; 0 / 38 &mdash;</div>
+<div id="page-indicator">&mdash; 0 / 39 &mdash;</div>
 
 <!-- ====== GRIMOIRE ====== -->
 <div id="grimoire-wrapper">
@@ -829,8 +833,11 @@ code {
       <div class="toc-chapter-header" style="color:var(--accent-helpers-light)">VI &mdash; Helpers</div>
       <div class="toc-entry" data-goto="32"><span class="toc-label">&emsp;Chapitre VI : Helpers</span><span class="toc-dots"></span><span class="toc-page-num">32</span></div>
 
+      <div class="toc-chapter-header" style="color:var(--accent-git-light)">VII &mdash; Git &amp; Deploy</div>
+      <div class="toc-entry" data-goto="36"><span class="toc-label">&emsp;Chapitre VII : Git &amp; Deploy</span><span class="toc-dots"></span><span class="toc-page-num">36</span></div>
+
       <div class="sep-simple" style="margin:10px 0"></div>
-      <div class="toc-entry" data-goto="36"><span class="toc-label">Colophon</span><span class="toc-dots"></span><span class="toc-page-num">36</span></div>
+      <div class="toc-entry" data-goto="38"><span class="toc-label">Colophon</span><span class="toc-dots"></span><span class="toc-page-num">38</span></div>
 
       <div class="page-footer">&mdash; 3 &mdash;</div>
     </div>
@@ -1197,9 +1204,32 @@ code {
   </div>
 
   <!-- ============================================
-       FIN (pages 36-37)
+       CHAPITRE VII : GIT & DEPLOY (pages 36-37)
        ============================================ -->
-  <!-- PAGE 36 : Colophon -->
+  <div class="grimoire-page">
+    <div class="page-inner">
+      <div class="chapter-title-page">
+        <span class="chapter-numeral">VII</span>
+        <h2 class="chapter-name" style="color:var(--accent-git-light)">Git &amp; Deploy</h2>
+        <div class="sep-chapter"></div>
+        <p class="chapter-desc">Gestion de version et d&eacute;ploiement continu</p>
+      </div>
+      <div class="page-footer">&mdash; 36 &mdash;</div>
+    </div>
+  </div>
+
+  <div class="grimoire-page">
+    <div class="page-inner">
+      <div class="page-header">Git &amp; Deploy</div>
+      <!-- {{SECTION:git}} -->
+      <div class="page-footer">&mdash; 37 &mdash;</div>
+    </div>
+  </div>
+
+  <!-- ============================================
+       FIN (pages 38-39)
+       ============================================ -->
+  <!-- PAGE 38 : Colophon -->
   <div class="grimoire-page">
     <div class="page-inner">
       <div class="colophon">
@@ -1212,11 +1242,11 @@ code {
         <div class="sep-chapter" style="margin-top:15px;width:40%"></div>
         <p class="colophon-line" style="font-style:italic;font-size:0.7rem;margin-top:10px">&laquo; Le code est po&eacute;sie, le grimoire en est la m&eacute;moire &raquo;</p>
       </div>
-      <div class="page-footer">&mdash; 36 &mdash;</div>
+      <div class="page-footer">&mdash; 38 &mdash;</div>
     </div>
   </div>
 
-  <!-- PAGE 37 : 4e de couverture (HARD) -->
+  <!-- PAGE 39 : 4e de couverture (HARD) -->
   <div class="grimoire-page hard-page" data-density="hard">
     <div class="back-cover">
       <div class="back-cover-ornament">
@@ -1339,6 +1369,9 @@ code {
   pageFlip.on('flip', function() { updateUI(); });
   // Initial
   updateUI();
+  requestAnimationFrame(function() {
+    document.getElementById('grimoire-wrapper').classList.add('ready');
+  });
 
   // --- Navigation ---
   prevBtn.addEventListener('click', function() { pageFlip.flipPrev(); });
@@ -1355,7 +1388,10 @@ code {
   document.querySelectorAll('.toc-entry[data-goto]').forEach(function(entry) {
     entry.addEventListener('click', function() {
       var pageNum = parseInt(this.getAttribute('data-goto'), 10);
-      if (!isNaN(pageNum)) pageFlip.turnToPage(pageNum);
+      if (!isNaN(pageNum)) {
+        pageFlip.turnToPage(pageNum);
+        this.blur();
+      }
     });
   });
 
