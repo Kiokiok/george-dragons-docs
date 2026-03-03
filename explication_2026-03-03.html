@@ -1,0 +1,1529 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Explication de session — 2026-03-03</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--grimoire-bg:#0d0b08;--page-bg:#1a1410;--card-bg:#1e1812;--text-gold:#c9a84c;--text-cream:#d4c5a9;--text-dim:#8a7e6b;--border-ornament-gold:#8b7340;--border-subtle:#2a2318;--code-bg:rgba(10,8,5,0.6);--accent-green:rgba(80,160,80,0.15);--accent-blue:rgba(80,120,200,0.15);--accent-concept:rgba(86,156,214,0.1);--accent-godot:rgba(78,201,176,0.1);--accent-logic:rgba(206,145,120,0.1);--accent-pattern:rgba(197,134,192,0.1)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--grimoire-bg);color:var(--text-cream);font-family:'Crimson Text',serif;font-size:17px;line-height:1.6}
+h1,h2,h3,h4{font-family:'Cinzel',serif;color:var(--text-gold)}
+h1{font-size:1.8em;margin-bottom:.3em}
+h2{font-size:1.4em;margin:1.2em 0 .6em;padding-bottom:.3em;border-bottom:1px solid var(--border-ornament-gold)}
+h3{font-size:1.15em;margin:.8em 0 .4em}
+h4{font-size:1em;margin:.4em 0 .2em;cursor:pointer}
+code{font-family:'JetBrains Mono',monospace;font-size:.85em;background:var(--code-bg);padding:1px 5px;border-radius:3px}
+a{color:var(--text-gold);text-decoration:none}
+a:hover{text-decoration:underline}
+.sidebar{position:fixed;left:0;top:0;width:220px;height:100vh;background:#13100b;border-right:1px solid var(--border-ornament-gold);padding:1.2em .8em;overflow-y:auto;z-index:10}
+.sidebar-title{font-family:'Cinzel',serif;color:var(--text-gold);font-size:.95em;margin-bottom:.8em;padding-bottom:.4em;border-bottom:1px solid var(--border-subtle)}
+.sidebar a{display:block;padding:.3em .5em;color:var(--text-dim);font-size:.88em;border-radius:4px;transition:all .2s}
+.sidebar a:hover,.sidebar a.active{color:var(--text-gold);background:rgba(139,115,64,0.15);text-decoration:none}
+.sidebar hr{border:none;border-top:1px solid var(--border-subtle);margin:.6em 0}
+.main-content{margin-left:230px;padding:2em 2.5em 3em;max-width:1000px}
+header{margin-bottom:2em}
+.subtitle{color:var(--text-dim);font-size:1.05em;margin-bottom:1em}
+.stats-grid{display:flex;gap:1em;flex-wrap:wrap}
+.stat-box{background:var(--card-bg);border:1px solid var(--border-subtle);border-radius:6px;padding:.6em 1.2em;text-align:center}
+.stat-value{font-family:'Cinzel',serif;font-size:1.5em;color:var(--text-gold)}
+.stat-label{font-size:.8em;color:var(--text-dim)}
+.file-section{margin-bottom:3em}
+.file-purpose-card{background:var(--card-bg);border:1px solid var(--border-ornament-gold);border-radius:8px;padding:1em 1.4em;margin-bottom:1em;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+.file-purpose-card h2{border:none;margin:0;padding:0;font-size:1.25em}
+.file-role{color:var(--text-dim);margin-top:.3em;font-style:italic}
+.badge{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:.6em;padding:2px 8px;border-radius:4px;vertical-align:middle;margin-left:.5em;font-weight:700;letter-spacing:.5px}
+.badge-new{background:#2d6a2d;color:#c8f0c8}
+.badge-modified{background:#2d4a7a;color:#c0d8f0}
+.code-container{margin-bottom:1em;border:1px solid var(--border-subtle);border-radius:6px;overflow:hidden}
+.code-toolbar{display:flex;justify-content:space-between;align-items:center;background:#13100b;padding:.4em 1em;border-bottom:1px solid var(--border-subtle)}
+.file-path-label{font-family:'JetBrains Mono',monospace;font-size:.78em;color:var(--text-dim)}
+.toggle-all-btn,.toggle-global-btn{background:none;border:1px solid var(--border-ornament-gold);color:var(--text-gold);font-family:'Crimson Text',serif;font-size:.82em;padding:2px 10px;border-radius:4px;cursor:pointer;transition:background .2s}
+.toggle-all-btn:hover,.toggle-global-btn:hover{background:rgba(139,115,64,0.2)}
+.code-block{background:var(--code-bg);margin:0;padding:.8em 0;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:.82em;line-height:1.55;tab-size:4}
+.code-block code{background:none;padding:0;display:block}
+.code-line{padding:0 1em 0 0;white-space:pre}
+.line-num{display:inline-block;width:3.5em;text-align:right;padding-right:1em;color:var(--text-dim);user-select:none;opacity:.5}
+.line-new{background:var(--accent-green)}
+.line-modified{background:var(--accent-blue)}
+.kw{color:#569cd6}
+.type{color:#4ec9b0}
+.str{color:#ce9178}
+.num{color:#b5cea8}
+.cmt{color:#6a9955;font-style:italic}
+.fn{color:#dcdcaa}
+.attr{color:#c586c0}
+.annotations-wrapper{margin-bottom:1.5em}
+.annotations-wrapper h3{font-size:1em;margin-bottom:.5em}
+.annotation-box{border-left:3px solid var(--border-ornament-gold);border-radius:0 6px 6px 0;padding:.6em 1em;margin-bottom:.5em;transition:all .3s ease}
+.annotation-box h4{font-size:.95em;display:flex;align-items:center;gap:.5em}
+.annotation-box h4 small{color:var(--text-dim);font-size:.8em;font-family:'JetBrains Mono',monospace}
+.annotation-content{overflow:hidden;transition:max-height .3s ease,opacity .3s ease}
+.annotation-box.collapsed .annotation-content{max-height:0;opacity:0;padding:0}
+.annotation-box:not(.collapsed) .annotation-content{max-height:2000px;opacity:1;padding-top:.3em}
+.annotation-box--concept{border-left-color:#569cd6;background:var(--accent-concept)}
+.annotation-box--godot{border-left-color:#4ec9b0;background:var(--accent-godot)}
+.annotation-box--logic{border-left-color:#ce9178;background:var(--accent-logic)}
+.annotation-box--pattern{border-left-color:#c586c0;background:var(--accent-pattern)}
+.annotation-category{font-size:.7em;padding:1px 6px;border-radius:3px;font-family:'JetBrains Mono',monospace;letter-spacing:.3px}
+.annotation-box--concept .annotation-category{background:rgba(86,156,214,.2);color:#569cd6}
+.annotation-box--godot .annotation-category{background:rgba(78,201,176,.2);color:#4ec9b0}
+.annotation-box--logic .annotation-category{background:rgba(206,145,120,.2);color:#ce9178}
+.annotation-box--pattern .annotation-category{background:rgba(197,134,192,.2);color:#c586c0}
+.concepts-box,.godot-box{background:var(--card-bg);border:1px solid var(--border-subtle);border-radius:6px;padding:1em 1.2em;margin-bottom:1em}
+.concept-item{margin-bottom:.6em;padding-bottom:.6em;border-bottom:1px solid var(--border-subtle)}
+.concept-item:last-child{margin-bottom:0;padding-bottom:0;border-bottom:none}
+.concept-item strong{color:var(--text-gold)}
+.class-relations-svg{margin:1em 0;text-align:center}
+.class-relations-svg svg{max-width:100%}
+#glossary dl{columns:1}
+#glossary dt{color:var(--text-gold);font-family:'Cinzel',serif;font-size:.95em;margin-top:.8em}
+#glossary dd{margin-left:1em;margin-bottom:.3em;color:var(--text-cream)}
+.session-commits{list-style:none;padding:0}
+.session-commits li{padding:.3em 0;border-bottom:1px solid var(--border-subtle)}
+.session-commits .hash{font-family:'JetBrains Mono',monospace;color:var(--text-gold);font-size:.85em;margin-right:.5em}
+.fade-in{opacity:0;transform:translateY(15px);transition:opacity .5s ease,transform .5s ease}
+.fade-in.visible{opacity:1;transform:translateY(0)}
+@media print{.sidebar{display:none}.main-content{margin-left:0}.annotation-box.collapsed .annotation-content{max-height:none;opacity:1}body{background:#fff;color:#222}.code-line{background:none !important}h1,h2,h3,h4,.stat-value,.concept-item strong,#glossary dt{color:#333}.code-block{background:#f5f5f5;border:1px solid #ccc}}
+</style>
+</head>
+<body>
+<nav class="sidebar">
+<div class="sidebar-title">Table des matieres</div>
+<a href="#session-summary">Resume de session</a>
+<a href="#architecture-overview">Architecture</a>
+<a href="#feature-flow">Flux de la feature</a>
+<hr>
+<a href="#file-GameProgress">GameProgress.cs</a>
+<a href="#file-ToastUI">ToastUI.cs</a>
+<a href="#file-DialogueNPC">DialogueNPC.cs</a>
+<a href="#file-WorldMap">WorldMap.cs</a>
+<a href="#file-Game">Game.cs</a>
+<hr>
+<a href="#glossary">Glossaire</a>
+</nav>
+
+<div class="main-content">
+<header>
+<h1>Grimoire de Session</h1>
+<p class="subtitle">Session du 2026-03-03 — Systeme de deverrouillage de chemins sur la carte du monde via dialogues NPC, avec notifications toast</p>
+<div style="margin-bottom:.6em"><button class="toggle-global-btn" onclick="toggleAllGlobal(this)">Tout deplier</button></div>
+<div class="stats-grid">
+<div class="stat-box"><div class="stat-value">5</div><div class="stat-label">Fichiers C#</div></div>
+<div class="stat-box"><div class="stat-value">1</div><div class="stat-label">Nouveau</div></div>
+<div class="stat-box"><div class="stat-value">4</div><div class="stat-label">Modifies</div></div>
+<div class="stat-box"><div class="stat-value">~520</div><div class="stat-label">Lignes de code</div></div>
+<div class="stat-box"><div class="stat-value">35</div><div class="stat-label">Annotations</div></div>
+<div class="stat-box"><div class="stat-value">1</div><div class="stat-label">Commit</div></div>
+</div>
+</header>
+
+<main>
+
+<!-- ==================== SESSION SUMMARY ==================== -->
+<section id="session-summary" class="fade-in">
+<h2>Resume de la session</h2>
+<p>Cette session a implemente un <strong>systeme complet de deverrouillage de chemins</strong> sur la carte du monde. Le joueur peut parler a un NPC, un dialogue se declenche, et a la fin du dialogue, un chemin bloque sur la carte se deverrouille. Une notification toast confirme visuellement le deverrouillage.</p>
+<h3>Commits</h3>
+<ul class="session-commits">
+<li><span class="hash">166fda6</span> toast UI / unlock path / gameprogress world map</li>
+</ul>
+<h3>Fichiers concernes</h3>
+<ul>
+<li><strong>GameProgress.cs</strong> <span class="badge badge-modified">MODIFIE</span> — Systeme central de flags de progression (reecrit)</li>
+<li><strong>ToastUI.cs</strong> <span class="badge badge-new">NOUVEAU</span> — Composant UI de notifications temporaires</li>
+<li><strong>DialogueNPC.cs</strong> <span class="badge badge-modified">MODIFIE</span> — NPCs avec deverrouillage post-dialogue</li>
+<li><strong>WorldMap.cs</strong> <span class="badge badge-modified">MODIFIE</span> — Filtrage des chemins verrouilles + BFS d'accessibilite</li>
+<li><strong>Game.cs</strong> <span class="badge badge-modified">MODIFIE</span> — Refactoring mineur (GameProgress devenu static)</li>
+</ul>
+</section>
+
+<!-- ==================== ARCHITECTURE SVG ==================== -->
+<section id="architecture-overview" class="fade-in">
+<h2>Architecture des changements</h2>
+<p>Voici comment les fichiers modifies interagissent entre eux. Les fleches representent les dependances : qui appelle qui.</p>
+<svg viewBox="0 0 700 340" width="100%" style="max-width:700px;display:block;margin:1em auto">
+<defs><marker id="ah" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#c9944a"/></marker></defs>
+<rect x="270" y="10" width="160" height="45" rx="6" fill="#231d16" stroke="#8b7335" stroke-width="1.5"/>
+<text x="350" y="38" text-anchor="middle" fill="#f0d78c" font-family="Cinzel" font-size="14">Game.cs</text>
+<rect x="20" y="140" width="200" height="45" rx="6" fill="#231d16" stroke="#8b7335" stroke-width="1.5"/>
+<text x="120" y="168" text-anchor="middle" fill="#f0d78c" font-family="Cinzel" font-size="14">GameProgress.cs</text>
+<rect x="490" y="140" width="180" height="45" rx="6" fill="#231d16" stroke="#8b7335" stroke-width="1.5"/>
+<text x="580" y="168" text-anchor="middle" fill="#f0d78c" font-family="Cinzel" font-size="14">ToastUI.cs</text>
+<rect x="20" y="280" width="200" height="45" rx="6" fill="#231d16" stroke="#8b7335" stroke-width="1.5"/>
+<text x="120" y="308" text-anchor="middle" fill="#f0d78c" font-family="Cinzel" font-size="14">DialogueNPC.cs</text>
+<rect x="490" y="280" width="180" height="45" rx="6" fill="#231d16" stroke="#8b7335" stroke-width="1.5"/>
+<text x="580" y="308" text-anchor="middle" fill="#f0d78c" font-family="Cinzel" font-size="14">WorldMap.cs</text>
+<!-- Game -> WorldMap -->
+<line x1="430" y1="50" x2="530" y2="280" stroke="#c9944a" stroke-width="1.2" marker-end="url(#ah)"/>
+<text x="500" y="160" fill="#c9944a" font-size="11" font-style="italic">instancie scene</text>
+<!-- DialogueNPC -> GameProgress -->
+<line x1="120" y1="280" x2="120" y2="190" stroke="#c9944a" stroke-width="1.2" marker-end="url(#ah)"/>
+<text x="130" y="240" fill="#c9944a" font-size="11" font-style="italic">Unlock(flag)</text>
+<!-- DialogueNPC -> ToastUI -->
+<line x1="220" y1="295" x2="490" y2="175" stroke="#c9944a" stroke-width="1.2" marker-end="url(#ah)"/>
+<text x="350" y="225" fill="#c9944a" font-size="11" font-style="italic">Show(message)</text>
+<!-- WorldMap -> GameProgress -->
+<line x1="490" y1="300" x2="220" y2="170" stroke="#c9944a" stroke-width="1.2" marker-end="url(#ah)" stroke-dasharray="6,3"/>
+<text x="380" y="250" fill="#c9944a" font-size="11" font-style="italic">IsUnlocked(flag)</text>
+</svg>
+<p><em>Fleches pleines = appels directs. Fleche pointillee = verification/lecture.</em></p>
+</section>
+
+<!-- ==================== FEATURE FLOW SVG ==================== -->
+<section id="feature-flow" class="fade-in">
+<h2>Flux de la feature</h2>
+<p>Le flux complet du deverrouillage, etape par etape :</p>
+<svg viewBox="0 0 920 100" width="100%" style="max-width:920px;display:block;margin:1em auto">
+<defs><marker id="af" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#c9944a"/></marker></defs>
+<rect x="0" y="20" width="130" height="55" rx="6" fill="#231d16" stroke="#8b7335" stroke-width="1.5"/>
+<text x="65" y="42" text-anchor="middle" fill="#f0d78c" font-size="11" font-family="Cinzel">Joueur parle</text>
+<text x="65" y="58" text-anchor="middle" fill="#c9944a" font-size="9">DialogueNPC</text>
+<line x1="130" y1="47" x2="148" y2="47" stroke="#c9944a" stroke-width="1.2" marker-end="url(#af)"/>
+<rect x="152" y="20" width="130" height="55" rx="6" fill="#231d16" stroke="#8b7335" stroke-width="1.5"/>
+<text x="217" y="42" text-anchor="middle" fill="#f0d78c" font-size="11" font-family="Cinzel">Dialogue joue</text>
+<text x="217" y="58" text-anchor="middle" fill="#c9944a" font-size="9">DialogueManager</text>
+<line x1="282" y1="47" x2="300" y2="47" stroke="#c9944a" stroke-width="1.2" marker-end="url(#af)"/>
+<rect x="304" y="20" width="130" height="55" rx="6" fill="#231d16" stroke="#8b7335" stroke-width="1.5"/>
+<text x="369" y="42" text-anchor="middle" fill="#f0d78c" font-size="11" font-family="Cinzel">Dialogue fini</text>
+<text x="369" y="58" text-anchor="middle" fill="#c9944a" font-size="9">OnDialogueFinished</text>
+<line x1="434" y1="47" x2="452" y2="47" stroke="#c9944a" stroke-width="1.2" marker-end="url(#af)"/>
+<rect x="456" y="20" width="130" height="55" rx="6" fill="#231d16" stroke="#8b7335" stroke-width="1.5"/>
+<text x="521" y="42" text-anchor="middle" fill="#f0d78c" font-size="11" font-family="Cinzel">Flag deverrouille</text>
+<text x="521" y="58" text-anchor="middle" fill="#c9944a" font-size="9">GameProgress.Unlock</text>
+<line x1="586" y1="47" x2="604" y2="47" stroke="#c9944a" stroke-width="1.2" marker-end="url(#af)"/>
+<rect x="608" y="20" width="130" height="55" rx="6" fill="#231d16" stroke="#8b7335" stroke-width="1.5"/>
+<text x="673" y="42" text-anchor="middle" fill="#f0d78c" font-size="11" font-family="Cinzel">Toast affiche</text>
+<text x="673" y="58" text-anchor="middle" fill="#c9944a" font-size="9">ToastUI.Show</text>
+<line x1="738" y1="47" x2="756" y2="47" stroke="#c9944a" stroke-width="1.2" marker-end="url(#af)"/>
+<rect x="760" y="20" width="150" height="55" rx="6" fill="#231d16" stroke="#8b7335" stroke-width="1.5"/>
+<text x="835" y="42" text-anchor="middle" fill="#f0d78c" font-size="11" font-family="Cinzel">Carte mise a jour</text>
+<text x="835" y="58" text-anchor="middle" fill="#c9944a" font-size="9">WorldMap._Ready</text>
+</svg>
+</section>
+
+<!-- ==================== FILE: GameProgress.cs ==================== -->
+<section class="file-section fade-in" id="file-GameProgress">
+<div class="file-purpose-card">
+<h2>GameProgress.cs <span class="badge badge-modified">MODIFIE</span></h2>
+<p class="file-role">Systeme central de progression du jeu. Gere un ensemble de flags (drapeaux) qui representent les elements deverrouilles. C'est le "cerveau" qui retient ce que le joueur a accompli. Cette classe a ete entierement reecrite : elle est passee d'une simple coquille vide a un systeme fonctionnel de flags avec evenements.</p>
+</div>
+<div class="code-container">
+<div class="code-toolbar">
+<span class="file-path-label">src/core/GameProgress.cs</span>
+<button class="toggle-all-btn" onclick="toggleAllAnnotations(this)">Tout deplier</button>
+</div>
+<pre class="code-block" data-new-lines="4-24"><code>using System;
+using System.Collections.Generic;
+
+public static class GameProgress
+{
+	public const string PATH_LACORSE_NORTH = "path_lacorse_north";
+
+	static readonly HashSet&lt;string&gt; unlockedFlags = new();
+
+	public static event Action&lt;string&gt; OnFlagUnlocked;
+
+	public static void Unlock(string flag)
+	{
+		if (unlockedFlags.Add(flag))
+		{
+			OnFlagUnlocked?.Invoke(flag);
+		}
+	}
+
+	public static bool IsUnlocked(string flag)
+	{
+		return unlockedFlags.Contains(flag);
+	}
+}</code></pre>
+</div>
+
+<div class="annotations-wrapper">
+<h3>Annotations</h3>
+
+<div class="annotation-box annotation-box--concept collapsed" id="ann-gp-1">
+<h4 onclick="toggleAnnotation('ann-gp-1')"><span class="annotation-category">CONCEPT</span> Imports et namespaces <small>(L1-2)</small></h4>
+<div class="annotation-content">
+<p>Les directives <code>using</code> sont comme des <strong>laissez-passer</strong> pour acceder a des bibliotheques de code. <code>System</code> donne acces aux types de base comme <code>Action&lt;T&gt;</code> (les evenements). <code>System.Collections.Generic</code> donne acces aux collections typees comme <code>HashSet&lt;T&gt;</code>.</p>
+<p>Remarque : les anciens imports inutiles (<code>System.Linq</code>, <code>System.Text</code>, <code>System.Threading.Tasks</code>) ont ete supprimes — on ne garde que ce qui est utilise.</p>
+</div>
+</div>
+
+<div class="annotation-box annotation-box--concept collapsed" id="ann-gp-2">
+<h4 onclick="toggleAnnotation('ann-gp-2')"><span class="annotation-category">CONCEPT</span> Classe statique <small>(L4)</small></h4>
+<div class="annotation-content">
+<p>Une <code>static class</code> est comme un <strong>tableau d'affichage commun</strong> dans un batiment : tout le monde peut y lire et ecrire, mais il n'existe qu'en un seul exemplaire. On ne peut pas creer d'instance (<code>new GameProgress()</code> serait interdit).</p>
+<p><strong>Pourquoi static ici ?</strong> La progression du jeu est un etat global unique — il n'y a qu'une seule partie en cours. N'importe quel systeme (WorldMap, DialogueNPC) peut verifier ou modifier la progression sans avoir besoin d'une reference vers un objet.</p>
+<p>Avant ce commit, <code>GameProgress</code> n'etait pas static et contenait des dictionnaires vides. La transformation en <code>static class</code> simplifie enormement l'acces depuis partout dans le code.</p>
+</div>
+</div>
+
+<div class="annotation-box annotation-box--concept collapsed" id="ann-gp-3">
+<h4 onclick="toggleAnnotation('ann-gp-3')"><span class="annotation-category">CONCEPT</span> const, HashSet et target-typed new <small>(L6-8)</small></h4>
+<div class="annotation-content">
+<p><code>public const string PATH_LACORSE_NORTH</code> definit une <strong>constante</strong> : une valeur fixee a la compilation qui ne changera jamais. C'est comme un <strong>numero de serie grave dans le metal</strong>. Utiliser des constantes nommees evite les "magic strings" eparpillees dans le code.</p>
+<p><code>HashSet&lt;string&gt;</code> est comme un <strong>sac de jetons uniques</strong> : on peut y ajouter un jeton, verifier s'il est present, mais impossible d'avoir deux fois le meme. Contrairement a une <code>List</code>, la recherche est en O(1) — quasi-instantanee quelle que soit la taille.</p>
+<p><code>new()</code> est le <strong>target-typed new</strong> (C# 9+) : le compilateur deduit le type depuis la declaration a gauche. <code>new()</code> equivaut ici a <code>new HashSet&lt;string&gt;()</code>. C'est plus concis sans perdre en clarte.</p>
+</div>
+</div>
+
+<div class="annotation-box annotation-box--concept collapsed" id="ann-gp-4">
+<h4 onclick="toggleAnnotation('ann-gp-4')"><span class="annotation-category">CONCEPT</span> event et Action&lt;string&gt; <small>(L10)</small></h4>
+<div class="annotation-content">
+<p>Un <code>event</code> est comme une <strong>liste de diffusion email</strong> : quand quelque chose se produit, tous les abonnes sont notifies automatiquement. <code>Action&lt;string&gt;</code> definit le "format du message" — ici, un string (le nom du flag).</p>
+<p><code>OnFlagUnlocked</code> est l'evenement declenche quand un flag est deverrouille. D'autres systemes peuvent s'y abonner avec <code>GameProgress.OnFlagUnlocked += MaMethode;</code> pour reagir aux deverrouillages.</p>
+<p>Actuellement cet evenement n'est pas utilise dans le code de cette session, mais il est prevu pour des extensions futures (ex: mettre a jour la carte en temps reel).</p>
+</div>
+</div>
+
+<div class="annotation-box annotation-box--logic collapsed" id="ann-gp-5">
+<h4 onclick="toggleAnnotation('ann-gp-5')"><span class="annotation-category">LOGIQUE</span> Methode Unlock — deverrouillage <small>(L12-18)</small></h4>
+<div class="annotation-content">
+<p>La methode <code>Unlock</code> est le coeur du systeme. Elle ajoute un flag au <code>HashSet</code>.</p>
+<p><strong>Astuce subtile :</strong> <code>HashSet.Add()</code> retourne <code>true</code> si l'element n'existait pas encore, <code>false</code> s'il etait deja present. Le <code>if</code> autour evite donc de declencher l'evenement en double si on essaie de deverrouiller quelque chose deja deverrouille.</p>
+<p>L'operateur <code>?.</code> (null-conditional) sur <code>OnFlagUnlocked?.Invoke(flag)</code> verifie si quelqu'un est abonne a l'evenement avant de le declencher. Sans le <code>?.</code>, appeler <code>Invoke</code> sur un evenement sans abonne provoquerait une <code>NullReferenceException</code>.</p>
+</div>
+</div>
+
+<div class="annotation-box annotation-box--logic collapsed" id="ann-gp-6">
+<h4 onclick="toggleAnnotation('ann-gp-6')"><span class="annotation-category">LOGIQUE</span> Methode IsUnlocked — verification <small>(L20-23)</small></h4>
+<div class="annotation-content">
+<p><code>IsUnlocked</code> est une simple question : "est-ce que ce flag est dans le sac ?". <code>HashSet.Contains()</code> repond en O(1).</p>
+<p>C'est cette methode qui est appelee par <code>WorldMap.IsNodeLocked()</code> pour savoir si un chemin ou un bouton doit etre affiche ou cache.</p>
+</div>
+</div>
+</div>
+
+<div class="concepts-box">
+<h3>Concepts cles de ce fichier</h3>
+<div class="concept-item"><strong>static class</strong><p>Classe non instanciable dont tous les membres sont partages. Comme un service public accessible a tous sans rendez-vous.</p></div>
+<div class="concept-item"><strong>HashSet&lt;T&gt;</strong><p>Collection d'elements uniques avec recherche ultra-rapide (O(1)). Ideal pour stocker des flags "oui/non".</p></div>
+<div class="concept-item"><strong>event Action&lt;T&gt;</strong><p>Systeme de notification : les abonnes sont prevenus quand l'evenement se declenche. Action&lt;string&gt; = l'evenement envoie un string.</p></div>
+<div class="concept-item"><strong>Operateur ?. (null-conditional)</strong><p>Appel securise qui ne s'execute que si l'objet n'est pas null. Evite les crashs sur les evenements sans abonnes.</p></div>
+</div>
+
+<div class="class-relations-svg">
+<svg viewBox="0 0 400 200" width="100%" style="max-width:400px">
+<defs><marker id="agp" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#c9944a"/></marker></defs>
+<rect x="120" y="70" width="160" height="45" rx="6" fill="#231d16" stroke="#f0d78c" stroke-width="2.5"/>
+<text x="200" y="98" text-anchor="middle" fill="#f0d78c" font-family="Cinzel" font-size="13">GameProgress</text>
+<rect x="0" y="160" width="130" height="35" rx="5" fill="#231d16" stroke="#8b7335" stroke-width="1"/>
+<text x="65" y="182" text-anchor="middle" fill="#f0d78c" font-size="11">DialogueNPC</text>
+<rect x="270" y="160" width="120" height="35" rx="5" fill="#231d16" stroke="#8b7335" stroke-width="1"/>
+<text x="330" y="182" text-anchor="middle" fill="#f0d78c" font-size="11">WorldMap</text>
+<line x1="65" y1="160" x2="170" y2="115" stroke="#c9944a" stroke-width="1" marker-end="url(#agp)"/>
+<text x="90" y="140" fill="#c9944a" font-size="9">Unlock</text>
+<line x1="330" y1="160" x2="230" y2="115" stroke="#c9944a" stroke-width="1" marker-end="url(#agp)" stroke-dasharray="5,3"/>
+<text x="300" y="140" fill="#c9944a" font-size="9">IsUnlocked</text>
+</svg>
+</div>
+</section>
+
+<!-- ==================== FILE: ToastUI.cs ==================== -->
+<section class="file-section fade-in" id="file-ToastUI">
+<div class="file-purpose-card">
+<h2>ToastUI.cs <span class="badge badge-new">NOUVEAU</span></h2>
+<p class="file-role">Composant d'interface qui affiche des notifications temporaires (toasts) a l'ecran. Le message apparait en fondu, reste affiche quelques secondes, puis disparait. Utilise le pattern Singleton pour etre appele depuis n'importe ou via <code>ToastUI.Show("message")</code>.</p>
+</div>
+<div class="code-container">
+<div class="code-toolbar">
+<span class="file-path-label">src/ui/ToastUI.cs</span>
+<button class="toggle-all-btn" onclick="toggleAllAnnotations(this)">Tout deplier</button>
+</div>
+<pre class="code-block" data-new-lines="1-75"><code>using Godot;
+
+public partial class ToastUI : Control
+{
+	static ToastUI instance;
+
+	PanelContainer panel;
+	Label label;
+
+	public override void _Ready()
+	{
+		instance = this;
+
+		// Build UI programmatically
+		panel = new PanelContainer();
+		panel.AnchorLeft = 0.5f;
+		panel.AnchorRight = 0.5f;
+		panel.AnchorTop = 0f;
+		panel.GrowHorizontal = Control.GrowDirection.Both;
+		panel.OffsetTop = 30;
+		panel.OffsetLeft = -200;
+		panel.OffsetRight = 200;
+
+		// Style: dark semi-transparent background with golden border
+		var styleBox = new StyleBoxFlat();
+		styleBox.BgColor = new Color(0.1f, 0.1f, 0.12f, 0.85f);
+		styleBox.BorderColor = new Color(0.85f, 0.65f, 0.2f, 1f);
+		styleBox.SetBorderWidthAll(2);
+		styleBox.SetCornerRadiusAll(6);
+		styleBox.SetContentMarginAll(16);
+		panel.AddThemeStyleboxOverride("panel", styleBox);
+
+		// Label
+		label = new Label();
+		label.HorizontalAlignment = HorizontalAlignment.Center;
+		label.AddThemeFontSizeOverride("font_size", 22);
+
+		// Load Sylfean font
+		var font = GD.Load&lt;Font&gt;("res://fonts/Sylfean.tres");
+		if (font != null)
+			label.AddThemeFontOverride("font", font);
+
+		label.AddThemeColorOverride("font_color", new Color(0.95f, 0.85f, 0.55f));
+
+		panel.AddChild(label);
+		AddChild(panel);
+
+		panel.Modulate = new Color(1, 1, 1, 0);
+		panel.Visible = false;
+	}
+
+	public static void Show(string message, float duration = 3f)
+	{
+		instance?.DoShow(message, duration);
+	}
+
+	void DoShow(string message, float duration)
+	{
+		label.Text = message;
+		panel.Visible = true;
+
+		var tween = CreateTween();
+
+		// Fade in
+		tween.TweenProperty(panel, "modulate:a", 1f, 0.2f);
+
+		// Wait
+		tween.TweenInterval(duration);
+
+		// Fade out
+		tween.TweenProperty(panel, "modulate:a", 0f, 0.5f);
+
+		tween.Finished += () =&gt; panel.Visible = false;
+	}
+}</code></pre>
+</div>
+
+<div class="annotations-wrapper">
+<h3>Annotations</h3>
+
+<div class="annotation-box annotation-box--godot collapsed" id="ann-toast-1">
+<h4 onclick="toggleAnnotation('ann-toast-1')"><span class="annotation-category">GODOT</span> partial class et Control <small>(L1-3)</small></h4>
+<div class="annotation-content">
+<p><code>partial class</code> est <strong>obligatoire</strong> pour toute classe C# dans Godot 4. Le source generator de Godot genere automatiquement une autre partie de la classe (dans un fichier cache) pour connecter le code C# au moteur.</p>
+<p><code>Control</code> est la classe de base pour tous les elements d'interface (UI) dans Godot. En heritant de <code>Control</code>, notre ToastUI peut etre place dans un <code>CanvasLayer</code> et s'afficher par-dessus le jeu.</p>
+</div>
+</div>
+
+<div class="annotation-box annotation-box--pattern collapsed" id="ann-toast-2">
+<h4 onclick="toggleAnnotation('ann-toast-2')"><span class="annotation-category">PATTERN</span> Singleton <small>(L5, L12, L52-55)</small></h4>
+<div class="annotation-content">
+<p>Le <strong>pattern Singleton</strong> garantit qu'une seule instance existe. C'est comme un <strong>haut-parleur unique</strong> dans un batiment : il n'y en a qu'un, et tout le monde peut l'utiliser sans savoir ou il est installe.</p>
+<p><code>static ToastUI instance</code> stocke la reference unique. Dans <code>_Ready()</code>, <code>instance = this</code> enregistre le noeud comme l'unique instance. La methode <code>Show()</code> utilise <code>instance?.DoShow()</code> pour deleguer a cette instance.</p>
+<p><strong>Pourquoi ici ?</strong> On veut pouvoir appeler <code>ToastUI.Show("message")</code> depuis n'importe quel script sans avoir a chercher le noeud dans l'arbre. C'est pratique mais attention : ce pattern cree un couplage global.</p>
+</div>
+</div>
+
+<div class="annotation-box annotation-box--godot collapsed" id="ann-toast-3">
+<h4 onclick="toggleAnnotation('ann-toast-3')"><span class="annotation-category">GODOT</span> Construction UI programmatique dans _Ready <small>(L10-50)</small></h4>
+<div class="annotation-content">
+<p><code>_Ready()</code> est appele une seule fois quand le noeud entre dans l'arbre de scene. C'est le <strong>constructeur cote Godot</strong>.</p>
+<p>Ici, toute l'interface est creee par code au lieu d'utiliser l'editeur visuel. <code>PanelContainer</code> est le conteneur de fond, et les proprietes <code>Anchor*</code> le positionnent au centre horizontal en haut de l'ecran. <code>GrowDirection.Both</code> permet au panneau de s'etendre dans les deux sens depuis son ancre.</p>
+<p><strong>Pourquoi par code ?</strong> Pour un element simple et reutilisable comme un toast, le creer par code evite de dependre d'une scene .tscn separee. Tout est autonome dans un seul fichier.</p>
+</div>
+</div>
+
+<div class="annotation-box annotation-box--godot collapsed" id="ann-toast-4">
+<h4 onclick="toggleAnnotation('ann-toast-4')"><span class="annotation-category">GODOT</span> StyleBoxFlat — theming <small>(L25-31)</small></h4>
+<div class="annotation-content">
+<p><code>StyleBoxFlat</code> est le systeme de <strong>personnalisation visuelle</strong> de Godot. C'est comme une feuille CSS pour un element : on definit la couleur de fond, les bordures, les coins arrondis et les marges.</p>
+<p><code>AddThemeStyleboxOverride("panel", styleBox)</code> applique ce style au PanelContainer. Le <code>"panel"</code> est le nom du theme slot du PanelContainer dans Godot.</p>
+<p>Les couleurs choisies (fond sombre semi-transparent, bordure doree) correspondent au theme medieval du jeu.</p>
+</div>
+</div>
+
+<div class="annotation-box annotation-box--godot collapsed" id="ann-toast-5">
+<h4 onclick="toggleAnnotation('ann-toast-5')"><span class="annotation-category">GODOT</span> GD.Load et chargement de ressources <small>(L39-41)</small></h4>
+<div class="annotation-content">
+<p><code>GD.Load&lt;Font&gt;("res://...")</code> charge une ressource depuis le systeme de fichiers du projet Godot. Le prefixe <code>res://</code> pointe vers la racine du projet.</p>
+<p>Le <code>if (font != null)</code> est une securite : si la police n'existe pas, on garde la police par defaut au lieu de crasher. C'est une bonne pratique pour les ressources optionnelles.</p>
+</div>
+</div>
+
+<div class="annotation-box annotation-box--godot collapsed" id="ann-toast-6">
+<h4 onclick="toggleAnnotation('ann-toast-6')"><span class="annotation-category">GODOT</span> Modulate et transparence <small>(L48-49)</small></h4>
+<div class="annotation-content">
+<p><code>Modulate</code> est un multiplicateur de couleur applique au noeud et tous ses enfants. <code>new Color(1, 1, 1, 0)</code> signifie : couleurs normales (R=1, G=1, B=1) mais completement transparent (A=0).</p>
+<p>Le panneau est invisible au demarrage (<code>Visible = false</code> + alpha a 0). Quand un toast est affiche, on anime l'alpha de 0 a 1 pour un effet de fondu.</p>
+</div>
+</div>
+
+<div class="annotation-box annotation-box--pattern collapsed" id="ann-toast-7">
+<h4 onclick="toggleAnnotation('ann-toast-7')"><span class="annotation-category">PATTERN</span> Facade statique <small>(L52-55)</small></h4>
+<div class="annotation-content">
+<p>La methode <code>public static void Show()</code> est une <strong>facade</strong> : elle offre une interface simple pour une operation complexe. L'appelant ecrit juste <code>ToastUI.Show("Chemin deverrouille !")</code> sans se soucier du panel, du label, du tween, etc.</p>
+<p><code>instance?.DoShow()</code> utilise le null-conditional <code>?.</code> pour eviter un crash si aucune instance n'existe (par exemple si le noeud ToastUI n'a pas ete ajoute a la scene).</p>
+<p>Le parametre <code>duration = 3f</code> est une <strong>valeur par defaut</strong> : si on ne precise pas la duree, le toast reste 3 secondes.</p>
+</div>
+</div>
+
+<div class="annotation-box annotation-box--godot collapsed" id="ann-toast-8">
+<h4 onclick="toggleAnnotation('ann-toast-8')"><span class="annotation-category">GODOT</span> Tween — animation procedurale <small>(L62-73)</small></h4>
+<div class="annotation-content">
+<p>Un <code>Tween</code> est un <strong>animateur automatique</strong> : on lui dit "change cette propriete de A a B en N secondes" et il gere l'interpolation. C'est comme un pilote automatique pour les animations.</p>
+<p><code>CreateTween()</code> cree un nouveau tween attache au noeud actuel. Les appels sont <strong>chainables et sequentiels</strong> :</p>
+<ul>
+<li><code>TweenProperty(panel, "modulate:a", 1f, 0.2f)</code> → anime l'alpha de 0 a 1 en 0.2s (fondu entrant)</li>
+<li><code>TweenInterval(duration)</code> → attend N secondes (pause)</li>
+<li><code>TweenProperty(panel, "modulate:a", 0f, 0.5f)</code> → anime l'alpha de 1 a 0 en 0.5s (fondu sortant)</li>
+</ul>
+<p><code>tween.Finished += () =&gt; panel.Visible = false</code> utilise une <strong>expression lambda</strong> pour cacher le panneau a la fin de l'animation. C'est un callback anonyme, plus concis qu'une methode nommee pour une action aussi simple.</p>
+</div>
+</div>
+</div>
+
+<div class="concepts-box">
+<h3>Concepts cles de ce fichier</h3>
+<div class="concept-item"><strong>partial class</strong><p>Obligatoire en Godot 4 C#. Le source generator de Godot genere l'autre moitie de la classe automatiquement.</p></div>
+<div class="concept-item"><strong>Singleton</strong><p>Pattern ou une seule instance existe. Pratique pour les services globaux (UI, audio, progression).</p></div>
+<div class="concept-item"><strong>Tween</strong><p>Animateur procedural de Godot. On enchaine des etapes (propriete, attente, callback) et le tween les execute dans l'ordre.</p></div>
+<div class="concept-item"><strong>Expression lambda</strong><p><code>() =&gt; expression</code> est une fonction anonyme compacte. Utilisee ici comme callback quand l'animation se termine.</p></div>
+</div>
+
+<div class="godot-box">
+<h3>Specificites Godot</h3>
+<div class="concept-item"><strong>Control (noeud UI)</strong><p>Classe de base pour les elements d'interface. Supporte les ancres, marges, themes.</p></div>
+<div class="concept-item"><strong>StyleBoxFlat</strong><p>Ressource de theme pour personnaliser l'apparence : fond, bordures, coins arrondis.</p></div>
+<div class="concept-item"><strong>AddTheme*Override</strong><p>Methodes pour surcharger le theme par code, sans passer par l'editeur.</p></div>
+</div>
+</section>
+
+<!-- ==================== FILE: DialogueNPC.cs ==================== -->
+<section class="file-section fade-in" id="file-DialogueNPC">
+<div class="file-purpose-card">
+<h2>DialogueNPC.cs <span class="badge badge-modified">MODIFIE</span></h2>
+<p class="file-role">Represente un NPC interactif qui peut declencher un dialogue. Les modifications ajoutent : un flag de deverrouillage (<code>UnlockFlag</code>), un dialogue alternatif apres la premiere interaction, et un callback qui deverrouille un chemin + affiche un toast quand le dialogue se termine.</p>
+</div>
+<div class="code-container">
+<div class="code-toolbar">
+<span class="file-path-label">src/dialogue/DialogueNPC.cs</span>
+<button class="toggle-all-btn" onclick="toggleAllAnnotations(this)">Tout deplier</button>
+</div>
+<pre class="code-block" data-new-lines="11-15,21-22,39-45,84-99" data-modified-lines="70-77"><code>using Godot;
+
+public partial class DialogueNPC : StaticBody3D, IInteractable
+{
+	[Export]
+	public DialogueDefinition Dialogue;
+
+	[Export]
+	public string NPCName = "NPC";
+
+	[Export]
+	public string UnlockFlag = "";
+
+	[Export]
+	public DialogueDefinition DialogueAfterUnlock;
+
+	Area3D interactZone;
+	Label3D promptLabel;
+	Label3D nameLabel;
+	bool playerInRange;
+	bool waitingForDialogueEnd;
+
+	string DoneFlagName =&gt; $"npc_done_{NPCName}";
+
+	public override void _Ready()
+	{
+		InteractManager.interactableList.Add(this);
+
+		interactZone = GetNode&lt;Area3D&gt;("InteractZone");
+		promptLabel = GetNode&lt;Label3D&gt;("PromptLabel");
+		nameLabel = GetNode&lt;Label3D&gt;("NameLabel");
+
+		promptLabel.Visible = false;
+		nameLabel.Text = NPCName;
+
+		interactZone.BodyEntered += OnBodyEntered;
+		interactZone.BodyExited += OnBodyExited;
+
+		// Connect to DialogueManager's finished signal if we need to track dialogue completion
+		if (!string.IsNullOrEmpty(UnlockFlag) || DialogueAfterUnlock != null)
+		{
+			var dm = GetTree().CurrentScene.FindChild("DialogueManager", true, false) as DialogueManager;
+			if (dm != null)
+				dm.DialogueFinished += OnDialogueFinished;
+		}
+	}
+
+	void OnBodyEntered(Node3D body)
+	{
+		if (body is CampCharacter)
+		{
+			playerInRange = true;
+			promptLabel.Visible = true;
+		}
+	}
+
+	void OnBodyExited(Node3D body)
+	{
+		if (body is CampCharacter)
+		{
+			playerInRange = false;
+			promptLabel.Visible = false;
+		}
+	}
+
+	public bool TryInteract()
+	{
+		if (playerInRange &amp;&amp; !DialogueManager.IsDialogueActive)
+		{
+			// Use alternate dialogue if NPC already talked to
+			bool alreadyDone = DialogueAfterUnlock != null &amp;&amp; GameProgress.IsUnlocked(DoneFlagName);
+			var dialogueToUse = alreadyDone ? DialogueAfterUnlock : Dialogue;
+
+			DialogueManager.StartDialogue(dialogueToUse);
+
+			if (!alreadyDone)
+				waitingForDialogueEnd = true;
+
+			return true;
+		}
+		return false;
+	}
+
+	void OnDialogueFinished()
+	{
+		if (!waitingForDialogueEnd) return;
+		waitingForDialogueEnd = false;
+
+		// Unlock path if needed
+		if (!string.IsNullOrEmpty(UnlockFlag) &amp;&amp; !GameProgress.IsUnlocked(UnlockFlag))
+		{
+			GameProgress.Unlock(UnlockFlag);
+			ToastUI.Show("Chemin deverrouille !");
+		}
+
+		// Mark NPC as talked to
+		if (DialogueAfterUnlock != null)
+			GameProgress.Unlock(DoneFlagName);
+	}
+}</code></pre>
+</div>
+
+<div class="annotations-wrapper">
+<h3>Annotations</h3>
+
+<div class="annotation-box annotation-box--concept collapsed" id="ann-dnpc-1">
+<h4 onclick="toggleAnnotation('ann-dnpc-1')"><span class="annotation-category">CONCEPT</span> Interface IInteractable <small>(L3)</small></h4>
+<div class="annotation-content">
+<p>Une <strong>interface</strong> est un <strong>contrat</strong> : toute classe qui l'implemente promet de fournir certaines methodes. C'est comme un badge "je suis interactif" que le NPC porte.</p>
+<p><code>IInteractable</code> oblige la classe a avoir une methode <code>TryInteract()</code>. Le systeme <code>InteractManager</code> peut ainsi traiter tous les objets interactifs de maniere uniforme, qu'il s'agisse d'un NPC, d'un coffre ou d'une porte.</p>
+<p><code>StaticBody3D</code> est le corps physique du NPC dans le monde 3D — il ne bouge pas mais peut etre detecte par les collisions.</p>
+</div>
+</div>
+
+<div class="annotation-box annotation-box--godot collapsed" id="ann-dnpc-2">
+<h4 onclick="toggleAnnotation('ann-dnpc-2')"><span class="annotation-category">GODOT</span> Champs [Export] <small>(L5-15)</small></h4>
+<div class="annotation-content">
+<p>L'attribut <code>[Export]</code> est comme une <strong>etiquette "configurable"</strong> : il expose le champ dans l'inspecteur de l'editeur Godot. Un game designer peut ainsi configurer chaque NPC sans toucher au code.</p>
+<p><strong>Nouveaux champs ajoutes :</strong></p>
+<ul>
+<li><code>UnlockFlag</code> — le nom du flag a deverrouiller apres le dialogue (ex: "path_lacorse_north"). Vide = pas de deverrouillage.</li>
+<li><code>DialogueAfterUnlock</code> — un dialogue alternatif joue si le joueur reparle au NPC apres l'avoir deja rencontre.</li>
+</ul>
+<p>Ces champs permettent de configurer le comportement du NPC entierement depuis l'editeur : quel dialogue jouer, quel chemin deverrouiller, et quel dialogue afficher ensuite.</p>
+</div>
+</div>
+
+<div class="annotation-box annotation-box--concept collapsed" id="ann-dnpc-3">
+<h4 onclick="toggleAnnotation('ann-dnpc-3')"><span class="annotation-category">CONCEPT</span> Expression-bodied property <small>(L23)</small></h4>
+<div class="annotation-content">
+<p><code>string DoneFlagName =&gt; $"npc_done_{NPCName}"</code> est une <strong>propriete calculee</strong> ecrite en forme compacte. A chaque lecture, elle retourne la valeur calculee. C'est equivalent a :</p>
+<p><code>string DoneFlagName { get { return $"npc_done_{NPCName}"; } }</code></p>
+<p>Le <code>$"..."</code> est une <strong>string interpolee</strong> : les expressions entre <code>{}</code> sont evaluees et inserees dans la chaine. Si NPCName vaut "Marchand", DoneFlagName retourne "npc_done_Marchand".</p>
+<p>Ce flag sert a marquer qu'on a deja parle a ce NPC specifique, pour savoir s'il faut jouer le dialogue initial ou le dialogue alternatif.</p>
+</div>
+</div>
+
+<div class="annotation-box annotation-box--godot collapsed" id="ann-dnpc-4">
+<h4 onclick="toggleAnnotation('ann-dnpc-4')"><span class="annotation-category">GODOT</span> Arbre de scene et connexion d'evenements <small>(L25-45)</small></h4>
+<div class="annotation-content">
+<p>Dans <code>_Ready()</code>, le NPC se configure :</p>
+<ul>
+<li><code>GetNode&lt;Area3D&gt;("InteractZone")</code> cherche un noeud enfant par son nom. Le <code>&lt;Area3D&gt;</code> est un <strong>cast generique</strong> : "je veux ce noeud ET je m'attends a ce qu'il soit un Area3D".</li>
+<li><code>BodyEntered</code> / <code>BodyExited</code> sont des <strong>signaux Godot</strong> emis quand un corps entre/sort de la zone de detection.</li>
+</ul>
+<p><strong>Nouveau (L39-45) :</strong> Si le NPC a un flag de deverrouillage ou un dialogue alternatif, il cherche le <code>DialogueManager</code> dans la scene et s'abonne a son evenement <code>DialogueFinished</code>.</p>
+<p><code>GetTree().CurrentScene.FindChild("DialogueManager", true, false)</code> parcourt l'arbre de scene pour trouver le noeud. Le <code>as DialogueManager</code> est un <strong>cast securise</strong> : il retourne null au lieu de crasher si le noeud n'est pas du bon type.</p>
+</div>
+</div>
+
+<div class="annotation-box annotation-box--godot collapsed" id="ann-dnpc-5">
+<h4 onclick="toggleAnnotation('ann-dnpc-5')"><span class="annotation-category">GODOT</span> Detection de proximite avec Area3D <small>(L48-64)</small></h4>
+<div class="annotation-content">
+<p><code>Area3D</code> est une zone invisible dans le monde 3D qui detecte les objets qui y entrent/sortent. C'est comme un <strong>capteur de mouvement</strong> a l'entree d'un magasin.</p>
+<p><code>body is CampCharacter</code> est du <strong>pattern matching</strong> C# : il verifie si le corps qui entre est un joueur (CampCharacter) et non un autre NPC ou objet. Seul le joueur declenche l'affichage du prompt d'interaction.</p>
+</div>
+</div>
+
+<div class="annotation-box annotation-box--logic collapsed" id="ann-dnpc-6">
+<h4 onclick="toggleAnnotation('ann-dnpc-6')"><span class="annotation-category">LOGIQUE</span> TryInteract avec dialogue alternatif <small>(L66-82)</small></h4>
+<div class="annotation-content">
+<p>La methode <code>TryInteract()</code> est appelee par le systeme d'interaction quand le joueur presse la touche d'interaction.</p>
+<p><strong>Logique modifiee :</strong></p>
+<ol>
+<li>Verifier que le joueur est a portee ET qu'aucun dialogue n'est actif</li>
+<li><strong>Nouveau :</strong> Verifier si le NPC a deja ete rencontre (<code>GameProgress.IsUnlocked(DoneFlagName)</code>)</li>
+<li>Si oui et qu'un dialogue alternatif existe → jouer le dialogue alternatif</li>
+<li>Sinon → jouer le dialogue principal et marquer qu'on attend la fin</li>
+</ol>
+<p>L'operateur ternaire <code>alreadyDone ? DialogueAfterUnlock : Dialogue</code> est un raccourci pour un if/else : "si deja fait, utilise l'alternatif, sinon l'original".</p>
+</div>
+</div>
+
+<div class="annotation-box annotation-box--logic collapsed" id="ann-dnpc-7">
+<h4 onclick="toggleAnnotation('ann-dnpc-7')"><span class="annotation-category">LOGIQUE</span> OnDialogueFinished — le coeur du deverrouillage <small>(L84-99)</small></h4>
+<div class="annotation-content">
+<p>C'est la methode la plus importante de cette session. Elle est appelee quand un dialogue se termine et orchestre tout le processus de deverrouillage :</p>
+<ol>
+<li><strong>Guard clause</strong> (L86-87) : si on n'attend pas la fin d'un dialogue, on ne fait rien. Cela evite de reagir aux dialogues des <em>autres</em> NPCs.</li>
+<li><strong>Deverrouillage</strong> (L90-93) : si un <code>UnlockFlag</code> est configure et pas encore deverrouille → appel de <code>GameProgress.Unlock()</code> + affichage du toast.</li>
+<li><strong>Marquage</strong> (L97-98) : marque le NPC comme "deja rencontre" pour que la prochaine interaction utilise le dialogue alternatif.</li>
+</ol>
+<p>C'est ici que les trois systemes se connectent : <code>DialogueNPC</code> → <code>GameProgress</code> → <code>ToastUI</code>.</p>
+</div>
+</div>
+</div>
+
+<div class="concepts-box">
+<h3>Concepts cles de ce fichier</h3>
+<div class="concept-item"><strong>Interface (IInteractable)</strong><p>Contrat qui garantit que la classe fournit certaines methodes. Permet au systeme d'interaction de traiter tous les objets interactifs uniformement.</p></div>
+<div class="concept-item"><strong>Pattern matching (is)</strong><p><code>body is CampCharacter</code> verifie le type d'un objet. Plus lisible et sur qu'un cast classique.</p></div>
+<div class="concept-item"><strong>String interpolation ($"...")</strong><p>Permet d'inserer des expressions dans une chaine avec <code>{variable}</code>. Plus lisible que la concatenation avec +.</p></div>
+<div class="concept-item"><strong>Operateur ternaire (? :)</strong><p><code>condition ? valeurSiVrai : valeurSiFaux</code> — raccourci pour un if/else en une seule expression.</p></div>
+</div>
+
+<div class="godot-box">
+<h3>Specificites Godot</h3>
+<div class="concept-item"><strong>Area3D et signaux BodyEntered/BodyExited</strong><p>Zone de detection 3D. Les signaux notifient quand un corps physique entre ou sort de la zone.</p></div>
+<div class="concept-item"><strong>GetTree().CurrentScene.FindChild()</strong><p>Parcourt l'arbre de scene pour trouver un noeud par son nom. Le parametre <code>true</code> active la recherche recursive.</p></div>
+<div class="concept-item"><strong>[Export] DialogueDefinition</strong><p>Expose une ressource personnalisee dans l'editeur, permettant de glisser-deposer un fichier de dialogue.</p></div>
+</div>
+</section>
+
+<!-- ==================== FILE: WorldMap.cs ==================== -->
+<section class="file-section fade-in" id="file-WorldMap">
+<div class="file-purpose-card">
+<h2>WorldMap.cs <span class="badge badge-modified">MODIFIE</span></h2>
+<p class="file-role">Gere la carte du monde interactive. Le joueur se deplace entre des boutons relies par des lignes. Les modifications ajoutent : filtrage des noeuds/chemins verrouilles via GameProgress, un algorithme BFS d'accessibilite pour masquer les zones isolees, et la sauvegarde de la position du joueur.</p>
+</div>
+<div class="code-container">
+<div class="code-toolbar">
+<span class="file-path-label">src/core/WorldMap.cs</span>
+<button class="toggle-all-btn" onclick="toggleAllAnnotations(this)">Tout deplier</button>
+</div>
+<pre class="code-block" data-new-lines="8,29-36,48-52,74-103,109-112,262,274-305"><code>using Godot;
+using System.Collections.Generic;
+using System.Linq;
+using tactics_game_proto.ui.world_map;
+
+public partial class WorldMap : Node
+{
+	private static string savedNodeName;
+
+	private Node2D mapRoot;
+	private Sprite2D character;
+	private WorldMapBtn currentNode;
+	private bool isMoving;
+
+	// Adjacency: for each button, list of (neighbor, path points ordered from this button toward neighbor)
+	private Dictionary&lt;WorldMapBtn, List&lt;(WorldMapBtn neighbor, Vector2[] points)&gt;&gt; adjacency = new();
+
+	public override void _Ready()
+	{
+		mapRoot = GetNode&lt;Node2D&gt;("Holder/Draggable_Control/map_root");
+		var linksNode = mapRoot.GetNode&lt;Node2D&gt;("links");
+
+		// Collect all BtnBattleStarter children, filtering locked ones
+		var buttons = new List&lt;WorldMapBtn&gt;();
+		foreach (var child in mapRoot.GetChildren())
+		{
+			if (child is WorldMapBtn btn)
+			{
+				if (IsNodeLocked(btn))
+				{
+					btn.Visible = false;
+					continue;
+				}
+				buttons.Add(btn);
+			}
+		}
+
+		// Initialize adjacency lists
+		foreach (var btn in buttons)
+			adjacency[btn] = new List&lt;(WorldMapBtn, Vector2[])&gt;();
+
+		// Build graph from Line2D connections, filtering locked lines
+		foreach (var child in linksNode.GetChildren())
+		{
+			if (child is not Line2D line || line.Points.Length &lt; 2)
+				continue;
+
+			if (IsNodeLocked(line))
+			{
+				line.Visible = false;
+				continue;
+			}
+
+			var points = line.Points;
+			var lineOffset = line.Position;
+
+			// Convert Line2D local points to map_root coordinates
+			var worldPoints = new Vector2[points.Length];
+			for (int i = 0; i &lt; points.Length; i++)
+				worldPoints[i] = points[i] + lineOffset;
+
+			// Find nearest buttons for first and last points
+			var btnA = FindNearestButton(buttons, worldPoints[0]);
+			var btnB = FindNearestButton(buttons, worldPoints[^1]);
+
+			if (btnA == null || btnB == null || btnA == btnB)
+				continue;
+
+			// Store both directions (forward and reversed)
+			adjacency[btnA].Add((btnB, worldPoints));
+			adjacency[btnB].Add((btnA, worldPoints.Reverse().ToArray()));
+		}
+
+		// Reachability pass: hide buttons and lines not reachable from starting node
+		var startBtn = buttons.FirstOrDefault(b =&gt; b.Name == "btn_battle") ?? buttons[0];
+		var reachable = FindReachableButtons(startBtn);
+
+		// Hide unreachable buttons and remove them from graph
+		foreach (var btn in buttons.Where(b =&gt; !reachable.Contains(b)).ToList())
+		{
+			btn.Visible = false;
+			adjacency.Remove(btn);
+			buttons.Remove(btn);
+		}
+
+		// Remove edges pointing to unreachable buttons
+		foreach (var btn in buttons)
+			adjacency[btn].RemoveAll(e =&gt; !reachable.Contains(e.neighbor));
+
+		// Hide Line2D whose endpoints don't both resolve to reachable buttons
+		foreach (var child in linksNode.GetChildren())
+		{
+			if (child is not Line2D line || !line.Visible)
+				continue;
+
+			var pts = line.Points;
+			var offset = line.Position;
+			var a = FindNearestButton(buttons, pts[0] + offset);
+			var b = FindNearestButton(buttons, pts[^1] + offset);
+
+			if (a == null || b == null)
+				line.Visible = false;
+		}
+
+		// Create the player character sprite
+		CreateCharacter();
+
+		// Restore saved position or default to start
+		if (savedNodeName != null)
+			currentNode = buttons.FirstOrDefault(b =&gt; b.Name == savedNodeName) ?? startBtn;
+		else
+			currentNode = startBtn;
+		character.Position = GetButtonCenter(currentNode);
+
+		// Intercept button clicks
+		foreach (var btn in buttons)
+		{
+			btn.ManagedByWorldMap = true;
+			var captured = btn;
+			captured.Pressed += () =&gt; OnBattleButtonPressed(captured);
+		}
+	}
+
+	private void CreateCharacter()
+	{
+		var image = Image.CreateEmpty(24, 24, false, Image.Format.Rgba8);
+		image.Fill(new Color(0.2f, 0.4f, 0.9f));
+		var texture = ImageTexture.CreateFromImage(image);
+
+		character = new Sprite2D();
+		character.Texture = texture;
+		character.ZIndex = 1;
+		mapRoot.AddChild(character);
+	}
+
+	private Vector2 GetButtonCenter(WorldMapBtn btn)
+	{
+		return btn.Position + btn.Size / 2;
+	}
+
+	private WorldMapBtn FindNearestButton(List&lt;WorldMapBtn&gt; buttons, Vector2 point)
+	{
+		WorldMapBtn nearest = null;
+		float minDist = float.MaxValue;
+
+		foreach (var btn in buttons)
+		{
+			float dist = GetButtonCenter(btn).DistanceTo(point);
+			if (dist &lt; minDist)
+			{
+				minDist = dist;
+				nearest = btn;
+			}
+		}
+
+		return minDist &lt; 50f ? nearest : null;
+	}
+
+	private void OnBattleButtonPressed(WorldMapBtn btn)
+	{
+		if (isMoving)
+			return;
+
+		if (btn == currentNode)
+		{
+			btn.OnTrigerred();
+			return;
+		}
+
+		var path = FindPath(currentNode, btn);
+		if (path == null || path.Count &lt; 2)
+			return;
+
+		MoveAlongPath(path);
+	}
+
+	/// &lt;summary&gt;
+	/// BFS pathfinding from one node to another.
+	/// &lt;/summary&gt;
+	private List&lt;WorldMapBtn&gt; FindPath(WorldMapBtn from, WorldMapBtn to)
+	{
+		var visited = new HashSet&lt;WorldMapBtn&gt; { from };
+		var queue = new Queue&lt;List&lt;WorldMapBtn&gt;&gt;();
+		queue.Enqueue(new List&lt;WorldMapBtn&gt; { from });
+
+		while (queue.Count &gt; 0)
+		{
+			var current = queue.Dequeue();
+			var last = current[^1];
+
+			if (last == to)
+				return current;
+
+			foreach (var (neighbor, _) in adjacency[last])
+			{
+				if (visited.Contains(neighbor))
+					continue;
+
+				visited.Add(neighbor);
+				var newPath = new List&lt;WorldMapBtn&gt;(current) { neighbor };
+				queue.Enqueue(newPath);
+			}
+		}
+
+		GD.PushWarning($"WorldMap: No path found from {from.Name} to {to.Name}");
+		return null;
+	}
+
+	/// &lt;summary&gt;
+	/// Moves the character along the BFS path using a Tween.
+	/// &lt;/summary&gt;
+	private void MoveAlongPath(List&lt;WorldMapBtn&gt; nodePath)
+	{
+		isMoving = true;
+
+		// Build waypoints from Line2D path data
+		var waypoints = new List&lt;Vector2&gt;();
+
+		for (int i = 0; i &lt; nodePath.Count - 1; i++)
+		{
+			var from = nodePath[i];
+			var to = nodePath[i + 1];
+
+			var edge = adjacency[from].FirstOrDefault(e =&gt; e.neighbor == to);
+			if (edge.points == null)
+				continue;
+
+			// Skip first point of each segment (it's where we already are or the junction just reached)
+			for (int j = 1; j &lt; edge.points.Length; j++)
+				waypoints.Add(edge.points[j]);
+		}
+
+		if (waypoints.Count == 0)
+		{
+			isMoving = false;
+			return;
+		}
+
+		// Snap last waypoint to exact button center
+		waypoints[^1] = GetButtonCenter(nodePath[^1]);
+
+		// Create tween chain
+		var targetNode = nodePath[^1];
+		var tween = CreateTween();
+		const float speed = 300f; // pixels per second
+
+		var prevPos = character.Position;
+		foreach (var wp in waypoints)
+		{
+			float dist = prevPos.DistanceTo(wp);
+			double duration = dist / speed;
+			if (duration &lt; 0.01)
+				continue;
+
+			tween.TweenProperty(character, "position", wp, duration);
+			prevPos = wp;
+		}
+
+		tween.Finished += () =&gt;
+		{
+			currentNode = targetNode;
+			savedNodeName = currentNode.Name;
+			isMoving = false;
+		};
+	}
+
+	public void BeginBattle()
+	{
+	}
+
+	/// &lt;summary&gt;
+	/// BFS from a starting button to find all reachable buttons in the graph.
+	/// &lt;/summary&gt;
+	private HashSet&lt;WorldMapBtn&gt; FindReachableButtons(WorldMapBtn start)
+	{
+		var visited = new HashSet&lt;WorldMapBtn&gt; { start };
+		var queue = new Queue&lt;WorldMapBtn&gt;();
+		queue.Enqueue(start);
+
+		while (queue.Count &gt; 0)
+		{
+			var current = queue.Dequeue();
+			if (!adjacency.ContainsKey(current)) continue;
+
+			foreach (var (neighbor, _) in adjacency[current])
+			{
+				if (visited.Add(neighbor))
+					queue.Enqueue(neighbor);
+			}
+		}
+
+		return visited;
+	}
+
+	/// &lt;summary&gt;
+	/// Checks if a node has a metadata unlock_flag that hasn't been unlocked yet.
+	/// &lt;/summary&gt;
+	private bool IsNodeLocked(Node node)
+	{
+		if (!node.HasMeta("unlock_flag"))
+			return false;
+
+		string flag = node.GetMeta("unlock_flag").AsString();
+		return !string.IsNullOrEmpty(flag) &amp;&amp; !GameProgress.IsUnlocked(flag);
+	}
+}</code></pre>
+</div>
+
+<div class="annotations-wrapper">
+<h3>Annotations</h3>
+
+<div class="annotation-box annotation-box--concept collapsed" id="ann-wm-1">
+<h4 onclick="toggleAnnotation('ann-wm-1')"><span class="annotation-category">CONCEPT</span> Variable static pour persistance inter-scene <small>(L8)</small></h4>
+<div class="annotation-content">
+<p><code>private static string savedNodeName</code> — Le mot-cle <code>static</code> fait que cette variable <strong>survit aux changements de scene</strong>. Quand le joueur quitte la carte pour un combat puis revient, la position est memorisee.</p>
+<p>C'est comme une note collante sur le bureau : meme si on range tous les papiers (destruction de la scene), la note reste. Attention : <code>static</code> est perdu si le jeu redemarre (pas de sauvegarde disque ici).</p>
+</div>
+</div>
+
+<div class="annotation-box annotation-box--concept collapsed" id="ann-wm-2">
+<h4 onclick="toggleAnnotation('ann-wm-2')"><span class="annotation-category">CONCEPT</span> Dictionary, ValueTuple et graphe d'adjacence <small>(L16)</small></h4>
+<div class="annotation-content">
+<p>La ligne <code>Dictionary&lt;WorldMapBtn, List&lt;(WorldMapBtn neighbor, Vector2[] points)&gt;&gt;</code> est dense mais logique :</p>
+<ul>
+<li><code>Dictionary&lt;K,V&gt;</code> = table de correspondance. La cle est un bouton, la valeur est la liste de ses voisins.</li>
+<li><code>(WorldMapBtn neighbor, Vector2[] points)</code> est un <strong>ValueTuple nomme</strong> : un regroupement de deux valeurs (le voisin + les points du chemin). C'est comme un post-it avec deux infos.</li>
+</ul>
+<p>Au final, cette structure represente un <strong>graphe d'adjacence</strong> : pour chaque bouton, on connait tous les boutons voisins et les coordonnees des chemins qui y menent. C'est la colonne vertebrale de la navigation sur la carte.</p>
+</div>
+</div>
+
+<div class="annotation-box annotation-box--logic collapsed" id="ann-wm-3">
+<h4 onclick="toggleAnnotation('ann-wm-3')"><span class="annotation-category">LOGIQUE</span> Filtrage des noeuds verrouilles <small>(L23-36, L48-52)</small></h4>
+<div class="annotation-content">
+<p><strong>C'est le coeur de la feature de cette session.</strong> Lors de la construction de la carte, chaque bouton et chaque ligne est verifie :</p>
+<ol>
+<li>Pour les boutons (L29-33) : si <code>IsNodeLocked(btn)</code> est vrai → on cache le bouton et on passe au suivant (<code>continue</code>)</li>
+<li>Pour les lignes (L48-52) : meme logique, les lignes vers des noeuds verrouilles sont masquees</li>
+</ol>
+<p>Le filtre s'applique au moment du <code>_Ready()</code>, donc a chaque fois que la scene de la carte est chargee. Si un flag a ete deverrouille depuis la derniere visite, les elements correspondants apparaitront.</p>
+</div>
+</div>
+
+<div class="annotation-box annotation-box--logic collapsed" id="ann-wm-4">
+<h4 onclick="toggleAnnotation('ann-wm-4')"><span class="annotation-category">LOGIQUE</span> Construction du graphe depuis les Line2D <small>(L42-72)</small></h4>
+<div class="annotation-content">
+<p>La carte du monde est modelisee dans l'editeur Godot avec des <code>Line2D</code> (lignes visuelles) qui relient des <code>WorldMapBtn</code> (boutons cliquables). Le code transforme cette representation visuelle en <strong>graphe manipulable</strong> :</p>
+<ol>
+<li>Pour chaque <code>Line2D</code>, on recupere les points et on les convertit en coordonnees globales (L58-60)</li>
+<li>On cherche les boutons les plus proches du debut et de la fin de la ligne (L63-64)</li>
+<li>On ajoute les connexions <strong>dans les deux sens</strong> (L70-71) — le graphe est bidirectionnel</li>
+</ol>
+<p><code>worldPoints.Reverse().ToArray()</code> utilise <strong>LINQ</strong> pour inverser le tableau de points quand on stocke la direction opposee.</p>
+<p><code>worldPoints[^1]</code> utilise l'<strong>index from end</strong> (C# 8+) : <code>^1</code> signifie "le dernier element". C'est plus lisible que <code>worldPoints[worldPoints.Length - 1]</code>.</p>
+</div>
+</div>
+
+<div class="annotation-box annotation-box--logic collapsed" id="ann-wm-5">
+<h4 onclick="toggleAnnotation('ann-wm-5')"><span class="annotation-category">LOGIQUE</span> BFS d'accessibilite <small>(L74-103)</small></h4>
+<div class="annotation-content">
+<p><strong>Probleme :</strong> Apres avoir masque les noeuds verrouilles, certains boutons peuvent se retrouver <strong>isoles</strong> — plus aucun chemin ne mene a eux depuis le point de depart. Il faut les masquer aussi.</p>
+<p><strong>Solution :</strong> Un <strong>BFS (Breadth-First Search)</strong> depuis le noeud de depart. C'est comme une <strong>inondation</strong> : on part du point de depart et on "inonde" chaque voisin accessible. Tout ce qui n'est pas atteint par l'eau est isole.</p>
+<ol>
+<li><code>FindReachableButtons(startBtn)</code> retourne l'ensemble des boutons atteignables</li>
+<li>Les boutons non-atteignables sont caches et retires du graphe (L79-83)</li>
+<li>Les aretes vers les boutons supprimes sont nettoyees (L86-88)</li>
+<li>Les lignes visuelles correspondantes sont cachees (L91-103)</li>
+</ol>
+<p><code>buttons.Where(b =&gt; !reachable.Contains(b)).ToList()</code> — le <code>.ToList()</code> est crucial : il materialise la liste AVANT de modifier <code>buttons</code> dans la boucle. Sans lui, on aurait une erreur "collection modified during iteration".</p>
+</div>
+</div>
+
+<div class="annotation-box annotation-box--logic collapsed" id="ann-wm-6">
+<h4 onclick="toggleAnnotation('ann-wm-6')"><span class="annotation-category">LOGIQUE</span> Position sauvegardee et restoration <small>(L105-121)</small></h4>
+<div class="annotation-content">
+<p>Quand le joueur revient sur la carte apres un combat, il doit retrouver sa position. Le champ <code>static savedNodeName</code> retient le nom du dernier noeud visite.</p>
+<p><code>buttons.FirstOrDefault(b =&gt; b.Name == savedNodeName) ?? startBtn</code> :</p>
+<ul>
+<li><code>FirstOrDefault</code> (LINQ) : cherche le premier bouton dont le nom correspond. Retourne <code>null</code> si aucun ne correspond.</li>
+<li><code>??</code> (null-coalescing) : si le resultat est null → utilise le bouton de depart par defaut.</li>
+</ul>
+<p><strong>Capture de variable</strong> (L119-120) : <code>var captured = btn</code> puis <code>captured.Pressed += () =&gt; ...</code>. C'est necessaire parce que la variable <code>btn</code> de la boucle <code>foreach</code> est la meme reference a chaque iteration. Sans la capture, toutes les lambdas utiliseraient le dernier bouton.</p>
+</div>
+</div>
+
+<div class="annotation-box annotation-box--logic collapsed" id="ann-wm-7">
+<h4 onclick="toggleAnnotation('ann-wm-7')"><span class="annotation-category">LOGIQUE</span> Recherche spatiale — FindNearestButton <small>(L141-157)</small></h4>
+<div class="annotation-content">
+<p>Cette methode cherche le bouton le plus proche d'un point donne, avec un seuil de 50 pixels. C'est un simple parcours lineaire de tous les boutons.</p>
+<p><code>float.MaxValue</code> est utilise comme valeur initiale pour la distance minimale — n'importe quel bouton reel sera plus proche. Le seuil de 50 pixels evite de connecter des lignes a des boutons trop eloignes.</p>
+</div>
+</div>
+
+<div class="annotation-box annotation-box--logic collapsed" id="ann-wm-8">
+<h4 onclick="toggleAnnotation('ann-wm-8')"><span class="annotation-category">LOGIQUE</span> BFS pathfinding — FindPath <small>(L180-207)</small></h4>
+<div class="annotation-content">
+<p>L'algorithme <strong>BFS (Breadth-First Search)</strong> trouve le chemin le plus court entre deux boutons dans le graphe. C'est comme explorer un labyrinthe <strong>couche par couche</strong> : d'abord les voisins directs, puis les voisins des voisins, etc.</p>
+<p>Le BFS garantit de trouver le chemin le <strong>plus court en nombre de noeuds</strong>. La file (<code>Queue</code>) assure que les chemins courts sont explores avant les longs.</p>
+<p><code>var (neighbor, _)</code> est une <strong>deconstruction de tuple</strong> avec <strong>discard</strong> : on extrait le voisin mais on ignore les points du chemin (note par <code>_</code>).</p>
+</div>
+</div>
+
+<div class="annotation-box annotation-box--godot collapsed" id="ann-wm-9">
+<h4 onclick="toggleAnnotation('ann-wm-9')"><span class="annotation-category">GODOT</span> Chaine de Tweens pour le deplacement <small>(L212-265)</small></h4>
+<div class="annotation-content">
+<p>Le deplacement du joueur suit les points des <code>Line2D</code> segment par segment. Pour chaque waypoint, un <code>TweenProperty</code> anime la position du sprite.</p>
+<p>La vitesse est constante (300 px/s) et la duree de chaque segment est calculee par <code>distance / vitesse</code>. Les segments trop courts (&lt; 0.01s) sont ignores pour eviter des micro-animations.</p>
+<p>A la fin du mouvement, <code>savedNodeName = currentNode.Name</code> memorise la position pour la persistence entre scenes.</p>
+</div>
+</div>
+
+<div class="annotation-box annotation-box--logic collapsed" id="ann-wm-10">
+<h4 onclick="toggleAnnotation('ann-wm-10')"><span class="annotation-category">LOGIQUE</span> IsNodeLocked — pont vers GameProgress <small>(L298-305)</small></h4>
+<div class="annotation-content">
+<p>Cette methode est le <strong>pont</strong> entre le systeme visuel (WorldMap) et le systeme de progression (GameProgress) :</p>
+<ol>
+<li><code>node.HasMeta("unlock_flag")</code> — verifie si le noeud Godot a une <strong>metadata</strong> nommee "unlock_flag". Les metadata sont des donnees personnalisees attachees aux noeuds dans l'editeur.</li>
+<li><code>node.GetMeta("unlock_flag").AsString()</code> — recupere la valeur et la convertit en string</li>
+<li><code>GameProgress.IsUnlocked(flag)</code> — verifie si ce flag a ete deverrouille</li>
+</ol>
+<p>Si le flag n'existe pas dans GameProgress, le noeud est considere comme verrouille. Le game designer n'a qu'a ajouter une metadata "unlock_flag" sur un bouton ou une ligne dans l'editeur pour le rendre conditionnel.</p>
+</div>
+</div>
+</div>
+
+<div class="concepts-box">
+<h3>Concepts cles de ce fichier</h3>
+<div class="concept-item"><strong>Graphe d'adjacence</strong><p>Structure de donnees representant les connexions entre noeuds. Chaque noeud connait ses voisins directs.</p></div>
+<div class="concept-item"><strong>BFS (Breadth-First Search)</strong><p>Algorithme de parcours en largeur. Explore les noeuds couche par couche, garantit le chemin le plus court en nombre d'etapes.</p></div>
+<div class="concept-item"><strong>Index from end (^1)</strong><p>Syntaxe C# 8+ pour acceder aux elements depuis la fin. <code>[^1]</code> = dernier, <code>[^2]</code> = avant-dernier.</p></div>
+<div class="concept-item"><strong>LINQ (.Where, .FirstOrDefault, .Reverse)</strong><p>Requetes fonctionnelles sur les collections. Filtrer, chercher, transformer en une ligne au lieu de boucles.</p></div>
+<div class="concept-item"><strong>Operateur ?? (null-coalescing)</strong><p>"Valeur par defaut si null". <code>x ?? y</code> retourne x si non-null, sinon y.</p></div>
+</div>
+
+<div class="godot-box">
+<h3>Specificites Godot</h3>
+<div class="concept-item"><strong>Line2D et Points</strong><p>Noeud Godot qui dessine une ligne passant par une serie de points. Utilise ici comme chemin visuel entre boutons.</p></div>
+<div class="concept-item"><strong>Node metadata (HasMeta/GetMeta)</strong><p>Systeme de donnees personnalisees attachees aux noeuds. Permet d'ajouter des proprietes sans modifier le code.</p></div>
+<div class="concept-item"><strong>Node.GetChildren()</strong><p>Retourne tous les enfants directs d'un noeud dans l'arbre de scene.</p></div>
+</div>
+</section>
+
+<!-- ==================== FILE: Game.cs ==================== -->
+<section class="file-section fade-in" id="file-Game">
+<div class="file-purpose-card">
+<h2>Game.cs <span class="badge badge-modified">MODIFIE</span></h2>
+<p class="file-role">Point d'entree du jeu et gestionnaire d'etats (MainMenu, WorldMap, Camp, Battle). Les modifications sont mineures : reformatage d'indentation (espaces vers tabulations) et suppression du champ <code>GameProgress progress</code> devenu inutile puisque GameProgress est maintenant une classe statique.</p>
+</div>
+<div class="code-container">
+<div class="code-toolbar">
+<span class="file-path-label">src/core/Game.cs</span>
+<button class="toggle-all-btn" onclick="toggleAllAnnotations(this)">Tout deplier</button>
+</div>
+<pre class="code-block"><code>using Godot;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+
+public enum GameState
+{
+	None,
+
+	MainMenu,
+	WorldMap,
+	Camp,
+	Battle,
+	Exploration
+}
+
+
+public partial class Game : Node
+{
+	GameState currentGameState;
+
+	[Export]
+	Godot.Collections.Dictionary&lt;GameState, PackedScene&gt; gameStatesAssets;
+
+	[Export]
+	CanvasLayer escapeMenu;
+
+	[Export]
+	PackedScene[] playerPawns;
+
+	static Game self;
+
+	Node currentStateInstance;
+
+	public static Action&lt;GameState&gt; onGameStateChanged;
+
+	public override void _Ready()
+	{
+		self = this;
+
+		TeamManager.Initialize();
+
+		if(escapeMenu != null)
+		{
+			escapeMenu.Visible = false;
+		}
+
+		if(currentGameState == GameState.None)
+		{
+			RequestChangeGameState(GameState.MainMenu);
+		}
+	}
+
+	public override void _Process(double delta)
+	{
+		if(Input.IsActionJustPressed("escape") &amp;&amp; currentGameState != GameState.MainMenu)
+		{
+			if(escapeMenu.Visible)
+			{
+				escapeMenu.Visible = false;
+			}
+			else
+			{
+				escapeMenu.Visible = true;
+			}
+
+
+		}
+	}
+
+	public static PackedScene[] GetPlayerPawnsPrefabs()
+	{
+		return self.playerPawns;
+	}
+
+	public static PackedScene GetPlayerPawnTemplate()
+	{
+		return self.playerPawns[0];
+	}
+
+	public static void RequestChangeGameState(GameState _newGameState)
+	{
+		if(_newGameState != self.currentGameState)
+		{
+			if(self.gameStatesAssets.ContainsKey(_newGameState))
+			{
+				Node newState = self.gameStatesAssets[_newGameState].Instantiate&lt;Node&gt;();
+
+				if(self.currentStateInstance != null)
+				{
+					self.RemoveChild(self.currentStateInstance);
+					self.currentStateInstance.QueueFree();
+				}
+
+				self.currentStateInstance = newState;
+				self.AddChild(newState);
+				self.currentGameState = _newGameState;
+
+				onGameStateChanged?.Invoke(self.currentGameState);
+
+				if (self.escapeMenu.Visible)
+				{
+					self.escapeMenu.Visible = false;
+				}
+
+			}
+		}
+	}
+
+
+
+
+}</code></pre>
+</div>
+
+<div class="annotations-wrapper">
+<h3>Annotations</h3>
+
+<div class="annotation-box annotation-box--concept collapsed" id="ann-game-1">
+<h4 onclick="toggleAnnotation('ann-game-1')"><span class="annotation-category">CONCEPT</span> Enum GameState <small>(L9-18)</small></h4>
+<div class="annotation-content">
+<p>Un <code>enum</code> est une <strong>liste fermee de choix possibles</strong>. C'est comme un panneau indicateur avec un nombre fixe de directions. Le jeu ne peut etre que dans UN de ces etats a la fois : menu principal, carte du monde, camp, combat, ou exploration.</p>
+<p>Utiliser un enum au lieu de strings evite les fautes de frappe et permet au compilateur de verifier les valeurs. <code>GameState.None</code> est l'etat initial avant le premier chargement.</p>
+</div>
+</div>
+
+<div class="annotation-box annotation-box--pattern collapsed" id="ann-game-2">
+<h4 onclick="toggleAnnotation('ann-game-2')"><span class="annotation-category">PATTERN</span> Singleton + [Export] Dictionary <small>(L22-38)</small></h4>
+<div class="annotation-content">
+<p>Comme ToastUI, Game utilise un <strong>Singleton</strong> (<code>static Game self</code>) pour etre accessible globalement via les methodes statiques.</p>
+<p><code>[Export] Dictionary&lt;GameState, PackedScene&gt; gameStatesAssets</code> est particulierement elegant : c'est un <strong>dictionnaire configurable dans l'editeur</strong>. Le game designer associe chaque etat (WorldMap, Camp, Battle) a une scene .tscn. Le code n'a plus besoin de paths en dur.</p>
+<p><strong>Changement de cette session :</strong> Le champ <code>GameProgress progress</code> qui existait avant a ete supprime. Puisque <code>GameProgress</code> est maintenant une <code>static class</code>, il n'a plus besoin d'etre instancie ou reference.</p>
+</div>
+</div>
+
+<div class="annotation-box annotation-box--logic collapsed" id="ann-game-3">
+<h4 onclick="toggleAnnotation('ann-game-3')"><span class="annotation-category">LOGIQUE</span> Changement d'etat — RequestChangeGameState <small>(L88-111)</small></h4>
+<div class="annotation-content">
+<p>Cette methode est le <strong>chef d'orchestre</strong> du jeu. Quand on veut changer d'etat (ex: de WorldMap vers Battle) :</p>
+<ol>
+<li>Verifie qu'on ne change pas vers le meme etat (guard clause)</li>
+<li>Instancie la nouvelle scene depuis le dictionnaire (<code>Instantiate&lt;Node&gt;()</code>)</li>
+<li>Detruit l'ancienne scene (<code>QueueFree()</code> — destruction differee, plus sure)</li>
+<li>Ajoute la nouvelle scene a l'arbre</li>
+<li>Notifie les abonnes via <code>onGameStateChanged?.Invoke()</code></li>
+</ol>
+<p><code>QueueFree()</code> vs <code>Free()</code> : QueueFree attend la fin du frame actuel pour detruire le noeud, evitant les crashs si le noeud est encore en cours d'utilisation.</p>
+</div>
+</div>
+</div>
+
+<div class="concepts-box">
+<h3>Concepts cles de ce fichier</h3>
+<div class="concept-item"><strong>Enum</strong><p>Type a valeurs nommees fixes. Ideal pour les etats, modes ou categories qui ne changent pas a l'execution.</p></div>
+<div class="concept-item"><strong>Dictionary&lt;Enum, Scene&gt;</strong><p>Table de correspondance etat→scene, configurable dans l'editeur. Decouples le code des chemins de fichiers.</p></div>
+<div class="concept-item"><strong>QueueFree()</strong><p>Destruction differee d'un noeud Godot. Plus sure que Free() car attend la fin du frame.</p></div>
+</div>
+</section>
+
+<!-- ==================== GLOSSARY ==================== -->
+<section id="glossary" class="fade-in">
+<h2>Glossaire</h2>
+<p>Tous les termes techniques utilises dans ce document, expliques simplement.</p>
+<dl>
+<dt>static class</dt>
+<dd>Classe qui ne peut pas etre instanciee. Tous ses membres sont partages globalement. Accessible depuis n'importe ou sans creer d'objet.</dd>
+
+<dt>partial class</dt>
+<dd>Classe dont le code est reparti dans plusieurs fichiers. Obligatoire en Godot 4 C# car le moteur genere automatiquement du code complementaire.</dd>
+
+<dt>HashSet&lt;T&gt;</dt>
+<dd>Collection d'elements uniques. L'ajout d'un doublon est ignore. Recherche en O(1) — quasi-instantanee quelle que soit la taille.</dd>
+
+<dt>Dictionary&lt;K,V&gt;</dt>
+<dd>Table de correspondance cle/valeur. Chaque cle est unique et pointe vers une valeur. Recherche en O(1).</dd>
+
+<dt>List&lt;T&gt;</dt>
+<dd>Collection dynamique ordonnee. On peut ajouter, supprimer, acceder par index. Taille variable.</dd>
+
+<dt>Queue&lt;T&gt;</dt>
+<dd>File d'attente FIFO (First In, First Out). Le premier element ajoute est le premier retire. Utilisee dans les algorithmes BFS.</dd>
+
+<dt>ValueTuple</dt>
+<dd>Regroupement leger de valeurs avec noms optionnels. <code>(string name, int age)</code> est un tuple de deux elements.</dd>
+
+<dt>event / Action&lt;T&gt;</dt>
+<dd>Systeme de notification. Un event peut avoir des abonnes qui sont prevenus quand l'event est declenche. <code>Action&lt;string&gt;</code> est un delegate qui prend un string en parametre.</dd>
+
+<dt>delegate</dt>
+<dd>Reference vers une methode. <code>Action&lt;T&gt;</code> est un delegate predefined qui ne retourne rien. Permet de passer des methodes comme parametres.</dd>
+
+<dt>Expression lambda</dt>
+<dd>Fonction anonyme compacte. <code>() =&gt; expression</code> (sans parametres) ou <code>x =&gt; expression</code> (un parametre). Souvent utilisee pour les callbacks et LINQ.</dd>
+
+<dt>Operateur ?. (null-conditional)</dt>
+<dd>Appel securise. <code>obj?.Method()</code> n'appelle <code>Method</code> que si <code>obj</code> n'est pas null. Evite les NullReferenceException.</dd>
+
+<dt>Operateur ?? (null-coalescing)</dt>
+<dd>Valeur par defaut. <code>x ?? y</code> retourne <code>x</code> si non-null, sinon <code>y</code>.</dd>
+
+<dt>Pattern matching (is / is not)</dt>
+<dd>Test de type elegant. <code>obj is MyType t</code> verifie le type et cree une variable typee en une seule operation.</dd>
+
+<dt>Index from end (^N)</dt>
+<dd>Acces depuis la fin d'une collection. <code>[^1]</code> = dernier element, <code>[^2]</code> = avant-dernier. C# 8+.</dd>
+
+<dt>Target-typed new</dt>
+<dd>Raccourci d'initialisation. <code>List&lt;int&gt; x = new()</code> au lieu de <code>new List&lt;int&gt;()</code>. Le type est deduit du contexte. C# 9+.</dd>
+
+<dt>String interpolation</dt>
+<dd>Construction de chaines avec <code>$"texte {variable}"</code>. Les expressions entre accolades sont evaluees et inserees.</dd>
+
+<dt>Expression-bodied member</dt>
+<dd>Syntaxe compacte avec <code>=&gt;</code>. <code>string Name =&gt; "valeur"</code> est equivalent a une propriete avec un getter.</dd>
+
+<dt>Operateur ternaire (? :)</dt>
+<dd>Raccourci if/else en une expression. <code>condition ? siVrai : siFaux</code>.</dd>
+
+<dt>LINQ</dt>
+<dd>Language Integrated Query. Methodes d'extension pour filtrer, trier, transformer des collections. <code>.Where()</code>, <code>.FirstOrDefault()</code>, <code>.Select()</code>, etc.</dd>
+
+<dt>enum</dt>
+<dd>Type a valeurs nommees fixes. Ex: <code>enum Couleur { Rouge, Vert, Bleu }</code>. Le compilateur garantit qu'on ne peut utiliser que les valeurs definies.</dd>
+
+<dt>const</dt>
+<dd>Constante evaluee a la compilation. La valeur est fixee dans le code et ne peut jamais changer.</dd>
+
+<dt>readonly</dt>
+<dd>Champ qui ne peut etre modifie qu'a l'initialisation ou dans le constructeur. Plus flexible que <code>const</code> car la valeur peut etre calculee.</dd>
+
+<dt>interface</dt>
+<dd>Contrat definissant un ensemble de methodes qu'une classe doit implementer. Permet le polymorphisme sans heritage.</dd>
+
+<dt>BFS (Breadth-First Search)</dt>
+<dd>Algorithme de parcours en largeur d'un graphe. Explore tous les voisins directs avant de passer aux voisins des voisins. Garantit le chemin le plus court en nombre d'etapes.</dd>
+
+<dt>Singleton</dt>
+<dd>Design pattern garantissant qu'une seule instance d'une classe existe. Offre un point d'acces global.</dd>
+
+<dt>Tween</dt>
+<dd>Outil d'animation procedurale de Godot. Interpole une propriete d'une valeur a une autre sur une duree donnee.</dd>
+
+<dt>[Export]</dt>
+<dd>Attribut Godot qui expose un champ dans l'inspecteur de l'editeur. Permet de configurer les valeurs sans modifier le code.</dd>
+
+<dt>_Ready()</dt>
+<dd>Methode du cycle de vie Godot, appelee une fois quand le noeud entre dans l'arbre de scene. Equivalent d'un constructeur cote moteur.</dd>
+
+<dt>_Process(double delta)</dt>
+<dd>Methode du cycle de vie Godot, appelee a chaque frame. <code>delta</code> est le temps ecoule depuis le dernier frame.</dd>
+
+<dt>PackedScene / Instantiate</dt>
+<dd>Modele de scene reutilisable. <code>Instantiate()</code> cree une copie independante de la scene en memoire.</dd>
+
+<dt>QueueFree()</dt>
+<dd>Suppression differee d'un noeud Godot. Attend la fin du frame actuel, evitant les problemes si le noeud est encore utilise.</dd>
+
+<dt>Area3D</dt>
+<dd>Zone de detection 3D dans Godot. Emet des signaux quand des corps entrent ou sortent de son volume.</dd>
+
+<dt>Node metadata</dt>
+<dd>Donnees personnalisees attachees a un noeud Godot via <code>SetMeta()</code>/<code>GetMeta()</code>. Configurables dans l'editeur ou par code.</dd>
+</dl>
+</section>
+
+</main>
+</div>
+
+<script>
+/* ========== Syntax Highlighter ========== */
+const KW = new Set(['using','namespace','public','private','protected','internal','static','class','struct','enum','interface','partial','abstract','sealed','override','virtual','void','int','float','double','string','bool','byte','char','long','short','var','new','if','else','return','foreach','in','for','while','do','break','continue','switch','case','default','const','readonly','event','delegate','this','base','null','true','false','is','not','as','typeof','ref','out','params','async','await','try','catch','finally','throw','get','set','where','yield']);
+const TY = new Set(['Node','Node2D','Node3D','Control','Sprite2D','Label','Label3D','PanelContainer','StyleBoxFlat','Color','Vector2','Vector3','Image','ImageTexture','Font','PackedScene','Area3D','Line2D','CanvasLayer','StaticBody3D','Tween','Action','HashSet','Dictionary','List','Queue','GameState','Game','GameProgress','ToastUI','WorldMap','WorldMapBtn','DialogueNPC','DialogueDefinition','DialogueManager','InteractManager','TeamManager','CampCharacter','IInteractable','GD','Input','Godot','Object','HorizontalAlignment','GrowDirection','Format']);
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function highlightLine(raw){
+  let result='',i=0;
+  while(i<raw.length){
+    if(raw[i]==='/'&&raw[i+1]==='/'){result+='<span class="cmt">'+esc(raw.slice(i))+'</span>';break;}
+    if(raw[i]==='"'){let j=i+1;while(j<raw.length&&raw[j]!=='"')j++;j++;result+='<span class="str">'+esc(raw.slice(i,j))+'</span>';i=j;continue;}
+    if(raw[i]==='\''){let j=i+1;while(j<raw.length&&raw[j]!=='\'')j++;j++;result+='<span class="str">'+esc(raw.slice(i,j))+'</span>';i=j;continue;}
+    if(raw[i]==='['){let m=raw.slice(i).match(/^\[(Export|Signal|Tool|GlobalClass)\]/);if(m){result+='<span class="attr">'+esc(m[0])+'</span>';i+=m[0].length;continue;}}
+    if(/[a-zA-Z_]/.test(raw[i])){let j=i;while(j<raw.length&&/[\w]/.test(raw[j]))j++;let w=raw.slice(i,j);
+      if(KW.has(w)){result+='<span class="kw">'+w+'</span>';}
+      else if(TY.has(w)){result+='<span class="type">'+w+'</span>';}
+      else if(j<raw.length&&raw[j]==='('){result+='<span class="fn">'+esc(w)+'</span>';}
+      else{result+=esc(w);}
+      i=j;continue;}
+    if(/\d/.test(raw[i])){let j=i;while(j<raw.length&&/[\d.f]/.test(raw[j]))j++;result+='<span class="num">'+raw.slice(i,j)+'</span>';i=j;continue;}
+    result+=esc(raw[i]);i++;
+  }
+  return result;
+}
+function parseRanges(s){
+  if(!s)return new Set();const r=new Set();
+  s.split(',').forEach(p=>{if(p.includes('-')){const[a,b]=p.split('-').map(Number);for(let i=a;i<=b;i++)r.add(i);}else r.add(Number(p));});
+  return r;
+}
+document.querySelectorAll('.code-block').forEach(pre=>{
+  const code=pre.querySelector('code');
+  const raw=code.textContent;
+  const lines=raw.split('\n');
+  const nl=parseRanges(pre.dataset.newLines);
+  const ml=parseRanges(pre.dataset.modifiedLines);
+  code.innerHTML=lines.map((line,i)=>{
+    const n=i+1;
+    let cls='code-line';
+    if(nl.has(n))cls+=' line-new';
+    else if(ml.has(n))cls+=' line-modified';
+    return '<div class="'+cls+'"><span class="line-num">'+String(n).padStart(3,' ')+'</span>'+highlightLine(line)+'</div>';
+  }).join('');
+});
+/* ========== Annotation Toggle ========== */
+function toggleAnnotation(id){const el=document.getElementById(id);if(el)el.classList.toggle('collapsed');}
+function toggleAllAnnotations(btn){
+  const section=btn.closest('.file-section');
+  const boxes=section.querySelectorAll('.annotation-box');
+  const allC=[...boxes].every(b=>b.classList.contains('collapsed'));
+  boxes.forEach(b=>{if(allC)b.classList.remove('collapsed');else b.classList.add('collapsed');});
+  btn.textContent=allC?'Tout replier':'Tout deplier';
+}
+function toggleAllGlobal(btn){
+  const boxes=document.querySelectorAll('.annotation-box');
+  const allC=[...boxes].every(b=>b.classList.contains('collapsed'));
+  boxes.forEach(b=>{if(allC)b.classList.remove('collapsed');else b.classList.add('collapsed');});
+  btn.textContent=allC?'Tout replier':'Tout deplier';
+  document.querySelectorAll('.toggle-all-btn').forEach(b=>{b.textContent=allC?'Tout replier':'Tout deplier';});
+}
+/* ========== Scroll Spy ========== */
+const spyObs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){
+    document.querySelectorAll('.sidebar a').forEach(a=>a.classList.remove('active'));
+    const l=document.querySelector('.sidebar a[href="#'+e.target.id+'"]');
+    if(l)l.classList.add('active');
+  }});
+},{threshold:0.2,rootMargin:'-10% 0px -70% 0px'});
+document.querySelectorAll('section[id]').forEach(s=>spyObs.observe(s));
+/* ========== Fade In ========== */
+const fadeObs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');fadeObs.unobserve(e.target);}});
+},{threshold:0.1});
+document.querySelectorAll('.fade-in').forEach(el=>fadeObs.observe(el));
+</script>
+</body>
+</html>
