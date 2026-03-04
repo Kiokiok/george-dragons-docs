@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Explication de session — 2026-03-04</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --grimoire-bg: #0d0b08;
+  --page-bg: #1a1410;
+  --card-bg: #1e1812;
+  --text-gold: #c9a84c;
+  --text-cream: #d4c5a9;
+  --text-dim: #8a7e6b;
+  --border-ornament-gold: #8b7340;
+  --border-subtle: #2a2318;
+  --code-bg: rgba(10, 8, 5, 0.6);
+  --accent-green: rgba(80, 160, 80, 0.15);
+  --accent-blue: rgba(80, 120, 200, 0.15);
+  --accent-concept: rgba(86, 156, 214, 0.1);
+  --accent-godot: rgba(78, 201, 176, 0.1);
+  --accent-logic: rgba(206, 145, 120, 0.1);
+  --accent-pattern: rgba(197, 134, 192, 0.1);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:var(--grimoire-bg); color:var(--text-cream); font-family:'Crimson Text',serif; font-size:17px; line-height:1.6; }
+h1,h2,h3,h4 { font-family:'Cinzel',serif; color:var(--text-gold); }
+h1 { font-size:2em; margin-bottom:.3em; }
+h2 { font-size:1.5em; margin:1.5em 0 .5em; border-bottom:1px solid var(--border-ornament-gold); padding-bottom:.3em; }
+h3 { font-size:1.2em; margin:1em 0 .4em; }
+h4 { font-size:1em; margin-bottom:.3em; }
+a { color:var(--text-gold); text-decoration:none; }
+a:hover { text-decoration:underline; }
+
+.sidebar { position:fixed; left:0; top:0; width:220px; height:100vh; background:var(--page-bg); border-right:1px solid var(--border-ornament-gold); padding:1.5em .8em; overflow-y:auto; z-index:100; }
+.sidebar h3 { font-size:.9em; margin-bottom:.8em; }
+.sidebar a { display:block; padding:.3em .5em; font-size:.85em; color:var(--text-dim); border-radius:3px; margin-bottom:2px; }
+.sidebar a.active, .sidebar a:hover { color:var(--text-gold); background:rgba(201,168,76,0.1); }
+
+header, main { margin-left:240px; padding:2em 3em; max-width:1100px; }
+header { padding-top:3em; }
+
+.stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:1em; margin-top:1em; }
+.stat-card { background:var(--card-bg); border:1px solid var(--border-subtle); border-radius:6px; padding:.8em; text-align:center; }
+.stat-card .val { font-size:1.8em; font-family:'Cinzel',serif; color:var(--text-gold); }
+.stat-card .lbl { font-size:.8em; color:var(--text-dim); }
+
+.subtitle { color:var(--text-dim); font-style:italic; }
+
+.badge { display:inline-block; padding:2px 8px; border-radius:3px; font-size:.75em; font-weight:bold; vertical-align:middle; margin-left:.5em; }
+.badge-new { background:#2d6a2d; color:#b5e8b5; }
+.badge-modified { background:#2d4a6a; color:#b5d0e8; }
+
+.file-section { margin:2.5em 0; }
+.file-purpose-card { background:var(--card-bg); border:1px solid var(--border-ornament-gold); border-radius:8px; padding:1.2em 1.5em; margin-bottom:1em; box-shadow:0 2px 8px rgba(0,0,0,.3); }
+.file-role { color:var(--text-dim); margin-top:.3em; }
+
+.code-container { margin:1em 0; }
+.code-toolbar { display:flex; justify-content:space-between; align-items:center; background:var(--card-bg); border:1px solid var(--border-subtle); border-bottom:none; border-radius:6px 6px 0 0; padding:.4em 1em; }
+.file-path { font-family:'JetBrains Mono',monospace; font-size:.8em; color:var(--text-dim); }
+.toggle-all-btn { background:none; border:1px solid var(--border-ornament-gold); color:var(--text-gold); padding:.2em .8em; border-radius:3px; cursor:pointer; font-family:'Crimson Text',serif; font-size:.85em; }
+.toggle-all-btn:hover { background:rgba(201,168,76,0.15); }
+
+pre.code-block { background:var(--code-bg); border:1px solid var(--border-subtle); border-radius:0 0 6px 6px; padding:1em; overflow-x:auto; font-family:'JetBrains Mono',monospace; font-size:.82em; line-height:1.7; }
+.line-num { color:var(--text-dim); display:inline-block; width:3em; text-align:right; margin-right:1em; user-select:none; }
+.line-new { background:var(--accent-green); display:inline-block; width:calc(100% - 4em); }
+.line-modified { background:var(--accent-blue); display:inline-block; width:calc(100% - 4em); }
+.kw { color:#569cd6; }
+.type { color:#4ec9b0; }
+.str { color:#ce9178; }
+.num { color:#b5cea8; }
+.cmt { color:#6a9955; }
+.fn { color:#dcdcaa; }
+.attr { color:#c586c0; }
+
+.annotation-marker { color:var(--text-gold); cursor:pointer; font-weight:bold; margin-left:.5em; font-size:.9em; }
+.annotation-marker:hover { text-decoration:underline; }
+
+.annotation-box { border-left:3px solid var(--border-ornament-gold); padding:.8em 1em; margin:.5em 0; border-radius:0 6px 6px 0; transition:max-height .3s ease, opacity .3s ease, padding .3s ease; overflow:hidden; }
+.annotation-box.collapsed { max-height:0; padding:0 1em; opacity:0; margin:0; }
+.annotation-box:not(.collapsed) { max-height:500px; opacity:1; }
+.annotation-box--concept { border-color:#569cd6; background:var(--accent-concept); }
+.annotation-box--godot { border-color:#4ec9b0; background:var(--accent-godot); }
+.annotation-box--logic { border-color:#ce9178; background:var(--accent-logic); }
+.annotation-box--pattern { border-color:#c586c0; background:var(--accent-pattern); }
+
+.concepts-box, .godot-box { background:var(--card-bg); border:1px solid var(--border-subtle); border-radius:6px; padding:1em 1.2em; margin:1em 0; }
+.concept-item { margin:.6em 0; }
+.concept-item strong { color:var(--text-gold); }
+
+.fade-in { opacity:0; transform:translateY(20px); transition:opacity .6s ease, transform .6s ease; }
+.fade-in.visible { opacity:1; transform:translateY(0); }
+
+dl { margin:1em 0; }
+dt { color:var(--text-gold); font-weight:600; margin-top:.8em; }
+dd { color:var(--text-cream); margin-left:1.5em; }
+
+@media print {
+  .sidebar { display:none; }
+  header, main { margin-left:0; }
+  body { background:#fff; color:#222; }
+  .annotation-box.collapsed { max-height:none; opacity:1; padding:.8em 1em; }
+  .toggle-all-btn { display:none; }
+}
+</style>
+</head>
+<body>
+
+<nav class="sidebar">
+<h3>Sommaire</h3>
+<a href="#session-summary">Resume</a>
+<a href="#architecture-overview">Architecture</a>
+<a href="#file-FloatingText">FloatingText.cs</a>
+<a href="#file-StatusEffect">StatusEffect.cs</a>
+<a href="#file-StatusController">StatusController.cs</a>
+<a href="#file-hp_bar">hp_bar.gdshader</a>
+<a href="#file-BattlePawn">BattlePawn.cs</a>
+<a href="#file-MonsterOverviewUI">MonsterOverviewUI.cs</a>
+<a href="#file-BattleUI">BattleUI.cs</a>
+<a href="#file-PlayerTurnUI">PlayerTurnUI.cs</a>
+<a href="#file-StatePlayerTurn">StatePlayerTurn.cs</a>
+<a href="#file-InitiativeTimelineUI">InitiativeTimelineUI.cs</a>
+<a href="#glossary">Glossaire</a>
+</nav>
+
+<header>
+<h1>Grimoire de Session</h1>
+<p class="subtitle">Session du 2026-03-04 — Shield bar, Monster Overview, Timeline fix, Floating text stacking</p>
+<div class="stats-grid">
+<div class="stat-card"><div class="val">10</div><div class="lbl">Fichiers analyses</div></div>
+<div class="stat-card"><div class="val">1</div><div class="lbl">Nouveau</div></div>
+<div class="stat-card"><div class="val">9</div><div class="lbl">Modifies</div></div>
+<div class="stat-card"><div class="val">2</div><div class="lbl">Commits</div></div>
+</div>
+</header>
+
+<main>
+
+<!-- ============ SESSION SUMMARY ============ -->
+<section id="session-summary" class="fade-in">
+<h2>Resume de la session</h2>
+<p>Cette session couvre 4 fonctionnalites majeures :</p>
+<ul>
+<li><strong>Shield bar</strong> : affichage visuel du bouclier sur la barre de vie (shader + calcul cote C#)</li>
+<li><strong>Monster Overview</strong> : panneau d'info en lecture seule quand on clique sur un pawn ennemi ou allie non jouable</li>
+<li><strong>Timeline fix</strong> : correction du curseur de timeline quand un allie meurt en combat</li>
+<li><strong>Floating text stacking</strong> : les textes flottants s'empilent au lieu de se superposer, couleurs PA/Shield differenciees</li>
+</ul>
+<p><strong>Commits :</strong></p>
+<ul>
+<li><code>721cbf1</code> — floating text / overview monster / shield bar / init fix</li>
+<li><code>5827984</code> — floating text separator</li>
+</ul>
+</section>
+
+<!-- ============ ARCHITECTURE ============ -->
+<section id="architecture-overview" class="fade-in">
+<h2>Architecture des changements</h2>
+<svg viewBox="0 0 800 420" width="100%" style="max-width:800px;">
+<defs><marker id="arr" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#c9944a"/></marker></defs>
+<!-- Battle layer -->
+<rect x="20" y="10" width="360" height="200" rx="8" fill="none" stroke="#8b7335" stroke-dasharray="5,3"/>
+<text x="30" y="30" fill="#8a7e6b" font-size="11" font-family="JetBrains Mono">battle/</text>
+<rect x="40" y="45" width="150" height="35" rx="5" fill="#231d16" stroke="#8b7335"/><text x="115" y="67" fill="#f0d78c" font-size="12" text-anchor="middle" font-family="JetBrains Mono">BattlePawn.cs</text>
+<rect x="210" y="45" width="155" height="35" rx="5" fill="#231d16" stroke="#8b7335"/><text x="287" y="67" fill="#f0d78c" font-size="12" text-anchor="middle" font-family="JetBrains Mono">StatusController.cs</text>
+<rect x="210" y="95" width="155" height="35" rx="5" fill="#231d16" stroke="#8b7335"/><text x="287" y="117" fill="#f0d78c" font-size="12" text-anchor="middle" font-family="JetBrains Mono">StatusEffect.cs</text>
+<rect x="40" y="150" width="155" height="35" rx="5" fill="#231d16" stroke="#8b7335"/><text x="117" y="172" fill="#f0d78c" font-size="12" text-anchor="middle" font-family="JetBrains Mono">StatePlayerTurn.cs</text>
+<!-- UI layer -->
+<rect x="420" y="10" width="370" height="280" rx="8" fill="none" stroke="#8b7335" stroke-dasharray="5,3"/>
+<text x="430" y="30" fill="#8a7e6b" font-size="11" font-family="JetBrains Mono">ui/</text>
+<rect x="440" y="45" width="155" height="35" rx="5" fill="#231d16" stroke="#8b7335"/><text x="517" y="67" fill="#f0d78c" font-size="12" text-anchor="middle" font-family="JetBrains Mono">BattleUI.cs</text>
+<rect x="440" y="95" width="165" height="35" rx="5" fill="#231d16" stroke="#8b7335"/><text x="522" y="117" fill="#f0d78c" font-size="12" text-anchor="middle" font-family="JetBrains Mono">PlayerTurnUI.cs</text>
+<rect x="440" y="145" width="185" height="35" rx="5" fill="#231d16" stroke="#4ec9b0" stroke-width="2"/><text x="532" y="167" fill="#b5e8b5" font-size="12" text-anchor="middle" font-family="JetBrains Mono">MonsterOverviewUI.cs</text>
+<rect x="440" y="195" width="195" height="35" rx="5" fill="#231d16" stroke="#8b7335"/><text x="537" y="217" fill="#f0d78c" font-size="12" text-anchor="middle" font-family="JetBrains Mono">InitiativeTimelineUI.cs</text>
+<rect x="440" y="245" width="155" height="35" rx="5" fill="#231d16" stroke="#8b7335"/><text x="517" y="267" fill="#f0d78c" font-size="12" text-anchor="middle" font-family="JetBrains Mono">FloatingText.cs</text>
+<!-- Shader -->
+<rect x="20" y="320" width="200" height="60" rx="8" fill="none" stroke="#8b7335" stroke-dasharray="5,3"/>
+<text x="30" y="340" fill="#8a7e6b" font-size="11" font-family="JetBrains Mono">shaders/</text>
+<rect x="35" y="350" width="170" height="25" rx="5" fill="#231d16" stroke="#8b7335"/><text x="120" y="368" fill="#f0d78c" font-size="12" text-anchor="middle" font-family="JetBrains Mono">hp_bar.gdshader</text>
+<!-- Arrows -->
+<line x1="190" y1="62" x2="210" y2="62" stroke="#c9944a" marker-end="url(#arr)"/>
+<line x1="287" y1="80" x2="287" y2="95" stroke="#c9944a" marker-end="url(#arr)"/>
+<line x1="115" y1="80" x2="115" y2="150" stroke="#c9944a" marker-end="url(#arr)"/>
+<line x1="195" y1="167" x2="440" y2="162" stroke="#c9944a" marker-end="url(#arr)"/>
+<line x1="115" y1="80" x2="120" y2="355" stroke="#c9944a" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+<line x1="517" y1="80" x2="517" y2="95" stroke="#c9944a" marker-end="url(#arr)"/>
+<line x1="517" y1="80" x2="517" y2="145" stroke="#c9944a" stroke-dasharray="4,3"/>
+<text x="400" y="400" fill="#8a7e6b" font-size="10" font-family="Crimson Text">— trait plein = appel direct | pointille = utilise shader/reference —</text>
+</svg>
+</section>
+
+<!-- ============ FILE: FloatingText.cs ============ -->
+<section class="file-section fade-in" id="file-FloatingText">
+<div class="file-purpose-card">
+<h2>FloatingText.cs <span class="badge badge-modified">MODIFIE</span></h2>
+<p class="file-role">Classe statique utilitaire qui fait apparaitre des textes 3D animes (degats, soin, PA, PM, shield) au-dessus des pions. Gere desormais l'empilement pour eviter la superposition.</p>
+</div>
+<div class="code-container">
+<div class="code-toolbar">
+<span class="file-path">src/ui/FloatingText.cs</span>
+<button class="toggle-all-btn" onclick="toggleAllAnnotations(this)">Tout deplier</button>
+</div>
+<pre class="code-block"><code><span class="line-num"> 1</span><span class="kw">using</span> <span class="type">Godot</span>;
+<span class="line-num"> 2</span><span class="line-new"><span class="kw">using</span> System.Collections.Generic;</span>
+<span class="line-num"> 3</span>
+<span class="line-num"> 4</span><span class="kw">public static class</span> <span class="type">FloatingText</span>
+<span class="line-num"> 5</span>{
+<span class="line-num"> 6</span>    <span class="kw">public static readonly</span> <span class="type">Color</span> DamageColor = <span class="kw">new</span> <span class="type">Color</span>(<span class="num">1</span>, <span class="num">0.2f</span>, <span class="num">0.2f</span>); <span class="annotation-marker" onclick="toggleAnnotation('ft-1')">?</span>
+<span class="line-num"> 7</span>    <span class="kw">public static readonly</span> <span class="type">Color</span> HealColor = <span class="kw">new</span> <span class="type">Color</span>(<span class="num">0.2f</span>, <span class="num">1</span>, <span class="num">0.2f</span>);
+<span class="line-num"> 8</span>    <span class="line-modified"><span class="kw">public static readonly</span> <span class="type">Color</span> PAColor = <span class="kw">new</span> <span class="type">Color</span>(<span class="num">0.15f</span>, <span class="num">0.25f</span>, <span class="num">0.7f</span>);</span>
+<span class="line-num"> 9</span>    <span class="kw">public static readonly</span> <span class="type">Color</span> PMColor = <span class="kw">new</span> <span class="type">Color</span>(<span class="num">0.2f</span>, <span class="num">0.8f</span>, <span class="num">0.2f</span>);
+<span class="line-num">10</span>    <span class="line-modified"><span class="kw">public static readonly</span> <span class="type">Color</span> ShieldColor = <span class="kw">new</span> <span class="type">Color</span>(<span class="num">0.3f</span>, <span class="num">0.6f</span>, <span class="num">1f</span>);</span>
+<span class="line-num">11</span>
+<span class="line-num">12</span>    <span class="line-new"><span class="kw">private const float</span> StackOffset = <span class="num">0.5f</span>;</span> <span class="annotation-marker" onclick="toggleAnnotation('ft-2')">?</span>
+<span class="line-num">13</span>    <span class="line-new"><span class="kw">private static readonly</span> <span class="type">Dictionary</span>&lt;<span class="type">Label3D</span>, <span class="type">Vector3</span>&gt; _activeLabels = <span class="kw">new</span>();</span>
+<span class="line-num">14</span>
+<span class="line-num">15</span>    <span class="kw">public static void</span> <span class="fn">Spawn</span>(<span class="type">Node</span> parent, <span class="type">Vector3</span> worldPos, <span class="kw">string</span> text, <span class="type">Color</span> color, <span class="kw">float</span> duration = <span class="num">2f</span>, <span class="kw">float</span> riseHeight = <span class="num">1.5f</span>)
+<span class="line-num">16</span>    {
+<span class="line-num">17</span>        <span class="line-new"><span class="cmt">// Nettoyer les labels detruits</span></span> <span class="annotation-marker" onclick="toggleAnnotation('ft-3')">?</span>
+<span class="line-num">18</span>        <span class="line-new"><span class="kw">var</span> toRemove = <span class="kw">new</span> <span class="type">List</span>&lt;<span class="type">Label3D</span>&gt;();</span>
+<span class="line-num">19</span>        <span class="line-new"><span class="kw">foreach</span> (<span class="kw">var</span> kv <span class="kw">in</span> _activeLabels)</span>
+<span class="line-num">20</span>        <span class="line-new">{</span>
+<span class="line-num">21</span>        <span class="line-new">    <span class="kw">if</span> (!<span class="type">GodotObject</span>.<span class="fn">IsInstanceValid</span>(kv.Key))</span>
+<span class="line-num">22</span>        <span class="line-new">        toRemove.<span class="fn">Add</span>(kv.Key);</span>
+<span class="line-num">23</span>        <span class="line-new">}</span>
+<span class="line-num">24</span>        <span class="line-new"><span class="kw">foreach</span> (<span class="kw">var</span> key <span class="kw">in</span> toRemove)</span>
+<span class="line-num">25</span>        <span class="line-new">    _activeLabels.<span class="fn">Remove</span>(key);</span>
+<span class="line-num">26</span>
+<span class="line-num">27</span>        <span class="line-new"><span class="cmt">// Compter les textes actifs a la meme position</span></span> <span class="annotation-marker" onclick="toggleAnnotation('ft-4')">?</span>
+<span class="line-num">28</span>        <span class="line-new"><span class="kw">int</span> stackCount = <span class="num">0</span>;</span>
+<span class="line-num">29</span>        <span class="line-new"><span class="kw">foreach</span> (<span class="kw">var</span> kv <span class="kw">in</span> _activeLabels)</span>
+<span class="line-num">30</span>        <span class="line-new">{</span>
+<span class="line-num">31</span>        <span class="line-new">    <span class="type">Vector3</span> origin = kv.Value;</span>
+<span class="line-num">32</span>        <span class="line-new">    <span class="kw">if</span> (<span class="type">Mathf</span>.<span class="fn">Abs</span>(origin.X - worldPos.X) &lt; <span class="num">0.1f</span> &amp;&amp; <span class="type">Mathf</span>.<span class="fn">Abs</span>(origin.Z - worldPos.Z) &lt; <span class="num">0.1f</span>)</span>
+<span class="line-num">33</span>        <span class="line-new">        stackCount++;</span>
+<span class="line-num">34</span>        <span class="line-new">}</span>
+<span class="line-num">35</span>
+<span class="line-num">36</span>        <span class="kw">var</span> label = <span class="kw">new</span> <span class="type">Label3D</span>();
+<span class="line-num">37</span>        parent.<span class="fn">AddChild</span>(label);
+<span class="line-num">38</span>
+<span class="line-num">39</span>        label.Text = text;
+<span class="line-num">40</span>        label.Modulate = color;
+<span class="line-num">41</span>        label.PixelSize = <span class="num">0.01f</span>;
+<span class="line-num">42</span>        label.FontSize = <span class="num">32</span>;
+<span class="line-num">43</span>        label.OutlineSize = <span class="num">8</span>;
+<span class="line-num">44</span>        label.Billboard = <span class="type">BaseMaterial3D</span>.BillboardModeEnum.Enabled; <span class="annotation-marker" onclick="toggleAnnotation('ft-5')">?</span>
+<span class="line-num">45</span>        label.NoDepthTest = <span class="kw">true</span>;
+<span class="line-num">46</span>
+<span class="line-num">47</span>        <span class="line-new"><span class="type">Vector3</span> spawnPos = worldPos + <span class="type">Vector3</span>.Up * (stackCount * StackOffset);</span>
+<span class="line-num">48</span>        <span class="line-new">label.GlobalPosition = spawnPos;</span>
+<span class="line-num">49</span>
+<span class="line-num">50</span>        <span class="line-new">_activeLabels[label] = worldPos;</span>
+<span class="line-num">51</span>
+<span class="line-num">52</span>        <span class="kw">var</span> tween = label.<span class="fn">CreateTween</span>(); <span class="annotation-marker" onclick="toggleAnnotation('ft-6')">?</span>
+<span class="line-num">53</span>        tween.<span class="fn">SetParallel</span>(<span class="kw">true</span>);
+<span class="line-num">54</span>        tween.<span class="fn">TweenProperty</span>(label, <span class="str">"global_position"</span>, spawnPos + <span class="type">Vector3</span>.Up * riseHeight, duration)
+<span class="line-num">55</span>            .<span class="fn">SetEase</span>(<span class="type">Tween</span>.EaseType.Out)
+<span class="line-num">56</span>            .<span class="fn">SetTrans</span>(<span class="type">Tween</span>.TransitionType.Cubic);
+<span class="line-num">57</span>        tween.<span class="fn">TweenProperty</span>(label, <span class="str">"modulate:a"</span>, <span class="num">0f</span>, duration)
+<span class="line-num">58</span>            .<span class="fn">SetEase</span>(<span class="type">Tween</span>.EaseType.In)
+<span class="line-num">59</span>            .<span class="fn">SetTrans</span>(<span class="type">Tween</span>.TransitionType.Cubic);
+<span class="line-num">60</span>        tween.<span class="fn">SetParallel</span>(<span class="kw">false</span>);
+<span class="line-num">61</span>        <span class="line-new">tween.<span class="fn">TweenCallback</span>(<span class="type">Callable</span>.<span class="fn">From</span>(() =&gt;</span>
+<span class="line-num">62</span>        <span class="line-new">{</span>
+<span class="line-num">63</span>        <span class="line-new">    _activeLabels.<span class="fn">Remove</span>(label);</span>
+<span class="line-num">64</span>        <span class="line-new">    label.<span class="fn">QueueFree</span>();</span>
+<span class="line-num">65</span>        <span class="line-new">}));</span>
+<span class="line-num">66</span>    }
+<span class="line-num">67</span>}</code></pre>
+</div>
+
+<div class="annotation-box annotation-box--concept collapsed" id="ft-1">
+<h4>Concept C# : static readonly Color</h4>
+<p><code>static readonly</code> declare des constantes initialisees une seule fois au demarrage. Comme des pots de peinture etiquetes dans un atelier : on les prepare une fois, puis on y pioche. <code>PAColor</code> est passe de bleu clair (0.3, 0.5, 1) a bleu fonce (0.15, 0.25, 0.7) pour le differencier visuellement de <code>ShieldColor</code> (0.3, 0.6, 1) qui reste bleu clair.</p>
+</div>
+<div class="annotation-box annotation-box--logic collapsed" id="ft-2">
+<h4>Logique : Systeme d'empilement</h4>
+<p><code>StackOffset</code> definit l'espacement vertical entre textes empiles (0.5 unite). <code>_activeLabels</code> est un dictionnaire static qui mappe chaque Label3D actif vers sa position d'origine. Comme une liste de post-its colles sur un tableau : on sait ou chacun a ete pose pour empiler les suivants au-dessus.</p>
+</div>
+<div class="annotation-box annotation-box--logic collapsed" id="ft-3">
+<h4>Logique : Nettoyage des labels invalides</h4>
+<p>Avant chaque spawn, on parcourt <code>_activeLabels</code> pour retirer les labels detruits (par <code>QueueFree</code>). <code>IsInstanceValid</code> verifie qu'un objet Godot n'a pas ete libere. On ne peut pas modifier un dictionnaire pendant son iteration, d'ou la liste <code>toRemove</code> intermediaire.</p>
+</div>
+<div class="annotation-box annotation-box--logic collapsed" id="ft-4">
+<h4>Logique : Comptage des textes a la meme position</h4>
+<p>On compare les positions X et Z (pas Y, car on empile verticalement) avec une tolerance de 0.1f. Si 2 textes sont deja actifs sur ce pion, le 3e apparaitra 1.0 unite plus haut (2 * 0.5). C'est comme empiler des assiettes : chaque nouvelle assiette se pose sur la pile existante.</p>
+</div>
+<div class="annotation-box annotation-box--godot collapsed" id="ft-5">
+<h4>Godot : Label3D Billboard</h4>
+<p><code>Billboard = Enabled</code> fait que le texte fait toujours face a la camera, quelle que soit l'orientation. <code>NoDepthTest = true</code> le rend visible meme a travers les objets 3D. Ideal pour des indicateurs de gameplay qui doivent etre toujours lisibles.</p>
+</div>
+<div class="annotation-box annotation-box--godot collapsed" id="ft-6">
+<h4>Godot : Tween animations</h4>
+<p><code>CreateTween()</code> cree une animation procedurale. <code>SetParallel(true)</code> fait jouer les tweens suivants en meme temps (montee + fondu). <code>SetParallel(false)</code> repasse en sequentiel pour que le callback de destruction s'execute apres. Le callback utilise une lambda C# qui nettoie le dictionnaire avant de detruire le label.</p>
+</div>
+</section>
+
+<!-- ============ FILE: StatusEffect.cs (ShieldEffect) ============ -->
+<section class="file-section fade-in" id="file-StatusEffect">
+<div class="file-purpose-card">
+<h2>StatusEffect.cs (ShieldEffect) <span class="badge badge-modified">MODIFIE</span></h2>
+<p class="file-role">Contient les effets de statut du jeu. Le ShieldEffect absorbe les degats avant qu'ils ne touchent les PV. La modification ajoute un texte flottant bleu quand le bouclier absorbe des degats.</p>
+</div>
+<div class="code-container">
+<div class="code-toolbar">
+<span class="file-path">src/battle/StatusEffect.cs — ShieldEffect.AbsorbDamage()</span>
+<button class="toggle-all-btn" onclick="toggleAllAnnotations(this)">Tout deplier</button>
+</div>
+<pre class="code-block"><code><span class="line-num">262</span><span class="kw">private void</span> <span class="fn">AbsorbDamage</span>(<span class="type">DamagePacket</span> packet) <span class="annotation-marker" onclick="toggleAnnotation('se-1')">?</span>
+<span class="line-num">263</span>{
+<span class="line-num">264</span>    <span class="kw">if</span> (ShieldAmount &lt;= <span class="num">0</span>) <span class="kw">return</span>;
+<span class="line-num">265</span>
+<span class="line-num">266</span>    <span class="kw">int</span> absorbed = <span class="type">Math</span>.<span class="fn">Min</span>(ShieldAmount, packet.FinalAmount); <span class="annotation-marker" onclick="toggleAnnotation('se-2')">?</span>
+<span class="line-num">267</span>    packet.FinalAmount -= absorbed;
+<span class="line-num">268</span>    ShieldAmount -= absorbed;
+<span class="line-num">269</span>
+<span class="line-num">270</span>    <span class="line-new"><span class="kw">if</span> (absorbed &gt; <span class="num">0</span>)</span> <span class="annotation-marker" onclick="toggleAnnotation('se-3')">?</span>
+<span class="line-num">271</span>    <span class="line-new">    TargetPawn.<span class="fn">SpawnFloatingText</span>(<span class="str">$"-{absorbed}"</span>, <span class="type">FloatingText</span>.ShieldColor);</span>
+<span class="line-num">272</span>
+<span class="line-num">273</span>    <span class="type">GD</span>.<span class="fn">Print</span>(<span class="str">$"[Shield] Absorbed {absorbed} damage, {ShieldAmount} shield remaining"</span>);
+<span class="line-num">274</span>
+<span class="line-num">275</span>    <span class="kw">if</span> (ShieldAmount &lt;= <span class="num">0</span>)
+<span class="line-num">276</span>    {
+<span class="line-num">277</span>        DurationRemaining = <span class="num">0</span>;
+<span class="line-num">278</span>    }
+<span class="line-num">279</span>}</code></pre>
+</div>
+
+<div class="annotation-box annotation-box--pattern collapsed" id="se-1">
+<h4>Pattern : Event handler pour interception de degats</h4>
+<p><code>AbsorbDamage</code> est branche sur l'event <code>OnBeforeTakeDamage</code> du pawn. C'est le pattern Observer : quand des degats arrivent, tous les effets abonnes peuvent les modifier AVANT qu'ils ne soient appliques. Le <code>DamagePacket</code> est un objet mutable passe par reference — chaque effet peut reduire <code>FinalAmount</code>.</p>
+</div>
+<div class="annotation-box annotation-box--logic collapsed" id="se-2">
+<h4>Logique : Calcul d'absorption</h4>
+<p><code>Math.Min(ShieldAmount, packet.FinalAmount)</code> prend le minimum entre le shield restant et les degats entrants. Si 5 degats arrivent et le shield a 3 points : absorbe 3, il reste 2 degats a subir en PV. Si le shield tombe a 0, <code>DurationRemaining = 0</code> marque l'effet pour suppression.</p>
+</div>
+<div class="annotation-box annotation-box--logic collapsed" id="se-3">
+<h4>Logique : Nouveau floating text shield (NOUVEAU)</h4>
+<p>La ligne ajoutee fait apparaitre un texte bleu clair (<code>ShieldColor</code>) au-dessus du pion montrant combien le bouclier a absorbe. Grace au systeme d'empilement de <code>FloatingText</code>, ce "-3" bleu clair ne se superposera pas au "-2" rouge (degats HP) qui apparait juste apres.</p>
+</div>
+</section>
+
+<!-- ============ FILE: StatusController.cs ============ -->
+<section class="file-section fade-in" id="file-StatusController">
+<div class="file-purpose-card">
+<h2>StatusController.cs <span class="badge badge-modified">MODIFIE</span></h2>
+<p class="file-role">Gestionnaire de tous les effets de statut d'un pion. Ajout de GetTotalShieldAmount() pour calculer le shield total affiche sur la barre de vie.</p>
+</div>
+<div class="code-container">
+<div class="code-toolbar">
+<span class="file-path">src/battle/StatusController.cs — GetTotalShieldAmount()</span>
+<button class="toggle-all-btn" onclick="toggleAllAnnotations(this)">Tout deplier</button>
+</div>
+<pre class="code-block"><code><span class="line-num">128</span><span class="cmt">/// &lt;summary&gt;</span>
+<span class="line-num">129</span><span class="cmt">/// Gets total shield amount from all active shield effects</span>
+<span class="line-num">130</span><span class="cmt">/// &lt;/summary&gt;</span>
+<span class="line-num">131</span><span class="line-new"><span class="kw">public int</span> <span class="fn">GetTotalShieldAmount</span>()</span> <span class="annotation-marker" onclick="toggleAnnotation('sc-1')">?</span>
+<span class="line-num">132</span><span class="line-new">{</span>
+<span class="line-num">133</span><span class="line-new">    <span class="kw">int</span> total = <span class="num">0</span>;</span>
+<span class="line-num">134</span><span class="line-new">    <span class="kw">foreach</span> (<span class="kw">var</span> effect <span class="kw">in</span> effects.<span class="fn">OfType</span>&lt;<span class="type">ShieldEffect</span>&gt;())</span>
+<span class="line-num">135</span><span class="line-new">        total += effect.ShieldAmount;</span>
+<span class="line-num">136</span><span class="line-new">    <span class="kw">return</span> total;</span>
+<span class="line-num">137</span><span class="line-new">}</span></code></pre>
+</div>
+
+<div class="annotation-box annotation-box--concept collapsed" id="sc-1">
+<h4>Concept C# : LINQ OfType&lt;T&gt;</h4>
+<p><code>OfType&lt;ShieldEffect&gt;()</code> filtre la liste <code>effects</code> pour ne garder que les elements de type <code>ShieldEffect</code>. C'est comme trier un tas de cartes et ne garder que les cartes "bouclier". Cela permet d'additionner les shields de plusieurs sources (ex: deux sorts de bouclier actifs simultanement).</p>
+</div>
+</section>
+
+<!-- ============ FILE: hp_bar.gdshader ============ -->
+<section class="file-section fade-in" id="file-hp_bar">
+<div class="file-purpose-card">
+<h2>hp_bar.gdshader <span class="badge badge-modified">MODIFIE</span></h2>
+<p class="file-role">Shader GLSL de la barre de vie 3D. Ajoute une zone shield bleue entre la zone HP et le fond vide.</p>
+</div>
+<div class="code-container">
+<div class="code-toolbar">
+<span class="file-path">shaders/hp_bar.gdshader</span>
+<button class="toggle-all-btn" onclick="toggleAllAnnotations(this)">Tout deplier</button>
+</div>
+<pre class="code-block"><code><span class="line-num"> 1</span><span class="kw">shader_type</span> spatial;
+<span class="line-num"> 2</span><span class="kw">render_mode</span> unshaded;
+<span class="line-num"> 3</span>
+<span class="line-num"> 4</span><span class="kw">uniform</span> <span class="type">bool</span> use_billboard;
+<span class="line-num"> 5</span><span class="kw">uniform</span> <span class="type">vec4</span> color : <span class="attr">source_color</span> = <span class="type">vec4</span>(<span class="num">1.0, 1.0, 1.0, 1.0</span>); <span class="annotation-marker" onclick="toggleAnnotation('sh-1')">?</span>
+<span class="line-num"> 6</span><span class="kw">uniform</span> <span class="type">vec4</span> background_color : <span class="attr">source_color</span> = <span class="type">vec4</span>(<span class="num">1.0, 1.0, 1.0, 1.0</span>);
+<span class="line-num"> 7</span><span class="line-new"><span class="kw">uniform</span> <span class="type">vec4</span> shield_color : <span class="attr">source_color</span> = <span class="type">vec4</span>(<span class="num">0.3, 0.6, 1.0, 1.0</span>);</span>
+<span class="line-num"> 8</span><span class="kw">instance uniform</span> <span class="type">float</span> health : <span class="attr">hint_range</span>(<span class="num">0.0, 1.0</span>) = <span class="num">0.5</span>;
+<span class="line-num"> 9</span><span class="line-new"><span class="kw">instance uniform</span> <span class="type">float</span> shield : <span class="attr">hint_range</span>(<span class="num">0.0, 1.0</span>) = <span class="num">0.0</span>;</span>
+<span class="line-num">10</span>
+<span class="line-num">11</span><span class="kw">void</span> <span class="fn">vertex</span>() {
+<span class="line-num">12</span>    <span class="kw">if</span> (use_billboard) { <span class="annotation-marker" onclick="toggleAnnotation('sh-2')">?</span>
+<span class="line-num">13</span>        MODELVIEW_MATRIX = VIEW_MATRIX * <span class="fn">mat4</span>(INV_VIEW_MATRIX[<span class="num">0</span>], INV_VIEW_MATRIX[<span class="num">1</span>], INV_VIEW_MATRIX[<span class="num">2</span>], MODEL_MATRIX[<span class="num">3</span>]);
+<span class="line-num">14</span>    }
+<span class="line-num">15</span>}
+<span class="line-num">16</span>
+<span class="line-num">17</span><span class="kw">void</span> <span class="fn">fragment</span>() { <span class="annotation-marker" onclick="toggleAnnotation('sh-3')">?</span>
+<span class="line-num">18</span>    <span class="line-new"><span class="kw">if</span> (UV.x &lt; health) {</span>
+<span class="line-num">19</span>    <span class="line-new">    ALBEDO = color.rgb;</span>
+<span class="line-num">20</span>    <span class="line-new">    ALPHA = color.a;</span>
+<span class="line-num">21</span>    <span class="line-new">} <span class="kw">else if</span> (UV.x &lt; health + shield) {</span>
+<span class="line-num">22</span>    <span class="line-new">    ALBEDO = shield_color.rgb;</span>
+<span class="line-num">23</span>    <span class="line-new">    ALPHA = shield_color.a;</span>
+<span class="line-num">24</span>    <span class="line-new">} <span class="kw">else</span> {</span>
+<span class="line-num">25</span>    <span class="line-new">    ALBEDO = background_color.rgb;</span>
+<span class="line-num">26</span>    <span class="line-new">    ALPHA = background_color.a;</span>
+<span class="line-num">27</span>    <span class="line-new">}</span>
+<span class="line-num">28</span>}</code></pre>
+</div>
+
+<div class="annotation-box annotation-box--concept collapsed" id="sh-1">
+<h4>Concept Shader : uniform vs instance uniform</h4>
+<p><code>uniform</code> est partage par TOUTES les instances utilisant ce materiau (ex: la couleur de fond est la meme pour toutes les barres). <code>instance uniform</code> est propre a CHAQUE instance (chaque pion a son propre <code>health</code> et <code>shield</code>). C'est comme un moule a gateau (uniform) vs la garniture de chaque gateau (instance uniform).</p>
+</div>
+<div class="annotation-box annotation-box--godot collapsed" id="sh-2">
+<h4>Godot Shader : Billboard dans vertex()</h4>
+<p>Le calcul de <code>MODELVIEW_MATRIX</code> fait pivoter la barre pour toujours faire face a la camera. On remplace l'orientation du modele par celle de la camera inverse (<code>INV_VIEW_MATRIX</code>) tout en gardant sa position (<code>MODEL_MATRIX[3]</code>).</p>
+</div>
+<div class="annotation-box annotation-box--logic collapsed" id="sh-3">
+<h4>Logique : Barre a 3 zones (NOUVEAU)</h4>
+<p>Le fragment shader divise la barre horizontalement via <code>UV.x</code> (0 a gauche, 1 a droite) :<br>
+1. <code>UV.x &lt; health</code> → zone HP (couleur rouge/verte)<br>
+2. <code>UV.x &lt; health + shield</code> → zone shield (bleu)<br>
+3. Le reste → fond (blanc/gris)<br>
+Avant la modification, il n'y avait que 2 zones (HP et fond). Le shield se superpose sur la partie HP : <code>health</code> est reduit cote C# pour faire de la place au shield.</p>
+</div>
+</section>
+
+<!-- ============ FILE: BattlePawn.cs ============ -->
+<section class="file-section fade-in" id="file-BattlePawn">
+<div class="file-purpose-card">
+<h2>BattlePawn.cs <span class="badge badge-modified">MODIFIE</span></h2>
+<p class="file-role">Represente un pion sur le champ de bataille. Modifications : calcul du shield pour la barre de vie, exports pour ennemis, helpers pour le panneau d'overview.</p>
+</div>
+<div class="code-container">
+<div class="code-toolbar">
+<span class="file-path">src/battle/BattlePawn.cs — Nouveaux exports + helpers</span>
+<button class="toggle-all-btn" onclick="toggleAllAnnotations(this)">Tout deplier</button>
+</div>
+<pre class="code-block"><code><span class="line-num">45</span><span class="line-new"><span class="attr">[Export]</span> <span class="kw">public string</span> EnemyPassiveName = <span class="str">""</span>;</span> <span class="annotation-marker" onclick="toggleAnnotation('bp-1')">?</span>
+<span class="line-num">46</span><span class="line-new"><span class="attr">[Export]</span> <span class="kw">public string</span> EnemyPassiveDescription = <span class="str">""</span>;</span>
+<span class="line-num">47</span><span class="line-new"><span class="attr">[Export]</span> <span class="kw">public</span> <span class="type">Color</span> EnemyColor = <span class="kw">new</span> <span class="type">Color</span>(<span class="num">0.7f</span>, <span class="num">0.15f</span>, <span class="num">0.15f</span>);</span>
+<span class="line-num"> ..</span>
+<span class="line-num">274</span><span class="line-new"><span class="kw">public</span> <span class="type">Color</span> <span class="fn">GetPortraitColor</span>()</span> <span class="annotation-marker" onclick="toggleAnnotation('bp-2')">?</span>
+<span class="line-num">275</span><span class="line-new">    =&gt; LinkedCharacterData?.ClassColor ?? EnemyColor;</span>
+<span class="line-num">276</span><span class="line-new"><span class="kw">public string</span> <span class="fn">GetPassiveName</span>()</span>
+<span class="line-num">277</span><span class="line-new">    =&gt; LinkedCharacterData?.PassiveName ?? EnemyPassiveName;</span>
+<span class="line-num">278</span><span class="line-new"><span class="kw">public string</span> <span class="fn">GetPassiveDescription</span>()</span>
+<span class="line-num">279</span><span class="line-new">    =&gt; LinkedCharacterData?.PassiveDescription ?? EnemyPassiveDescription;</span></code></pre>
+</div>
+
+<div class="annotation-box annotation-box--godot collapsed" id="bp-1">
+<h4>Godot : [Export] pour les ennemis</h4>
+<p>Les <code>[Export]</code> permettent de configurer chaque ennemi directement dans l'editeur Godot : son nom de passif, sa description, et sa couleur de portrait. Comme les joueurs ont un <code>CharacterData</code> mais pas les ennemis, ces exports sont le fallback pour les monstres.</p>
+</div>
+<div class="annotation-box annotation-box--concept collapsed" id="bp-2">
+<h4>Concept C# : Null-conditional + Null-coalescing (?.  ??)</h4>
+<p><code>LinkedCharacterData?.ClassColor ?? EnemyColor</code> se lit : "Si le pion a un CharacterData, prends sa ClassColor. Sinon, prends EnemyColor." L'operateur <code>?.</code> evite un crash si <code>LinkedCharacterData</code> est null, et <code>??</code> fournit la valeur par defaut. C'est le pattern ideal pour gerer joueurs et ennemis avec le meme code.</p>
+</div>
+
+<div class="code-container">
+<div class="code-toolbar">
+<span class="file-path">src/battle/BattlePawn.cs — _Process() shield calculation</span>
+</div>
+<pre class="code-block"><code><span class="line-num">283</span><span class="kw">float</span> dt = (<span class="kw">float</span>)delta;
+<span class="line-num">284</span>
+<span class="line-num">285</span><span class="line-new"><span class="kw">float</span> healthNorm = (<span class="kw">float</span>)CurrentHP / (<span class="kw">float</span>)DefaultHP;</span> <span class="annotation-marker" onclick="toggleAnnotation('bp-3')">?</span>
+<span class="line-num">286</span><span class="line-new"><span class="kw">float</span> shieldNorm = <span class="num">0f</span>;</span>
+<span class="line-num">287</span><span class="line-new"><span class="kw">if</span> (StatusController != <span class="kw">null</span>)</span>
+<span class="line-num">288</span><span class="line-new">{</span>
+<span class="line-num">289</span><span class="line-new">    <span class="kw">int</span> totalShield = StatusController.<span class="fn">GetTotalShieldAmount</span>();</span>
+<span class="line-num">290</span><span class="line-new">    <span class="cmt">// Shield couvre une partie de la zone HP</span></span>
+<span class="line-num">291</span><span class="line-new">    <span class="kw">float</span> shieldRatio = CurrentHP &gt; <span class="num">0</span> ? (<span class="kw">float</span>)totalShield / (<span class="kw">float</span>)CurrentHP : <span class="num">0f</span>;</span>
+<span class="line-num">292</span><span class="line-new">    shieldNorm = <span class="type">Mathf</span>.<span class="fn">Min</span>(shieldRatio * healthNorm, healthNorm);</span>
+<span class="line-num">293</span><span class="line-new">}</span>
+<span class="line-num">294</span><span class="line-new">hpBarInst.<span class="fn">SetInstanceShaderParameter</span>(<span class="str">"health"</span>, healthNorm - shieldNorm);</span>
+<span class="line-num">295</span><span class="line-new">hpBarInst.<span class="fn">SetInstanceShaderParameter</span>(<span class="str">"shield"</span>, shieldNorm);</span></code></pre>
+</div>
+
+<div class="annotation-box annotation-box--logic collapsed" id="bp-3">
+<h4>Logique : Formule du shield sur la barre de vie</h4>
+<p>Le shield se superpose sur la zone HP, sans jamais la depasser :<br>
+1. <code>healthNorm</code> = HP courants / HP max (ex: 8/10 = 0.8)<br>
+2. <code>shieldRatio</code> = shield total / HP courants (ex: 4/8 = 0.5)<br>
+3. <code>shieldNorm</code> = min(shieldRatio * healthNorm, healthNorm) = min(0.5 * 0.8, 0.8) = 0.4<br>
+4. On envoie au shader : health = 0.8 - 0.4 = <strong>0.4</strong>, shield = <strong>0.4</strong><br>
+Resultat visuel : [====HP(40%)====][===SHIELD(40%)===][---vide(20%)---]<br>
+Le shield mange une partie de la zone HP mais ne depasse jamais au-dela de la zone remplie.</p>
+</div>
+</section>
+
+<!-- ============ FILE: MonsterOverviewUI.cs ============ -->
+<section class="file-section fade-in" id="file-MonsterOverviewUI">
+<div class="file-purpose-card">
+<h2>MonsterOverviewUI.cs <span class="badge badge-new">NOUVEAU</span></h2>
+<p class="file-role">Panneau d'information en lecture seule pour afficher les stats d'un pion (ennemi ou allie non jouable). Remplace le panel joueur quand on clique sur un monstre.</p>
+</div>
+<div class="code-container">
+<div class="code-toolbar">
+<span class="file-path">src/ui/battle/MonsterOverviewUI.cs</span>
+<button class="toggle-all-btn" onclick="toggleAllAnnotations(this)">Tout deplier</button>
+</div>
+<pre class="code-block"><code><span class="line-num"> 1</span><span class="line-new"><span class="kw">using</span> <span class="type">Godot</span>;</span>
+<span class="line-num"> 2</span><span class="line-new"><span class="kw">using</span> System.Collections.Generic;</span>
+<span class="line-num"> 3</span>
+<span class="line-num"> 4</span><span class="line-new"><span class="kw">public partial class</span> <span class="type">MonsterOverviewUI</span> : <span class="type">MarginContainer</span></span> <span class="annotation-marker" onclick="toggleAnnotation('mo-1')">?</span>
+<span class="line-num"> 5</span><span class="line-new">{</span>
+<span class="line-num"> 6</span><span class="line-new">    <span class="attr">[Export]</span> <span class="type">PackedScene</span> AbilitySelectBtn;</span>
+<span class="line-num"> 7</span>
+<span class="line-num"> 8</span><span class="line-new">    <span class="type">Control</span> panelRoot;</span>
+<span class="line-num"> 9</span><span class="line-new">    <span class="type">Label</span> labelName, labelPV;</span>
+<span class="line-num">10</span><span class="line-new">    <span class="type">Label</span> labelPassifName, labelPassifDesc;</span>
+<span class="line-num">11</span><span class="line-new">    <span class="type">ColorRect</span> portrait;</span>
+<span class="line-num">12</span><span class="line-new">    <span class="type">DiamondStatDisplay</span> diamondPA, diamondPM;</span>
+<span class="line-num">13</span><span class="line-new">    <span class="type">HBoxContainer</span> abilityButtonsContainer;</span>
+<span class="line-num">14</span>
+<span class="line-num">15</span><span class="line-new">    <span class="type">BattlePawn</span> currentMonster;</span>
+<span class="line-num">16</span><span class="line-new">    <span class="type">List</span>&lt;<span class="type">VBoxContainer</span>&gt; abilityWrappers = <span class="kw">new</span>();</span>
+<span class="line-num">17</span>
+<span class="line-num">18</span><span class="line-new">    <span class="kw">public override void</span> <span class="fn">_Ready</span>()</span> <span class="annotation-marker" onclick="toggleAnnotation('mo-2')">?</span>
+<span class="line-num">19</span><span class="line-new">    {</span>
+<span class="line-num">20</span><span class="line-new">        panelRoot = <span class="fn">GetNode</span>&lt;<span class="type">Control</span>&gt;(<span class="str">"PanelContainer"</span>);</span>
+<span class="line-num">21</span><span class="line-new">        <span class="kw">var</span> inner = panelRoot.<span class="fn">GetNode</span>&lt;<span class="type">HBoxContainer</span>&gt;(<span class="str">"MarginContainer_Inner/HBoxContainer_Main"</span>);</span>
+<span class="line-num">22</span>
+<span class="line-num">23</span><span class="line-new">        <span class="kw">var</span> right = inner.<span class="fn">GetNode</span>(<span class="str">"VBoxContainer_Right"</span>);</span>
+<span class="line-num">24</span><span class="line-new">        portrait = right.<span class="fn">GetNode</span>&lt;<span class="type">ColorRect</span>&gt;(<span class="str">"ColorRect_Portrait"</span>);</span>
+<span class="line-num">25</span><span class="line-new">        labelName = right.<span class="fn">GetNode</span>&lt;<span class="type">Label</span>&gt;(<span class="str">"Label_Name"</span>);</span>
+<span class="line-num">26</span><span class="line-new">        labelPV = right.<span class="fn">GetNode</span>&lt;<span class="type">Label</span>&gt;(<span class="str">"Label_PV"</span>);</span>
+<span class="line-num">27</span>
+<span class="line-num">28</span><span class="line-new">        <span class="kw">var</span> left = inner.<span class="fn">GetNode</span>(<span class="str">"HBoxContainer_Left"</span>);</span>
+<span class="line-num">29</span><span class="line-new">        abilityButtonsContainer = left.<span class="fn">GetNode</span>&lt;<span class="type">HBoxContainer</span>&gt;(<span class="str">"Container_Abilities_Buttons"</span>);</span>
+<span class="line-num">30</span><span class="line-new">        <span class="kw">var</span> passif = left.<span class="fn">GetNode</span>(<span class="str">"VBoxContainer_Passif"</span>);</span>
+<span class="line-num">31</span><span class="line-new">        labelPassifName = passif.<span class="fn">GetNode</span>&lt;<span class="type">Label</span>&gt;(<span class="str">"Label_PassifName"</span>);</span>
+<span class="line-num">32</span><span class="line-new">        labelPassifDesc = passif.<span class="fn">GetNode</span>&lt;<span class="type">Label</span>&gt;(<span class="str">"Label_PassifDesc"</span>);</span>
+<span class="line-num">33</span>
+<span class="line-num">34</span><span class="line-new">        <span class="cmt">// Losanges PA/PM crees dynamiquement</span></span> <span class="annotation-marker" onclick="toggleAnnotation('mo-3')">?</span>
+<span class="line-num">35</span><span class="line-new">        <span class="kw">var</span> diamondVBox = <span class="kw">new</span> <span class="type">VBoxContainer</span>();</span>
+<span class="line-num">36</span><span class="line-new">        diamondVBox.<span class="fn">AddThemeConstantOverride</span>(<span class="str">"separation"</span>, <span class="num">8</span>);</span>
+<span class="line-num">37</span><span class="line-new">        diamondVBox.SizeFlagsVertical = SizeFlags.ShrinkCenter;</span>
+<span class="line-num">38</span>
+<span class="line-num">39</span><span class="line-new">        diamondPA = <span class="kw">new</span> <span class="type">DiamondStatDisplay</span>();</span>
+<span class="line-num">40</span><span class="line-new">        diamondPA.<span class="fn">Setup</span>(<span class="kw">new</span> <span class="type">Color</span>(<span class="num">0.2f</span>, <span class="num">0.4f</span>, <span class="num">0.85f</span>));</span>
+<span class="line-num">41</span><span class="line-new">        diamondVBox.<span class="fn">AddChild</span>(diamondPA);</span>
+<span class="line-num">42</span>
+<span class="line-num">43</span><span class="line-new">        diamondPM = <span class="kw">new</span> <span class="type">DiamondStatDisplay</span>();</span>
+<span class="line-num">44</span><span class="line-new">        diamondPM.<span class="fn">Setup</span>(<span class="kw">new</span> <span class="type">Color</span>(<span class="num">0.2f</span>, <span class="num">0.7f</span>, <span class="num">0.3f</span>));</span>
+<span class="line-num">45</span><span class="line-new">        diamondVBox.<span class="fn">AddChild</span>(diamondPM);</span>
+<span class="line-num">46</span>
+<span class="line-num">47</span><span class="line-new">        inner.<span class="fn">AddChild</span>(diamondVBox);</span>
+<span class="line-num">48</span>
+<span class="line-num">49</span><span class="line-new">        Visible = <span class="kw">false</span>;</span>
+<span class="line-num">50</span><span class="line-new">    }</span>
+<span class="line-num">51</span>
+<span class="line-num">52</span><span class="line-new">    <span class="kw">public void</span> <span class="fn">ShowMonster</span>(<span class="type">BattlePawn</span> monster)</span> <span class="annotation-marker" onclick="toggleAnnotation('mo-4')">?</span>
+<span class="line-num">53</span><span class="line-new">    {</span>
+<span class="line-num">54</span><span class="line-new">        <span class="kw">if</span> (monster == currentMonster &amp;&amp; Visible)</span>
+<span class="line-num">55</span><span class="line-new">            <span class="kw">return</span>;</span>
+<span class="line-num">56</span>
+<span class="line-num">57</span><span class="line-new">        <span class="kw">if</span> (currentMonster != <span class="kw">null</span>)</span>
+<span class="line-num">58</span><span class="line-new">            currentMonster.OnStatsChanged -= RefreshStats;</span>
+<span class="line-num">59</span>
+<span class="line-num">60</span><span class="line-new">        currentMonster = monster;</span>
+<span class="line-num">61</span><span class="line-new">        currentMonster.OnStatsChanged += RefreshStats;</span>
+<span class="line-num">62</span>
+<span class="line-num">63</span><span class="line-new">        <span class="cmt">// Nettoyer les anciens boutons</span></span>
+<span class="line-num">64</span><span class="line-new">        <span class="kw">foreach</span> (<span class="kw">var</span> wrapper <span class="kw">in</span> abilityWrappers)</span>
+<span class="line-num">65</span><span class="line-new">            wrapper.<span class="fn">QueueFree</span>();</span>
+<span class="line-num">66</span><span class="line-new">        abilityWrappers.<span class="fn">Clear</span>();</span>
+<span class="line-num">67</span>
+<span class="line-num">68</span><span class="line-new">        <span class="cmt">// Abilities (disabled, lecture seule)</span></span> <span class="annotation-marker" onclick="toggleAnnotation('mo-5')">?</span>
+<span class="line-num">69</span><span class="line-new">        <span class="kw">if</span> (currentMonster.AbilitiesRefs != <span class="kw">null</span>)</span>
+<span class="line-num">70</span><span class="line-new">        {</span>
+<span class="line-num">71</span><span class="line-new">            <span class="kw">foreach</span> (<span class="kw">var</span> ability <span class="kw">in</span> currentMonster.AbilitiesRefs)</span>
+<span class="line-num">72</span><span class="line-new">            {</span>
+<span class="line-num">73</span><span class="line-new">                <span class="kw">var</span> wrapper = <span class="kw">new</span> <span class="type">VBoxContainer</span>();</span>
+<span class="line-num">74</span><span class="line-new">                wrapper.<span class="fn">AddThemeConstantOverride</span>(<span class="str">"separation"</span>, <span class="num">2</span>);</span>
+<span class="line-num">75</span>
+<span class="line-num">76</span><span class="line-new">                <span class="type">AbilityButton</span> btn = AbilitySelectBtn.<span class="fn">Instantiate</span>&lt;<span class="type">AbilityButton</span>&gt;();</span>
+<span class="line-num">77</span><span class="line-new">                btn.Text = ability.abilityInstance.<span class="fn">GetDisplayName</span>();</span>
+<span class="line-num">78</span><span class="line-new">                btn.TooltipText = ability.abilityInstance.<span class="fn">GetDescription</span>();</span>
+<span class="line-num">79</span><span class="line-new">                btn.<span class="fn">SetCustomMinimumSize</span>(<span class="kw">new</span> <span class="type">Vector2</span>(<span class="num">150</span>, <span class="num">60</span>));</span>
+<span class="line-num">80</span><span class="line-new">                btn.Disabled = <span class="kw">true</span>;</span>
+<span class="line-num">81</span><span class="line-new">                wrapper.<span class="fn">AddChild</span>(btn);</span>
+<span class="line-num">82</span>
+<span class="line-num">83</span><span class="line-new">                <span class="kw">var</span> apCost = <span class="kw">new</span> <span class="type">APCostDisplay</span>();</span>
+<span class="line-num">84</span><span class="line-new">                apCost.SizeFlagsHorizontal = SizeFlags.ShrinkEnd;</span>
+<span class="line-num">85</span><span class="line-new">                apCost.<span class="fn">SetCost</span>(ability.abilityInstance.<span class="fn">GetAPCost</span>());</span>
+<span class="line-num">86</span><span class="line-new">                wrapper.<span class="fn">AddChild</span>(apCost);</span>
+<span class="line-num">87</span>
+<span class="line-num">88</span><span class="line-new">                abilityButtonsContainer.<span class="fn">AddChild</span>(wrapper);</span>
+<span class="line-num">89</span><span class="line-new">                abilityWrappers.<span class="fn">Add</span>(wrapper);</span>
+<span class="line-num">90</span><span class="line-new">            }</span>
+<span class="line-num">91</span><span class="line-new">        }</span>
+<span class="line-num">92</span>
+<span class="line-num">93</span><span class="line-new">        <span class="fn">RefreshStats</span>();</span>
+<span class="line-num">94</span><span class="line-new">        Visible = <span class="kw">true</span>;</span>
+<span class="line-num">95</span><span class="line-new">    }</span>
+<span class="line-num">96</span>
+<span class="line-num">97</span><span class="line-new">    <span class="kw">public void</span> <span class="fn">HidePanel</span>()</span> <span class="annotation-marker" onclick="toggleAnnotation('mo-6')">?</span>
+<span class="line-num">98</span><span class="line-new">    {</span>
+<span class="line-num">99</span><span class="line-new">        <span class="kw">if</span> (currentMonster != <span class="kw">null</span>)</span>
+<span class="line-num">100</span><span class="line-new">            currentMonster.OnStatsChanged -= RefreshStats;</span>
+<span class="line-num">101</span><span class="line-new">        currentMonster = <span class="kw">null</span>;</span>
+<span class="line-num">102</span><span class="line-new">        Visible = <span class="kw">false</span>;</span>
+<span class="line-num">103</span><span class="line-new">    }</span>
+<span class="line-num">104</span>
+<span class="line-num">105</span><span class="line-new">    <span class="kw">void</span> <span class="fn">RefreshStats</span>()</span> <span class="annotation-marker" onclick="toggleAnnotation('mo-7')">?</span>
+<span class="line-num">106</span><span class="line-new">    {</span>
+<span class="line-num">107</span><span class="line-new">        <span class="kw">if</span> (currentMonster == <span class="kw">null</span>) <span class="kw">return</span>;</span>
+<span class="line-num">108</span><span class="line-new">        labelName.Text = currentMonster.Name;</span>
+<span class="line-num">109</span><span class="line-new">        portrait.Color = currentMonster.<span class="fn">GetPortraitColor</span>();</span>
+<span class="line-num">110</span><span class="line-new">        labelPV.Text = <span class="str">$"PV: {currentMonster.CurrentHP}/{currentMonster.DefaultHP}"</span>;</span>
+<span class="line-num">111</span><span class="line-new">        diamondPA.<span class="fn">UpdateValue</span>(currentMonster.CurrentAP, currentMonster.DefaultActionPoints);</span>
+<span class="line-num">112</span><span class="line-new">        diamondPM.<span class="fn">UpdateValue</span>(currentMonster.CurrentMovementPoints, currentMonster.DefaultMaxMovement);</span>
+<span class="line-num">113</span>
+<span class="line-num">114</span><span class="line-new">        <span class="kw">string</span> passiveName = currentMonster.<span class="fn">GetPassiveName</span>();</span>
+<span class="line-num">115</span><span class="line-new">        <span class="kw">if</span> (!<span class="kw">string</span>.<span class="fn">IsNullOrEmpty</span>(passiveName))</span>
+<span class="line-num">116</span><span class="line-new">        {</span>
+<span class="line-num">117</span><span class="line-new">            labelPassifName.Text = <span class="str">$"Passif : {passiveName}"</span>;</span>
+<span class="line-num">118</span><span class="line-new">            labelPassifDesc.Text = currentMonster.<span class="fn">GetPassiveDescription</span>();</span>
+<span class="line-num">119</span><span class="line-new">        }</span>
+<span class="line-num">120</span><span class="line-new">        <span class="kw">else</span></span>
+<span class="line-num">121</span><span class="line-new">        {</span>
+<span class="line-num">122</span><span class="line-new">            labelPassifName.Text = <span class="str">"Passif : —"</span>;</span>
+<span class="line-num">123</span><span class="line-new">            labelPassifDesc.Text = <span class="str">""</span>;</span>
+<span class="line-num">124</span><span class="line-new">        }</span>
+<span class="line-num">125</span><span class="line-new">    }</span>
+<span class="line-num">126</span><span class="line-new">}</span></code></pre>
+</div>
+
+<div class="annotation-box annotation-box--pattern collapsed" id="mo-1">
+<h4>Pattern : Panel UI lecture seule</h4>
+<p><code>MonsterOverviewUI</code> herite de <code>MarginContainer</code> et non de <code>Control</code> simple, car il a besoin de marges internes. Il vit EN DEHORS du systeme de layers exclusifs (<code>IBattleUILayer</code>) : il peut etre affiche en meme temps que <code>PlayerTurnUI</code> ou <code>EnemyTurnUI</code>. C'est un overlay independant.</p>
+</div>
+<div class="annotation-box annotation-box--godot collapsed" id="mo-2">
+<h4>Godot : _Ready() et GetNode&lt;T&gt;</h4>
+<p><code>_Ready()</code> est appele quand le noeud entre dans l'arbre de scene. <code>GetNode&lt;T&gt;("chemin")</code> recupere un noeud enfant par son chemin dans la hierarchie. La structure (PanelContainer > MarginContainer_Inner > HBoxContainer_Main) est definie dans le fichier .tscn.</p>
+</div>
+<div class="annotation-box annotation-box--godot collapsed" id="mo-3">
+<h4>Godot : Creation dynamique de DiamondStatDisplay</h4>
+<p>Les losanges PA/PM sont crees par code (pas dans le .tscn) et ajoutes au HBoxContainer. <code>AddThemeConstantOverride("separation", 8)</code> definit l'espacement entre les enfants. <code>SizeFlagsVertical = ShrinkCenter</code> centre verticalement le conteneur. Ce pattern est identique a celui de <code>PlayerTurnUI._Ready()</code>.</p>
+</div>
+<div class="annotation-box annotation-box--logic collapsed" id="mo-4">
+<h4>Logique : ShowMonster — pas de toggle</h4>
+<p>Si on re-clique sur le meme monstre deja affiche, on <code>return</code> immediatement au lieu de fermer le panel. Le toggle (clic pour fermer) est gere par le clic droit dans <code>StatePlayerTurn</code>. On desinscrit l'ancien monstre de <code>OnStatsChanged</code> avant d'inscrire le nouveau pour eviter les fuites d'events.</p>
+</div>
+<div class="annotation-box annotation-box--godot collapsed" id="mo-5">
+<h4>Godot : Instantiation de boutons d'abilities</h4>
+<p>Chaque ability du monstre est affichee comme un <code>AbilityButton</code> instancie depuis une <code>PackedScene</code>. La difference avec <code>PlayerTurnUI</code> : les boutons sont <code>Disabled = true</code> (lecture seule, pas cliquables). L'<code>APCostDisplay</code> sous chaque bouton montre le cout en PA.</p>
+</div>
+<div class="annotation-box annotation-box--pattern collapsed" id="mo-6">
+<h4>Pattern : Desinscription d'events</h4>
+<p><code>HidePanel</code> desinscrit <code>RefreshStats</code> de <code>OnStatsChanged</code> avant de mettre <code>currentMonster = null</code>. Si on oubliait de desinscrire, le callback continuerait a etre appele apres la fermeture du panel, causant potentiellement des null reference exceptions.</p>
+</div>
+<div class="annotation-box annotation-box--logic collapsed" id="mo-7">
+<h4>Logique : Mise a jour temps reel des stats</h4>
+<p><code>RefreshStats</code> met a jour tous les labels (nom, PV, PA, PM, passif) a partir du pawn courant. Comme elle est branchee sur <code>OnStatsChanged</code>, les stats se mettent a jour en temps reel : si le monstre prend des degats pendant qu'on le regarde, le panel se rafraichit automatiquement.</p>
+</div>
+</section>
+
+<!-- ============ FILE: BattleUI.cs ============ -->
+<section class="file-section fade-in" id="file-BattleUI">
+<div class="file-purpose-card">
+<h2>BattleUI.cs <span class="badge badge-modified">MODIFIE</span></h2>
+<p class="file-role">Gestionnaire central de l'UI de combat. Ajout d'une reference vers MonsterOverviewUI.</p>
+</div>
+<div class="code-container">
+<div class="code-toolbar"><span class="file-path">src/ui/BattleUI.cs — Ajouts</span></div>
+<pre class="code-block"><code><span class="line-num">16</span><span class="line-new"><span class="attr">[Export]</span> <span class="type">MonsterOverviewUI</span> monsterOverviewUI;</span> <span class="annotation-marker" onclick="toggleAnnotation('bu-1')">?</span>
+<span class="line-num">..</span>
+<span class="line-num">69</span><span class="line-new"><span class="kw">public</span> <span class="type">MonsterOverviewUI</span> <span class="fn">GetMonsterOverviewUI</span>() =&gt; monsterOverviewUI;</span></code></pre>
+</div>
+<div class="annotation-box annotation-box--pattern collapsed" id="bu-1">
+<h4>Pattern : Facade pour acces UI</h4>
+<p><code>BattleUI</code> sert de facade centrale : les etats de combat (<code>StatePlayerTurn</code>, etc.) n'accedent pas directement a <code>MonsterOverviewUI</code> mais passent par <code>battle.BattleUI.GetMonsterOverviewUI()</code>. Cela permet de changer l'implementation sans toucher aux appelants. Le <code>?.</code> dans les appelants gere le cas ou le composant n'est pas assigne dans l'editeur.</p>
+</div>
+</section>
+
+<!-- ============ FILE: PlayerTurnUI.cs ============ -->
+<section class="file-section fade-in" id="file-PlayerTurnUI">
+<div class="file-purpose-card">
+<h2>PlayerTurnUI.cs <span class="badge badge-modified">MODIFIE</span></h2>
+<p class="file-role">UI du tour du joueur. Ajout de methodes pour masquer/afficher le panel de stats quand l'overview monstre prend le relais.</p>
+</div>
+<div class="code-container">
+<div class="code-toolbar"><span class="file-path">src/ui/battle/PlayerTurnUI.cs — Nouvelles methodes</span></div>
+<pre class="code-block"><code><span class="line-num">131</span><span class="line-new"><span class="kw">public void</span> <span class="fn">HideCharPanel</span>() =&gt; panelCharInfo.Visible = <span class="kw">false</span>;</span> <span class="annotation-marker" onclick="toggleAnnotation('pt-1')">?</span>
+<span class="line-num">132</span><span class="line-new"><span class="kw">public void</span> <span class="fn">ShowCharPanel</span>()</span>
+<span class="line-num">133</span><span class="line-new">{</span>
+<span class="line-num">134</span><span class="line-new">    <span class="kw">if</span> (currentPawn != <span class="kw">null</span>) panelCharInfo.Visible = <span class="kw">true</span>;</span>
+<span class="line-num">135</span><span class="line-new">}</span></code></pre>
+</div>
+<div class="annotation-box annotation-box--logic collapsed" id="pt-1">
+<h4>Logique : Toggle du panel joueur</h4>
+<p>Quand on clique sur un monstre, <code>StatePlayerTurn</code> appelle <code>ui.HideCharPanel()</code> pour cacher le panel joueur et montrer l'overview monstre. Au clic droit ou re-selection du joueur, <code>ShowCharPanel()</code> le re-affiche. La garde <code>currentPawn != null</code> empeche d'afficher un panel vide si aucun joueur n'est selectionne.</p>
+</div>
+</section>
+
+<!-- ============ FILE: StatePlayerTurn.cs ============ -->
+<section class="file-section fade-in" id="file-StatePlayerTurn">
+<div class="file-purpose-card">
+<h2>StatePlayerTurn.cs <span class="badge badge-modified">MODIFIE</span></h2>
+<p class="file-role">Etat du tour du joueur dans la machine a etats de combat. Modifications majeures : gestion des clics sur ennemis/allies pour l'overview, fermeture par clic droit, garde contre les clics pendant le preview d'ability.</p>
+</div>
+<div class="code-container">
+<div class="code-toolbar">
+<span class="file-path">src/battle/states/StatePlayerTurn.cs — SetSelectedPawn + OnExitState</span>
+<button class="toggle-all-btn" onclick="toggleAllAnnotations(this)">Tout deplier</button>
+</div>
+<pre class="code-block"><code><span class="line-num"> 89</span><span class="kw">void</span> <span class="fn">SetSelectedPawn</span>(<span class="type">BattlePawn</span> _pawn)
+<span class="line-num"> 90</span>{
+<span class="line-num"> 91</span>    <span class="kw">if</span> (selectedPawnForTurn != <span class="kw">null</span>)
+<span class="line-num"> 92</span>        selectedPawnForTurn.<span class="fn">OnDeselected</span>();
+<span class="line-num"> 93</span>    selectedPawnForTurn = _pawn;
+<span class="line-num"> 94</span>    selectedPawnForTurn?.<span class="fn">OnSelected</span>();
+<span class="line-num"> 95</span>
+<span class="line-num"> 96</span>    <span class="line-new"><span class="kw">if</span> (_pawn != <span class="kw">null</span>)</span> <span class="annotation-marker" onclick="toggleAnnotation('sp-1')">?</span>
+<span class="line-num"> 97</span>    <span class="line-new">    battle.BattleUI.<span class="fn">GetMonsterOverviewUI</span>()?.<span class="fn">HidePanel</span>();</span>
+<span class="line-num"> 98</span>
+<span class="line-num"> 99</span>    ui.<span class="fn">ReInitialize</span>(selectedPawnForTurn, <span class="kw">this</span>);
+<span class="line-num">100</span>}
+<span class="line-num">..</span>
+<span class="line-num">143</span><span class="kw">public void</span> <span class="fn">OnExitState</span>()
+<span class="line-num">144</span>{
+<span class="line-num">145</span>    ui.OnEndTurnRequested -= OnEndOfTurnRequested;
+<span class="line-num">146</span>    <span class="fn">ClearCells</span>();
+<span class="line-num">147</span>    <span class="type">ImmediateRenderer</span>.<span class="fn">ClearInstance</span>(playerCellRid);
+<span class="line-num">148</span>    selectedPawnForTurn?.<span class="fn">OnEndTurn</span>();
+<span class="line-num">149</span>    <span class="line-new">battle.BattleUI.<span class="fn">GetMonsterOverviewUI</span>()?.<span class="fn">HidePanel</span>();</span> <span class="annotation-marker" onclick="toggleAnnotation('sp-2')">?</span>
+<span class="line-num">150</span>}</code></pre>
+</div>
+
+<div class="annotation-box annotation-box--logic collapsed" id="sp-1">
+<h4>Logique : Fermer l'overview quand on selectionne un joueur</h4>
+<p>Quand un joueur est selectionne, l'overview monstre est automatiquement ferme. Cela garantit qu'on ne voit jamais l'overview d'un monstre ET le panel d'un joueur en meme temps — ils partagent le meme espace visuel (bas-gauche).</p>
+</div>
+<div class="annotation-box annotation-box--logic collapsed" id="sp-2">
+<h4>Logique : Nettoyage en sortie d'etat</h4>
+<p>A la fin du tour joueur, on ferme tout : panel monstre, cellules de debug, et on termine le tour du pion. C'est crucial pour eviter les artefacts visuels entre les etats de combat.</p>
+</div>
+
+<div class="code-container">
+<div class="code-toolbar"><span class="file-path">src/battle/states/StatePlayerTurn.cs — ProcessPawnSelection (clics ennemis/allies)</span></div>
+<pre class="code-block"><code><span class="line-num">189</span><span class="kw">if</span> (battle.<span class="fn">GetPawnAtLocation</span>(hitCell, <span class="kw">out</span> <span class="type">BattlePawn</span> cellPawn))
+<span class="line-num">190</span>{
+<span class="line-num">191</span>    <span class="line-new"><span class="kw">if</span> (cellPawn.currentOwnership == <span class="type">BattlePawn</span>.Ownership.PLAYER</span>
+<span class="line-num">192</span>    <span class="line-new">    &amp;&amp; cellPawn.currentState != <span class="type">BattlePawn</span>.PawnState.Dead)</span>
+<span class="line-num">193</span>    {
+<span class="line-num">194</span>        <span class="line-new"><span class="kw">if</span> (cellPawn.<span class="fn">CanBePlayed</span>())</span>
+<span class="line-num">195</span>            { <span class="fn">SetSelectedPawn</span>(cellPawn); <span class="fn">PushTurnState</span>(TurnState.SelectedPawn); }
+<span class="line-num">196</span>        <span class="line-new"><span class="kw">else</span></span> <span class="annotation-marker" onclick="toggleAnnotation('sp-3')">?</span>
+<span class="line-num">197</span>        <span class="line-new">{</span>
+<span class="line-num">198</span>        <span class="line-new">    ui.<span class="fn">HideCharPanel</span>();</span>
+<span class="line-num">199</span>        <span class="line-new">    battle.BattleUI.<span class="fn">GetMonsterOverviewUI</span>()?.<span class="fn">ShowMonster</span>(cellPawn);</span>
+<span class="line-num">200</span>        <span class="line-new">}</span>
+<span class="line-num">201</span>    }
+<span class="line-num">202</span>    <span class="line-new"><span class="kw">else if</span> (cellPawn.currentOwnership == <span class="type">BattlePawn</span>.Ownership.ENEMY</span>
+<span class="line-num">203</span>    <span class="line-new">         &amp;&amp; cellPawn.currentState != <span class="type">BattlePawn</span>.PawnState.Dead)</span>
+<span class="line-num">204</span>    <span class="line-new">{</span>
+<span class="line-num">205</span>    <span class="line-new">    ui.<span class="fn">HideCharPanel</span>();</span>
+<span class="line-num">206</span>    <span class="line-new">    battle.BattleUI.<span class="fn">GetMonsterOverviewUI</span>()?.<span class="fn">ShowMonster</span>(cellPawn);</span>
+<span class="line-num">207</span>    <span class="line-new">}</span>
+<span class="line-num">208</span>}</code></pre>
+</div>
+
+<div class="annotation-box annotation-box--logic collapsed" id="sp-3">
+<h4>Logique : Overview pour allies non jouables et ennemis</h4>
+<p>En phase de selection, 3 cas de clic :<br>
+1. Joueur jouable → le selectionner pour jouer son tour<br>
+2. Joueur non jouable (a deja joue) → afficher son overview en lecture seule<br>
+3. Ennemi vivant → afficher son overview<br>
+Dans les cas 2 et 3, on cache le panel joueur (<code>HideCharPanel</code>) car l'overview prend sa place. Meme logique dans <code>ProcessPawnSelected</code> mais avec une garde supplementaire.</p>
+</div>
+
+<div class="code-container">
+<div class="code-toolbar"><span class="file-path">src/battle/states/StatePlayerTurn.cs — ProcessPawnSelected (garde ability + clic droit)</span></div>
+<pre class="code-block"><code><span class="line-num">221</span><span class="line-new"><span class="cmt">// Ne gerer les clics overview que si le pawn ne preview pas une ability</span></span> <span class="annotation-marker" onclick="toggleAnnotation('sp-4')">?</span>
+<span class="line-num">222</span><span class="line-new"><span class="kw">if</span> (selectedPawnForTurn == <span class="kw">null</span></span>
+<span class="line-num">223</span><span class="line-new">    || selectedPawnForTurn.currentState != <span class="type">BattlePawn</span>.PawnState.PreviewingAbility)</span>
+<span class="line-num">224</span><span class="line-new">{</span>
+<span class="line-num">225</span>    <span class="cmt">// ... raycasting et gestion des clics overview ...</span>
+<span class="line-num">226</span>    <span class="cmt">// Chaque branche se termine par `return;` pour eviter</span>
+<span class="line-num">227</span>    <span class="cmt">// que ProcessPawnTurn ne re-traite le meme clic</span>
+<span class="line-num">228</span><span class="line-new">}</span>
+<span class="line-num">229</span>
+<span class="line-num">267</span><span class="kw">if</span> (<span class="type">Input</span>.<span class="fn">IsActionJustPressed</span>(<span class="str">"right_click"</span>)) <span class="annotation-marker" onclick="toggleAnnotation('sp-5')">?</span>
+<span class="line-num">268</span>{
+<span class="line-num">269</span>    <span class="line-new"><span class="kw">var</span> monsterUI = battle.BattleUI.<span class="fn">GetMonsterOverviewUI</span>();</span>
+<span class="line-num">270</span>    <span class="line-new"><span class="kw">if</span> (monsterUI != <span class="kw">null</span> &amp;&amp; monsterUI.Visible)</span>
+<span class="line-num">271</span>    <span class="line-new">{</span>
+<span class="line-num">272</span>    <span class="line-new">    monsterUI.<span class="fn">HidePanel</span>();</span>
+<span class="line-num">273</span>    <span class="line-new">    ui.<span class="fn">ShowCharPanel</span>();</span>
+<span class="line-num">274</span>    <span class="line-new">}</span>
+<span class="line-num">275</span>    <span class="kw">else if</span> (currentTurnState == TurnState.SelectedPawn
+<span class="line-num">276</span>        &amp;&amp; selectedPawnForTurn.currentState != <span class="type">BattlePawn</span>.PawnState.PreviewingAbility)
+<span class="line-num">277</span>    {
+<span class="line-num">278</span>        <span class="fn">PopTurnState</span>();
+<span class="line-num">279</span>        <span class="fn">SetSelectedPawn</span>(<span class="kw">null</span>);
+<span class="line-num">280</span>    }
+<span class="line-num">281</span>}</code></pre>
+</div>
+
+<div class="annotation-box annotation-box--logic collapsed" id="sp-4">
+<h4>Logique : Garde PreviewingAbility (bug fix critique)</h4>
+<p>Quand le joueur est en train de cibler une ability (PreviewingAbility), les clics gauche doivent etre reserves au ciblage de l'ability, pas a l'ouverture de l'overview. Sans cette garde, cliquer sur un allie pour lancer "Pluie de fleches" ouvrait l'overview au lieu de lancer le sort. Les <code>return;</code> a la fin de chaque branche empechent que <code>ProcessPawnTurn</code> re-traite le meme <code>IsActionJustPressed</code> dans la meme frame.</p>
+</div>
+<div class="annotation-box annotation-box--logic collapsed" id="sp-5">
+<h4>Logique : Clic droit — fermer overview OU deselectionner</h4>
+<p>Le clic droit a une priorite :<br>
+1. Si l'overview monstre est visible → le fermer et re-afficher le panel joueur<br>
+2. Sinon, si on est en SelectedPawn et pas en preview → deselectionner le joueur<br>
+Cette hierarchie empeche de deselectionner accidentellement le joueur quand on veut juste fermer l'overview.</p>
+</div>
+
+<div class="code-container">
+<div class="code-toolbar"><span class="file-path">src/battle/states/StatePlayerTurn.cs — ProcessPawnTurn (overview en etat Idle)</span></div>
+<pre class="code-block"><code><span class="line-num">305</span><span class="line-new"><span class="kw">if</span> (<span class="type">Input</span>.<span class="fn">IsActionJustPressed</span>(<span class="str">"left_click"</span>))</span>
+<span class="line-num">306</span><span class="line-new">{</span>
+<span class="line-num">307</span><span class="line-new">    <span class="cmt">// Clic sur un pawn existant ?</span></span> <span class="annotation-marker" onclick="toggleAnnotation('sp-6')">?</span>
+<span class="line-num">308</span><span class="line-new">    <span class="kw">if</span> (battle.<span class="fn">GetPawnAtLocation</span>(hitCell, <span class="kw">out</span> <span class="type">BattlePawn</span> clickedPawn))</span>
+<span class="line-num">309</span><span class="line-new">    {</span>
+<span class="line-num">310</span><span class="line-new">        <span class="kw">if</span> (clickedPawn.currentOwnership == Ownership.ENEMY</span>
+<span class="line-num">311</span><span class="line-new">            &amp;&amp; clickedPawn.currentState != PawnState.Dead)</span>
+<span class="line-num">312</span><span class="line-new">        {</span>
+<span class="line-num">313</span><span class="line-new">            ui.<span class="fn">HideCharPanel</span>();</span>
+<span class="line-num">314</span><span class="line-new">            battle.BattleUI.<span class="fn">GetMonsterOverviewUI</span>()?.<span class="fn">ShowMonster</span>(clickedPawn);</span>
+<span class="line-num">315</span><span class="line-new">            <span class="kw">return</span>;</span>
+<span class="line-num">316</span><span class="line-new">        }</span>
+<span class="line-num">317</span><span class="line-new">        <span class="kw">else if</span> (clickedPawn == selectedPawnForTurn)</span>
+<span class="line-num">318</span><span class="line-new">        {</span>
+<span class="line-num">319</span><span class="line-new">            battle.BattleUI.<span class="fn">GetMonsterOverviewUI</span>()?.<span class="fn">HidePanel</span>();</span>
+<span class="line-num">320</span><span class="line-new">            ui.<span class="fn">ShowCharPanel</span>();</span>
+<span class="line-num">321</span><span class="line-new">            <span class="kw">return</span>;</span>
+<span class="line-num">322</span><span class="line-new">        }</span>
+<span class="line-num">323</span><span class="line-new">    }</span>
+<span class="line-num">324</span>
+<span class="line-num">325</span>    <span class="kw">if</span> (!selectedPawnForTurn.<span class="fn">CanMove</span>())
+<span class="line-num">326</span>    {
+<span class="line-num">327</span>        ui.<span class="fn">ShakePM</span>();
+<span class="line-num">328</span>        <span class="kw">return</span>;
+<span class="line-num">329</span>    }
+<span class="line-num">330</span>}</code></pre>
+</div>
+
+<div class="annotation-box annotation-box--logic collapsed" id="sp-6">
+<h4>Logique : Overview dans ProcessPawnTurn (etat locke)</h4>
+<p>Meme quand le pion est "locke" (a deja bouge ou lance un sort), on peut toujours consulter les stats ennemis ou re-afficher son propre panel. L'ordre est important : on verifie d'abord s'il y a un pawn sur la cellule cliquee AVANT de verifier <code>CanMove()</code>. Sinon, cliquer sur un ennemi quand on n'a plus de PM secouait le losange PM au lieu d'afficher l'overview.</p>
+</div>
+</section>
+
+<!-- ============ FILE: InitiativeTimelineUI.cs ============ -->
+<section class="file-section fade-in" id="file-InitiativeTimelineUI">
+<div class="file-purpose-card">
+<h2>InitiativeTimelineUI.cs <span class="badge badge-modified">MODIFIE</span></h2>
+<p class="file-role">Affiche la timeline d'initiative des tours (joueur/ennemi). Fix : le curseur reste au bon endroit quand un allie meurt.</p>
+</div>
+<div class="code-container">
+<div class="code-toolbar"><span class="file-path">src/ui/battle/InitiativeTimelineUI.cs — OnPawnDied()</span></div>
+<pre class="code-block"><code><span class="line-num">28</span><span class="kw">void</span> <span class="fn">OnPawnDied</span>(<span class="type">BattlePawn</span> _pawn)
+<span class="line-num">29</span>{
+<span class="line-num">30</span>    <span class="kw">if</span> (!Visible) <span class="kw">return</span>;
+<span class="line-num">31</span>
+<span class="line-num">32</span>    <span class="line-new"><span class="kw">int</span> savedIndex = currentSlotIndex;</span> <span class="annotation-marker" onclick="toggleAnnotation('tl-1')">?</span>
+<span class="line-num">33</span>    <span class="fn">BuildTimeline</span>();
+<span class="line-num">34</span>
+<span class="line-num">35</span>    <span class="line-new"><span class="cmt">// Conserver la position si encore valide</span></span>
+<span class="line-num">36</span>    <span class="line-new"><span class="kw">if</span> (savedIndex &gt;= <span class="num">0</span> &amp;&amp; savedIndex &lt; slots.Count)</span>
+<span class="line-num">37</span>    <span class="line-new">    currentSlotIndex = savedIndex;</span>
+<span class="line-num">38</span>    <span class="line-new"><span class="kw">else</span></span>
+<span class="line-num">39</span>    <span class="line-new">    currentSlotIndex = <span class="type">System</span>.<span class="type">Math</span>.<span class="fn">Max</span>(<span class="num">0</span>, slots.Count - <span class="num">1</span>);</span>
+<span class="line-num">40</span>
+<span class="line-num">41</span>    <span class="line-new"><span class="fn">UpdateSlotStates</span>();</span>
+<span class="line-num">42</span>    <span class="line-new"><span class="fn">CallDeferred</span>(<span class="kw">nameof</span>(DeferredAnimateCursor));</span>
+<span class="line-num">43</span>}</code></pre>
+</div>
+
+<div class="annotation-box annotation-box--logic collapsed" id="tl-1">
+<h4>Logique : Fix du curseur de timeline (bug fix)</h4>
+<p><strong>Bug</strong> : Quand un allie mourait, <code>BuildTimeline()</code> reconstruisait les slots et <code>currentSlotIndex</code> etait reset a -1. Au prochain <code>OnTurnChanged</code>, l'index revenait a 0 → le curseur sautait au debut.<br>
+<strong>Fix</strong> : On sauvegarde l'index avant le rebuild. Apres, si l'index est encore valide (entre 0 et le nouveau nombre de slots), on le restaure. Sinon, on le cale au dernier slot. <code>CallDeferred</code> anime le curseur au prochain frame pour laisser le layout se recalculer.</p>
+</div>
+</section>
+
+<!-- ============ GLOSSAIRE ============ -->
+<section id="glossary" class="fade-in">
+<h2>Glossaire</h2>
+<dl>
+<dt>static class</dt><dd>Classe C# qui ne peut pas etre instanciee. Tous ses membres sont accessibles directement via le nom de la classe (ex: <code>FloatingText.Spawn()</code>).</dd>
+<dt>static readonly</dt><dd>Champ initialise une seule fois au demarrage du programme. Contrairement a <code>const</code>, peut etre initialise avec du code (ex: <code>new Color(...)</code>).</dd>
+<dt>Dictionary&lt;K,V&gt;</dt><dd>Collection de paires cle-valeur. Acces en O(1) par cle. Ici utilise pour mapper des Label3D vers leur position d'origine.</dd>
+<dt>OfType&lt;T&gt;()</dt><dd>Extension LINQ qui filtre une collection pour ne garder que les elements d'un type specifique. Plus propre qu'un <code>if (x is T)</code> dans une boucle.</dd>
+<dt>Tween</dt><dd>Animation procedurale Godot qui interpole une propriete d'un objet entre deux valeurs sur une duree. Alternative au systeme d'AnimationPlayer pour les animations simples.</dd>
+<dt>instance uniform</dt><dd>Variable shader propre a chaque instance de mesh (contrairement a <code>uniform</code> partage par tout le materiau). Set via <code>SetInstanceShaderParameter()</code> en C#.</dd>
+<dt>UV.x</dt><dd>Coordonnee horizontale de texture, de 0 (gauche) a 1 (droite). Utilisee dans le fragment shader pour diviser la barre de vie en zones.</dd>
+<dt>Billboard</dt><dd>Mode d'affichage ou un objet 3D fait toujours face a la camera, quelle que soit l'angle de vue.</dd>
+<dt>QueueFree()</dt><dd>Methode Godot qui marque un noeud pour suppression a la fin de la frame. Plus sur que <code>Free()</code> qui supprime immediatement.</dd>
+<dt>CallDeferred()</dt><dd>Methode Godot qui reporte l'execution d'une methode au prochain cycle idle. Utile pour laisser le layout se recalculer avant d'animer.</dd>
+<dt>DamagePacket</dt><dd>Objet mutable passe a travers les events <code>OnBeforeTakeDamage</code>. Chaque effet (shield, armure, etc.) peut modifier <code>FinalAmount</code> avant l'application des degats.</dd>
+<dt>?. (null-conditional)</dt><dd>Operateur C# qui n'appelle la methode que si l'objet n'est pas null. <code>a?.Method()</code> est equivalent a <code>if (a != null) a.Method()</code>.</dd>
+<dt>?? (null-coalescing)</dt><dd>Operateur C# qui retourne la valeur de gauche si non-null, sinon celle de droite. <code>a ?? b</code> = "a, ou b si a est null".</dd>
+<dt>MarginContainer</dt><dd>Conteneur Godot UI qui ajoute automatiquement des marges internes a ses enfants. Utile pour le padding sans CSS.</dd>
+<dt>PackedScene</dt><dd>Reference a une scene Godot (.tscn) pouvant etre instanciee a runtime via <code>Instantiate&lt;T&gt;()</code>.</dd>
+<dt>partial class</dt><dd>Permet de diviser une classe C# en plusieurs fichiers. Requis par Godot pour generer du code de binding automatiquement.</dd>
+<dt>IsActionJustPressed</dt><dd>Methode Godot Input qui retourne true uniquement sur la frame ou l'action est declenchee. Attention : retourne true pour TOUS les appelants de la meme frame.</dd>
+</dl>
+</section>
+
+</main>
+
+<script>
+function toggleAnnotation(id){const e=document.getElementById(id);if(e)e.classList.toggle('collapsed');}
+function toggleAllAnnotations(btn){const s=btn.closest('.file-section')||document;const b=s.querySelectorAll('.annotation-box');const c=[...b].every(x=>x.classList.contains('collapsed'));b.forEach(x=>{if(c)x.classList.remove('collapsed');else x.classList.add('collapsed');});btn.textContent=c?'Tout replier':'Tout deplier';}
+function toggleAllGlobal(btn){const b=document.querySelectorAll('.annotation-box');const c=[...b].every(x=>x.classList.contains('collapsed'));b.forEach(x=>{if(c)x.classList.remove('collapsed');else x.classList.add('collapsed');});btn.textContent=c?'Tout replier':'Tout deplier';document.querySelectorAll('.toggle-all-btn').forEach(b=>{b.textContent=c?'Tout replier':'Tout deplier';});}
+const observer=new IntersectionObserver(e=>{e.forEach(entry=>{if(entry.isIntersecting){document.querySelectorAll('.sidebar a').forEach(a=>a.classList.remove('active'));const link=document.querySelector(`.sidebar a[href="#${entry.target.id}"]`);if(link)link.classList.add('active');}});},{threshold:0.3});
+document.querySelectorAll('section[id]').forEach(s=>observer.observe(s));
+const fadeObserver=new IntersectionObserver(e=>{e.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('visible');fadeObserver.unobserve(entry.target);}});},{threshold:0.1});
+document.querySelectorAll('.fade-in').forEach(el=>fadeObserver.observe(el));
+</script>
+</body>
+</html>

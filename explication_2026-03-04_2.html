@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>📜 Explication de session — 2026-03-04</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --grimoire-bg: #0d0b08;
+      --page-bg: #1a1410;
+      --card-bg: #1e1812;
+      --text-gold: #c9a84c;
+      --text-cream: #d4c5a9;
+      --text-dim: #8a7e6b;
+      --border-ornament-gold: #8b7340;
+      --border-subtle: #2a2318;
+      --code-bg: rgba(10, 8, 5, 0.6);
+      --accent-green: rgba(80, 160, 80, 0.15);
+      --accent-blue: rgba(80, 120, 200, 0.15);
+      --accent-concept: rgba(86, 156, 214, 0.1);
+      --accent-godot: rgba(78, 201, 176, 0.1);
+      --accent-logic: rgba(206, 145, 120, 0.1);
+      --accent-pattern: rgba(197, 134, 192, 0.1);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--grimoire-bg);
+      color: var(--text-cream);
+      font-family: 'Crimson Text', serif;
+      font-size: 18px;
+      line-height: 1.7;
+      min-height: 100vh;
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 260px;
+      height: 100vh;
+      background: var(--page-bg);
+      border-right: 1px solid var(--border-ornament-gold);
+      padding: 20px 16px;
+      overflow-y: auto;
+      z-index: 100;
+    }
+    .sidebar h3 {
+      font-family: 'Cinzel', serif;
+      color: var(--text-gold);
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 16px;
+    }
+    .sidebar a {
+      display: block;
+      color: var(--text-dim);
+      text-decoration: none;
+      padding: 6px 10px;
+      font-size: 14px;
+      border-radius: 4px;
+      transition: all 0.2s;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .sidebar a:hover { color: var(--text-cream); background: var(--border-subtle); }
+    .sidebar a.active { color: var(--text-gold); background: rgba(201,168,76,0.1); border-left: 2px solid var(--text-gold); }
+
+    /* MAIN CONTENT */
+    header, main {
+      margin-left: 280px;
+      max-width: 960px;
+      padding: 40px 30px;
+    }
+    header {
+      border-bottom: 1px solid var(--border-ornament-gold);
+      padding-bottom: 30px;
+      margin-bottom: 0;
+    }
+    header h1 {
+      font-family: 'Cinzel', serif;
+      color: var(--text-gold);
+      font-size: 32px;
+      margin-bottom: 8px;
+    }
+    header .subtitle {
+      color: var(--text-dim);
+      font-size: 16px;
+      font-style: italic;
+    }
+    .stats-grid {
+      display: flex;
+      gap: 24px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+    .stat-item {
+      background: var(--card-bg);
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      padding: 12px 20px;
+      text-align: center;
+    }
+    .stat-item .stat-num {
+      font-family: 'Cinzel', serif;
+      color: var(--text-gold);
+      font-size: 28px;
+      display: block;
+    }
+    .stat-item .stat-label {
+      color: var(--text-dim);
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    h2 {
+      font-family: 'Cinzel', serif;
+      color: var(--text-gold);
+      font-size: 22px;
+      margin: 40px 0 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    h3 {
+      font-family: 'Cinzel', serif;
+      color: var(--text-gold);
+      font-size: 18px;
+      margin: 20px 0 10px;
+    }
+    h4 {
+      font-family: 'Cinzel', serif;
+      color: var(--text-cream);
+      font-size: 16px;
+      margin-bottom: 6px;
+    }
+
+    p { margin-bottom: 12px; }
+
+    /* BADGES */
+    .badge {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      vertical-align: middle;
+      margin-left: 8px;
+    }
+    .badge-modified { background: rgba(80,120,200,0.3); color: #7ab3f0; border: 1px solid rgba(80,120,200,0.5); }
+
+    /* FILE PURPOSE CARD */
+    .file-purpose-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-ornament-gold);
+      border-radius: 8px;
+      padding: 20px 24px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+    .file-purpose-card h2 { margin: 0 0 8px; border: none; padding: 0; }
+    .file-role { color: var(--text-dim); font-style: italic; margin: 0; }
+
+    /* CODE CONTAINER */
+    .code-container {
+      background: var(--code-bg);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+    .code-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--card-bg);
+      padding: 8px 16px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .file-path {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+    .toggle-all-btn {
+      background: rgba(201,168,76,0.15);
+      border: 1px solid var(--border-ornament-gold);
+      color: var(--text-gold);
+      padding: 4px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+      font-family: 'JetBrains Mono', monospace;
+      transition: background 0.2s;
+    }
+    .toggle-all-btn:hover { background: rgba(201,168,76,0.3); }
+
+    .code-block {
+      padding: 16px;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      margin: 0;
+      counter-reset: line;
+    }
+    .code-block code { font-family: inherit; }
+    .code-line { display: block; padding: 1px 0; }
+    .line-num {
+      display: inline-block;
+      width: 36px;
+      text-align: right;
+      color: var(--text-dim);
+      margin-right: 16px;
+      user-select: none;
+      font-size: 11px;
+    }
+    .line-new { background: var(--accent-green); }
+    .line-modified { background: var(--accent-blue); }
+
+    /* SYNTAX HIGHLIGHTING */
+    .kw { color: #569cd6; }
+    .type { color: #4ec9b0; }
+    .str { color: #ce9178; }
+    .num { color: #b5cea8; }
+    .cmt { color: #6a9955; font-style: italic; }
+    .fn { color: #dcdcaa; }
+    .attr { color: #c586c0; }
+
+    /* ANNOTATION MARKER */
+    .annotation-marker {
+      display: inline-block;
+      width: 18px;
+      height: 18px;
+      line-height: 18px;
+      text-align: center;
+      background: rgba(201,168,76,0.2);
+      border: 1px solid var(--border-ornament-gold);
+      border-radius: 50%;
+      color: var(--text-gold);
+      font-size: 11px;
+      cursor: pointer;
+      margin-left: 8px;
+      vertical-align: middle;
+      transition: all 0.2s;
+      user-select: none;
+    }
+    .annotation-marker:hover {
+      background: rgba(201,168,76,0.4);
+      transform: scale(1.15);
+    }
+
+    /* ANNOTATION BOXES */
+    .annotation-box {
+      border-left: 3px solid var(--border-ornament-gold);
+      padding: 14px 18px;
+      margin: 8px 0 12px 52px;
+      border-radius: 0 6px 6px 0;
+      transition: all 0.3s ease;
+      overflow: hidden;
+      max-height: 600px;
+      opacity: 1;
+    }
+    .annotation-box.collapsed {
+      max-height: 0;
+      padding: 0 18px;
+      margin: 0 0 0 52px;
+      opacity: 0;
+      border-left-width: 0;
+    }
+    .annotation-box--concept { border-left-color: #569cd6; background: var(--accent-concept); }
+    .annotation-box--godot { border-left-color: #4ec9b0; background: var(--accent-godot); }
+    .annotation-box--logic { border-left-color: #ce9178; background: var(--accent-logic); }
+    .annotation-box--pattern { border-left-color: #c586c0; background: var(--accent-pattern); }
+
+    .annotation-box h4 { font-size: 14px; margin-bottom: 6px; }
+    .annotation-box p { font-size: 15px; margin-bottom: 6px; line-height: 1.5; }
+
+    /* CONCEPTS & GODOT BOXES */
+    .concepts-box, .godot-box {
+      background: var(--card-bg);
+      border: 1px solid var(--border-ornament-gold);
+      border-radius: 8px;
+      padding: 20px 24px;
+      margin: 20px 0;
+    }
+    .concept-item { margin-bottom: 14px; }
+    .concept-item strong { color: var(--text-gold); }
+    .concept-item p { font-size: 15px; color: var(--text-cream); margin: 4px 0 0; }
+
+    /* GLOSSARY */
+    dl { margin: 12px 0; }
+    dt {
+      color: var(--text-gold);
+      font-weight: bold;
+      font-size: 16px;
+      margin-top: 14px;
+    }
+    dd {
+      color: var(--text-cream);
+      margin-left: 20px;
+      font-size: 15px;
+      margin-bottom: 8px;
+    }
+
+    /* SVG CONTAINERS */
+    .svg-container {
+      background: var(--card-bg);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 20px;
+      margin: 20px 0;
+      text-align: center;
+    }
+    .svg-container svg { max-width: 100%; height: auto; }
+
+    /* FADE IN */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+    /* GLOBAL TOGGLE */
+    .global-toggle {
+      display: inline-block;
+      margin-top: 16px;
+    }
+
+    /* PRINT */
+    @media print {
+      .sidebar { display: none; }
+      header, main { margin-left: 0; }
+      body { background: white; color: black; }
+      .annotation-box { max-height: none !important; opacity: 1 !important; border-left-width: 3px !important; padding: 14px 18px !important; margin: 8px 0 12px 52px !important; }
+      .toggle-all-btn, .global-toggle { display: none; }
+      .code-container { border-color: #ccc; }
+      .file-purpose-card { border-color: #ccc; }
+      h1, h2, h3, h4, .stat-num, dt, .concept-item strong { color: #333; }
+      .line-num { color: #999; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="sidebar">
+  <h3>Table des matieres</h3>
+  <a href="#session-summary">Resume de session</a>
+  <a href="#architecture-overview">Architecture</a>
+  <a href="#feature-flow">Flux de la feature</a>
+  <a href="#file-InitiativeTimelineUI">InitiativeTimelineUI</a>
+  <a href="#file-TimelineSlotUI">TimelineSlotUI</a>
+  <a href="#glossary">Glossaire</a>
+</nav>
+
+<header>
+  <h1>📜 Grimoire de Session</h1>
+  <p class="subtitle">Session du 2026-03-04 — Refactorisation du systeme de Timeline Initiative : passage d'un layout horizontal a un design vertical 2 colonnes avec file d'attente circulaire et animations</p>
+  <div class="stats-grid">
+    <div class="stat-item">
+      <span class="stat-num">2</span>
+      <span class="stat-label">Fichiers analyses</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num">249</span>
+      <span class="stat-label">Lignes de code</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num">18</span>
+      <span class="stat-label">Annotations</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num">4</span>
+      <span class="stat-label">Commits couverts</span>
+    </div>
+  </div>
+  <div class="global-toggle">
+    <button class="toggle-all-btn" onclick="toggleAllGlobal(this)">Tout deplier</button>
+  </div>
+</header>
+
+<main>
+
+<!-- ==================== SESSION SUMMARY ==================== -->
+<section id="session-summary" class="fade-in">
+  <h2>Resume de la session</h2>
+  <p>Cette session a entierement refactorise le systeme d'initiative de combat. L'ancien systeme utilisait une barre <strong>horizontale</strong> avec alternance [?][E1][?][E2] et un curseur glissant — mais il buggait quand un pawn mourait (decalage du curseur).</p>
+  <p>Le nouveau systeme utilise un layout <strong>vertical a 2 colonnes</strong>, comme une file d'attente tournante :</p>
+  <ul style="margin: 12px 0 12px 30px; color: var(--text-cream);">
+    <li><strong>Colonne gauche</strong> : un slot vert generique "Joueur" (premiere ligne uniquement)</li>
+    <li><strong>Colonne droite</strong> : file d'attente des ennemis vivants</li>
+    <li><strong>Alternance du highlight</strong> : seul le slot du joueur actif (joueur OU ennemi) est mis en surbrillance</li>
+    <li><strong>Animation de rotation</strong> : quand un ennemi finit son tour, son slot monte + fade out, puis reapparait en bas avec fade in</li>
+  </ul>
+  <p>Commits couverts : <code>c374534</code> → <code>0fc055b</code> (creation initiale → refacto complete)</p>
+</section>
+
+<!-- ==================== ARCHITECTURE ==================== -->
+<section id="architecture-overview" class="fade-in">
+  <h2>Architecture des changements</h2>
+  <div class="svg-container">
+    <svg viewBox="0 0 700 320" width="100%" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arrow" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+          <polygon points="0 0, 10 3.5, 0 7" fill="#c9944a"/>
+        </marker>
+        <marker id="arrow-dash" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+          <polygon points="0 0, 10 3.5, 0 7" fill="#c9944a"/>
+        </marker>
+      </defs>
+
+      <!-- BattleInstance -->
+      <rect x="20" y="20" width="200" height="60" rx="6" fill="#231d16" stroke="#8b7335" stroke-width="1.5"/>
+      <text x="120" y="45" fill="#f0d78c" font-family="Cinzel,serif" font-size="13" text-anchor="middle">BattleInstance</text>
+      <text x="120" y="62" fill="#8a7e6b" font-family="JetBrains Mono,monospace" font-size="10" text-anchor="middle">OnTurnChanged / OnPawnDied</text>
+
+      <!-- InitiativeTimelineUI -->
+      <rect x="30" y="150" width="280" height="70" rx="6" fill="#231d16" stroke="#c9a84c" stroke-width="2.5"/>
+      <text x="170" y="178" fill="#f0d78c" font-family="Cinzel,serif" font-size="14" text-anchor="middle" font-weight="bold">InitiativeTimelineUI</text>
+      <text x="170" y="198" fill="#8a7e6b" font-family="JetBrains Mono,monospace" font-size="10" text-anchor="middle">Controleur principal (MODIFIE)</text>
+
+      <!-- TimelineSlotUI -->
+      <rect x="400" y="150" width="260" height="70" rx="6" fill="#231d16" stroke="#c9a84c" stroke-width="2.5"/>
+      <text x="530" y="178" fill="#f0d78c" font-family="Cinzel,serif" font-size="14" text-anchor="middle" font-weight="bold">TimelineSlotUI</text>
+      <text x="530" y="198" fill="#8a7e6b" font-family="JetBrains Mono,monospace" font-size="10" text-anchor="middle">Slot individuel (MODIFIE)</text>
+
+      <!-- BattlePawn -->
+      <rect x="250" y="270" width="200" height="40" rx="6" fill="#231d16" stroke="#8b7335" stroke-width="1"/>
+      <text x="350" y="295" fill="#f0d78c" font-family="Cinzel,serif" font-size="12" text-anchor="middle">BattlePawn</text>
+
+      <!-- Fleches -->
+      <!-- BattleInstance -> InitiativeTimelineUI (events) -->
+      <line x1="120" y1="80" x2="140" y2="150" stroke="#c9944a" stroke-width="1.5" stroke-dasharray="6,3" marker-end="url(#arrow-dash)"/>
+      <text x="85" y="118" fill="#c9944a" font-size="10" font-family="JetBrains Mono,monospace">events</text>
+
+      <!-- InitiativeTimelineUI -> TimelineSlotUI (instancie) -->
+      <line x1="310" y1="185" x2="400" y2="185" stroke="#c9944a" stroke-width="1.5" marker-end="url(#arrow)"/>
+      <text x="340" y="178" fill="#c9944a" font-size="10" font-family="JetBrains Mono,monospace">instancie</text>
+
+      <!-- InitiativeTimelineUI -> BattlePawn (utilise) -->
+      <line x1="170" y1="220" x2="280" y2="270" stroke="#c9944a" stroke-width="1" stroke-dasharray="6,3" marker-end="url(#arrow-dash)"/>
+      <text x="190" y="255" fill="#c9944a" font-size="10" font-family="JetBrains Mono,monospace">utilise</text>
+
+      <!-- TimelineSlotUI -> BattlePawn (utilise) -->
+      <line x1="500" y1="220" x2="420" y2="270" stroke="#c9944a" stroke-width="1" stroke-dasharray="6,3" marker-end="url(#arrow-dash)"/>
+      <text x="470" y="255" fill="#c9944a" font-size="10" font-family="JetBrains Mono,monospace">affiche</text>
+    </svg>
+  </div>
+</section>
+
+<!-- ==================== FEATURE FLOW ==================== -->
+<section id="feature-flow" class="fade-in">
+  <h2>Flux de la feature</h2>
+  <div class="svg-container">
+    <svg viewBox="0 0 750 200" width="100%" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="flow-arrow" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+          <polygon points="0 0, 10 3.5, 0 7" fill="#c9944a"/>
+        </marker>
+      </defs>
+
+      <!-- Step 1 -->
+      <rect x="10" y="30" width="130" height="55" rx="6" fill="#231d16" stroke="#8b7335" stroke-width="1.5"/>
+      <text x="75" y="52" fill="#f0d78c" font-family="Cinzel,serif" font-size="11" text-anchor="middle">1. Initialize</text>
+      <text x="75" y="70" fill="#8a7e6b" font-size="9" text-anchor="middle" font-family="JetBrains Mono,monospace">Creer VBoxContainer</text>
+
+      <line x1="140" y1="57" x2="160" y2="57" stroke="#c9944a" stroke-width="1.5" marker-end="url(#flow-arrow)"/>
+
+      <!-- Step 2 -->
+      <rect x="162" y="30" width="130" height="55" rx="6" fill="#231d16" stroke="#8b7335" stroke-width="1.5"/>
+      <text x="227" y="52" fill="#f0d78c" font-family="Cinzel,serif" font-size="11" text-anchor="middle">2. PlayerTurn</text>
+      <text x="227" y="70" fill="#8a7e6b" font-size="9" text-anchor="middle" font-family="JetBrains Mono,monospace">BuildUI + highlight J</text>
+
+      <line x1="292" y1="57" x2="312" y2="57" stroke="#c9944a" stroke-width="1.5" marker-end="url(#flow-arrow)"/>
+
+      <!-- Step 3 -->
+      <rect x="314" y="30" width="130" height="55" rx="6" fill="#231d16" stroke="#8b7335" stroke-width="1.5"/>
+      <text x="379" y="52" fill="#f0d78c" font-family="Cinzel,serif" font-size="11" text-anchor="middle">3. EnemyTurn</text>
+      <text x="379" y="70" fill="#8a7e6b" font-size="9" text-anchor="middle" font-family="JetBrains Mono,monospace">BuildUI + highlight E</text>
+
+      <line x1="444" y1="57" x2="464" y2="57" stroke="#c9944a" stroke-width="1.5" marker-end="url(#flow-arrow)"/>
+
+      <!-- Step 4 -->
+      <rect x="466" y="30" width="130" height="55" rx="6" fill="#231d16" stroke="#c9a84c" stroke-width="2"/>
+      <text x="531" y="52" fill="#f0d78c" font-family="Cinzel,serif" font-size="11" text-anchor="middle">4. Rotation</text>
+      <text x="531" y="70" fill="#8a7e6b" font-size="9" text-anchor="middle" font-family="JetBrains Mono,monospace">Anim haut + fade</text>
+
+      <line x1="596" y1="57" x2="616" y2="57" stroke="#c9944a" stroke-width="1.5" marker-end="url(#flow-arrow)"/>
+
+      <!-- Step 5 -->
+      <rect x="618" y="30" width="120" height="55" rx="6" fill="#231d16" stroke="#8b7335" stroke-width="1.5"/>
+      <text x="678" y="52" fill="#f0d78c" font-family="Cinzel,serif" font-size="11" text-anchor="middle">5. Rebuild</text>
+      <text x="678" y="70" fill="#8a7e6b" font-size="9" text-anchor="middle" font-family="JetBrains Mono,monospace">Fade in en bas</text>
+
+      <!-- Loop arrow back -->
+      <path d="M 678 85 L 678 140 Q 678 160 658 160 L 247 160 Q 227 160 227 140 L 227 85" stroke="#c9944a" stroke-width="1" stroke-dasharray="5,3" fill="none" marker-end="url(#flow-arrow)"/>
+      <text x="440" y="155" fill="#c9944a" font-size="10" font-family="JetBrains Mono,monospace">boucle tour suivant</text>
+
+      <!-- Death branch -->
+      <rect x="314" y="120" width="130" height="45" rx="6" fill="#231d16" stroke="#ce5050" stroke-width="1.5"/>
+      <text x="379" y="140" fill="#f0d78c" font-family="Cinzel,serif" font-size="11" text-anchor="middle">OnPawnDied</text>
+      <text x="379" y="155" fill="#8a7e6b" font-size="9" text-anchor="middle" font-family="JetBrains Mono,monospace">Remove + rebuild</text>
+    </svg>
+  </div>
+</section>
+
+<!-- ==================== FILE: InitiativeTimelineUI.cs ==================== -->
+<section class="file-section fade-in" id="file-InitiativeTimelineUI">
+  <div class="file-purpose-card">
+    <h2>InitiativeTimelineUI.cs <span class="badge badge-modified">MODIFIE</span></h2>
+    <p class="file-role">Controleur principal de la timeline d'initiative en combat. Gere la file d'attente circulaire des ennemis, la construction dynamique de l'UI verticale, l'alternance du highlight joueur/ennemi, et l'animation de rotation des slots.</p>
+  </div>
+
+  <div class="code-container">
+    <div class="code-toolbar">
+      <span class="file-path">src/ui/battle/InitiativeTimelineUI.cs</span>
+      <button class="toggle-all-btn" onclick="toggleAllAnnotations(this)">Tout deplier</button>
+    </div>
+    <pre class="code-block"><code><span class="code-line"><span class="line-num"> 1</span><span class="kw">using</span> <span class="type">Godot</span>;</code></span>
+<span class="code-line"><span class="line-num"> 2</span><span class="kw">using</span> <span class="type">System.Collections.Generic</span>;</code></span>
+<span class="code-line"><span class="line-num"> 3</span><span class="kw">using</span> <span class="type">System.Linq</span>;</code></span>
+<span class="code-line"><span class="line-num"> 4</span></code></span>
+<span class="code-line"><span class="line-num"> 5</span><span class="kw">public partial class</span> <span class="type">InitiativeTimelineUI</span> : <span class="type">Control</span> <span class="annotation-marker" onclick="toggleAnnotation('ann-tl-1')">?</span></code></span>
+<span class="code-line"><span class="line-num"> 6</span>{</code></span>
+<span class="code-line line-new"><span class="line-num"> 7</span>	<span class="type">PackedScene</span> slotScene;</code></span>
+<span class="code-line line-new"><span class="line-num"> 8</span>	<span class="type">VBoxContainer</span> rowsContainer; <span class="annotation-marker" onclick="toggleAnnotation('ann-tl-2')">?</span></code></span>
+<span class="code-line"><span class="line-num"> 9</span>	<span class="type">BattleInstance</span> battleInstance;</code></span>
+<span class="code-line"><span class="line-num">10</span></code></span>
+<span class="code-line line-new"><span class="line-num">11</span>	<span class="type">List</span>&lt;<span class="type">BattlePawn</span>&gt; enemyQueue = <span class="kw">new</span>(); <span class="annotation-marker" onclick="toggleAnnotation('ann-tl-3')">?</span></code></span>
+<span class="code-line line-new"><span class="line-num">12</span>	<span class="kw">bool</span> isFirstPlayerTurn = <span class="kw">true</span>;</code></span>
+<span class="code-line line-new"><span class="line-num">13</span>	<span class="kw">bool</span> isPlayerTurnActive = <span class="kw">true</span>;</code></span>
+<span class="code-line line-new"><span class="line-num">14</span>	<span class="kw">bool</span> isAnimating = <span class="kw">false</span>;</code></span>
+<span class="code-line"><span class="line-num">15</span></code></span>
+<span class="code-line line-new"><span class="line-num">16</span>	<span class="kw">const float</span> ANIM_DURATION = <span class="num">0.3f</span>; <span class="annotation-marker" onclick="toggleAnnotation('ann-tl-4')">?</span></code></span>
+<span class="code-line"><span class="line-num">17</span></code></span>
+<span class="code-line"><span class="line-num">18</span>	<span class="kw">public void</span> <span class="fn">Initialize</span>(<span class="type">BattleInstance</span> _battleInstance)</code></span>
+<span class="code-line"><span class="line-num">19</span>	{</code></span>
+<span class="code-line"><span class="line-num">20</span>		battleInstance = _battleInstance;</code></span>
+<span class="code-line"><span class="line-num">21</span>		Visible = <span class="kw">false</span>;</code></span>
+<span class="code-line"><span class="line-num">22</span></code></span>
+<span class="code-line"><span class="line-num">23</span>		slotScene = <span class="type">GD</span>.<span class="fn">Load</span>&lt;<span class="type">PackedScene</span>&gt;(<span class="str">"res://scenes/ui/battle/timeline_slot.tscn"</span>);</code></span>
+<span class="code-line"><span class="line-num">24</span></code></span>
+<span class="code-line line-new"><span class="line-num">25</span>		<span class="cmt">// Supprimer l'ancien layout</span> <span class="annotation-marker" onclick="toggleAnnotation('ann-tl-5')">?</span></code></span>
+<span class="code-line line-new"><span class="line-num">26</span>		<span class="kw">var</span> oldSlots = <span class="fn">GetNodeOrNull</span>&lt;<span class="type">HBoxContainer</span>&gt;(<span class="str">"HBoxContainer_Slots"</span>);</code></span>
+<span class="code-line line-new"><span class="line-num">27</span>		oldSlots?.<span class="fn">QueueFree</span>();</code></span>
+<span class="code-line line-new"><span class="line-num">28</span>		<span class="kw">var</span> oldCursor = <span class="fn">GetNodeOrNull</span>&lt;<span class="type">ColorRect</span>&gt;(<span class="str">"ColorRect_Cursor"</span>);</code></span>
+<span class="code-line line-new"><span class="line-num">29</span>		oldCursor?.<span class="fn">QueueFree</span>();</code></span>
+<span class="code-line"><span class="line-num">30</span></code></span>
+<span class="code-line line-new"><span class="line-num">31</span>		<span class="cmt">// Creer le nouveau layout vertical</span> <span class="annotation-marker" onclick="toggleAnnotation('ann-tl-6')">?</span></code></span>
+<span class="code-line line-new"><span class="line-num">32</span>		rowsContainer = <span class="kw">new</span> <span class="type">VBoxContainer</span>();</code></span>
+<span class="code-line line-new"><span class="line-num">33</span>		rowsContainer.LayoutMode = <span class="num">1</span>;</code></span>
+<span class="code-line line-new"><span class="line-num">34</span>		rowsContainer.AnchorsPreset = (<span class="kw">int</span>)<span class="type">LayoutPreset</span>.TopRight;</code></span>
+<span class="code-line line-new"><span class="line-num">35</span>		rowsContainer.AnchorLeft = <span class="num">1.0f</span>;</code></span>
+<span class="code-line line-new"><span class="line-num">36</span>		rowsContainer.AnchorRight = <span class="num">1.0f</span>;</code></span>
+<span class="code-line line-new"><span class="line-num">37</span>		rowsContainer.GrowHorizontal = <span class="type">GrowDirection</span>.Begin;</code></span>
+<span class="code-line line-new"><span class="line-num">38</span>		rowsContainer.AddThemeConstantOverride(<span class="str">"separation"</span>, <span class="num">4</span>);</code></span>
+<span class="code-line line-new"><span class="line-num">39</span>		<span class="fn">AddChild</span>(rowsContainer);</code></span>
+<span class="code-line"><span class="line-num">40</span></code></span>
+<span class="code-line"><span class="line-num">41</span>		battleInstance.OnPawnDied += <span class="fn">OnPawnDied</span>;</code></span>
+<span class="code-line"><span class="line-num">42</span>	}</code></span>
+<span class="code-line"><span class="line-num">43</span></code></span>
+<span class="code-line line-new"><span class="line-num">44</span>	<span class="kw">void</span> <span class="fn">BuildUI</span>() <span class="annotation-marker" onclick="toggleAnnotation('ann-tl-7')">?</span></code></span>
+<span class="code-line"><span class="line-num">45</span>	{</code></span>
+<span class="code-line line-new"><span class="line-num">46</span>		<span class="cmt">// Nettoyer le container</span></code></span>
+<span class="code-line line-new"><span class="line-num">47</span>		<span class="kw">foreach</span> (<span class="kw">var</span> child <span class="kw">in</span> rowsContainer.<span class="fn">GetChildren</span>())</code></span>
+<span class="code-line line-new"><span class="line-num">48</span>			child.<span class="fn">QueueFree</span>();</code></span>
+<span class="code-line"><span class="line-num">49</span></code></span>
+<span class="code-line line-new"><span class="line-num">50</span>		<span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">0</span>; i &lt; enemyQueue.Count; i++) <span class="annotation-marker" onclick="toggleAnnotation('ann-tl-8')">?</span></code></span>
+<span class="code-line"><span class="line-num">51</span>		{</code></span>
+<span class="code-line line-new"><span class="line-num">52</span>			<span class="kw">var</span> row = <span class="kw">new</span> <span class="type">HBoxContainer</span>();</code></span>
+<span class="code-line line-new"><span class="line-num">53</span>			row.<span class="fn">AddThemeConstantOverride</span>(<span class="str">"separation"</span>, <span class="num">4</span>);</code></span>
+<span class="code-line line-new"><span class="line-num">54</span>			rowsContainer.<span class="fn">AddChild</span>(row);</code></span>
+<span class="code-line"><span class="line-num">55</span></code></span>
+<span class="code-line line-new"><span class="line-num">56</span>			<span class="kw">if</span> (i == <span class="num">0</span>) <span class="annotation-marker" onclick="toggleAnnotation('ann-tl-9')">?</span></code></span>
+<span class="code-line"><span class="line-num">57</span>			{</code></span>
+<span class="code-line line-new"><span class="line-num">58</span>				<span class="cmt">// Slot joueur vert — premiere ligne uniquement</span></code></span>
+<span class="code-line line-new"><span class="line-num">59</span>				<span class="kw">var</span> playerSlot = slotScene.<span class="fn">Instantiate</span>&lt;<span class="type">TimelineSlotUI</span>&gt;();</code></span>
+<span class="code-line line-new"><span class="line-num">60</span>				row.<span class="fn">AddChild</span>(playerSlot);</code></span>
+<span class="code-line line-new"><span class="line-num">61</span>				playerSlot.<span class="fn">Setup</span>(<span class="kw">null</span>, <span class="kw">true</span>);</code></span>
+<span class="code-line line-new"><span class="line-num">62</span>				playerSlot.<span class="fn">SetHighlighted</span>(isPlayerTurnActive);</code></span>
+<span class="code-line"><span class="line-num">63</span>			}</code></span>
+<span class="code-line"><span class="line-num">64</span>			<span class="kw">else</span></code></span>
+<span class="code-line"><span class="line-num">65</span>			{</code></span>
+<span class="code-line line-new"><span class="line-num">66</span>				<span class="cmt">// Spacer pour aligner la colonne ennemie</span> <span class="annotation-marker" onclick="toggleAnnotation('ann-tl-10')">?</span></code></span>
+<span class="code-line line-new"><span class="line-num">67</span>				<span class="kw">var</span> spacer = <span class="kw">new</span> <span class="type">Control</span>();</code></span>
+<span class="code-line line-new"><span class="line-num">68</span>				spacer.CustomMinimumSize = <span class="kw">new</span> <span class="type">Vector2</span>(<span class="num">50</span>, <span class="num">0</span>);</code></span>
+<span class="code-line line-new"><span class="line-num">69</span>				row.<span class="fn">AddChild</span>(spacer);</code></span>
+<span class="code-line"><span class="line-num">70</span>			}</code></span>
+<span class="code-line"><span class="line-num">71</span></code></span>
+<span class="code-line line-new"><span class="line-num">72</span>			<span class="cmt">// Slot ennemi</span></code></span>
+<span class="code-line line-new"><span class="line-num">73</span>			<span class="kw">var</span> enemySlot = slotScene.<span class="fn">Instantiate</span>&lt;<span class="type">TimelineSlotUI</span>&gt;();</code></span>
+<span class="code-line line-new"><span class="line-num">74</span>			row.<span class="fn">AddChild</span>(enemySlot);</code></span>
+<span class="code-line line-new"><span class="line-num">75</span>			enemySlot.<span class="fn">Setup</span>(enemyQueue[i], <span class="kw">false</span>);</code></span>
+<span class="code-line line-new"><span class="line-num">76</span>			enemySlot.<span class="fn">SetHighlighted</span>(i == <span class="num">0</span> &amp;&amp; !isPlayerTurnActive);</code></span>
+<span class="code-line"><span class="line-num">77</span>		}</code></span>
+<span class="code-line"><span class="line-num">78</span>	}</code></span>
+<span class="code-line"><span class="line-num">79</span></code></span>
+<span class="code-line"><span class="line-num">80</span>	<span class="kw">public void</span> <span class="fn">OnTurnChanged</span>(<span class="type">BattleTurn</span> turn) <span class="annotation-marker" onclick="toggleAnnotation('ann-tl-11')">?</span></code></span>
+<span class="code-line"><span class="line-num">81</span>	{</code></span>
+<span class="code-line"><span class="line-num">82</span>		<span class="kw">if</span> (turn == <span class="type">BattleTurn</span>.Positioning || turn == <span class="type">BattleTurn</span>.EndOfBattleTurn || turn == <span class="type">BattleTurn</span>.None)</code></span>
+<span class="code-line"><span class="line-num">83</span>		{</code></span>
+<span class="code-line"><span class="line-num">84</span>			Visible = <span class="kw">false</span>;</code></span>
+<span class="code-line"><span class="line-num">85</span>			<span class="kw">return</span>;</code></span>
+<span class="code-line"><span class="line-num">86</span>		}</code></span>
+<span class="code-line"><span class="line-num">87</span></code></span>
+<span class="code-line"><span class="line-num">88</span>		Visible = <span class="kw">true</span>;</code></span>
+<span class="code-line"><span class="line-num">89</span></code></span>
+<span class="code-line line-new"><span class="line-num">90</span>		<span class="kw">if</span> (turn == <span class="type">BattleTurn</span>.PlayerTurn) <span class="annotation-marker" onclick="toggleAnnotation('ann-tl-12')">?</span></code></span>
+<span class="code-line"><span class="line-num">91</span>		{</code></span>
+<span class="code-line line-new"><span class="line-num">92</span>			isPlayerTurnActive = <span class="kw">true</span>;</code></span>
+<span class="code-line"><span class="line-num">93</span></code></span>
+<span class="code-line line-new"><span class="line-num">94</span>			<span class="kw">if</span> (isFirstPlayerTurn)</code></span>
+<span class="code-line"><span class="line-num">95</span>			{</code></span>
+<span class="code-line line-new"><span class="line-num">96</span>				enemyQueue = battleInstance.<span class="fn">IterateEnemyPawns</span>()</code></span>
+<span class="code-line line-new"><span class="line-num">97</span>					.<span class="fn">Where</span>(p =&gt; p.CurrentHP &gt; <span class="num">0</span>).<span class="fn">ToList</span>();</code></span>
+<span class="code-line line-new"><span class="line-num">98</span>				isFirstPlayerTurn = <span class="kw">false</span>;</code></span>
+<span class="code-line line-new"><span class="line-num">99</span>				<span class="fn">BuildUI</span>();</code></span>
+<span class="code-line"><span class="line-num">100</span>			}</code></span>
+<span class="code-line"><span class="line-num">101</span>			<span class="kw">else</span></code></span>
+<span class="code-line"><span class="line-num">102</span>			{</code></span>
+<span class="code-line line-new"><span class="line-num">103</span>				<span class="cmt">// Rotation animee : l'ennemi qui vient de jouer monte + fade out</span></code></span>
+<span class="code-line line-new"><span class="line-num">104</span>				<span class="fn">AnimateRotation</span>();</code></span>
+<span class="code-line"><span class="line-num">105</span>			}</code></span>
+<span class="code-line"><span class="line-num">106</span>		}</code></span>
+<span class="code-line line-new"><span class="line-num">107</span>		<span class="kw">else if</span> (turn == <span class="type">BattleTurn</span>.EnemyTurn)</code></span>
+<span class="code-line"><span class="line-num">108</span>		{</code></span>
+<span class="code-line line-new"><span class="line-num">109</span>			isPlayerTurnActive = <span class="kw">false</span>;</code></span>
+<span class="code-line line-new"><span class="line-num">110</span>			<span class="fn">BuildUI</span>();</code></span>
+<span class="code-line"><span class="line-num">111</span>		}</code></span>
+<span class="code-line"><span class="line-num">112</span>	}</code></span>
+<span class="code-line"><span class="line-num">113</span></code></span>
+<span class="code-line line-new"><span class="line-num">114</span>	<span class="kw">async void</span> <span class="fn">AnimateRotation</span>() <span class="annotation-marker" onclick="toggleAnnotation('ann-tl-13')">?</span></code></span>
+<span class="code-line"><span class="line-num">115</span>	{</code></span>
+<span class="code-line line-new"><span class="line-num">116</span>		<span class="kw">if</span> (isAnimating || enemyQueue.Count == <span class="num">0</span>)</code></span>
+<span class="code-line"><span class="line-num">117</span>		{</code></span>
+<span class="code-line line-new"><span class="line-num">118</span>			<span class="cmt">// Fallback sans animation</span></code></span>
+<span class="code-line line-new"><span class="line-num">119</span>			<span class="fn">PerformRotation</span>();</code></span>
+<span class="code-line line-new"><span class="line-num">120</span>			<span class="fn">BuildUI</span>();</code></span>
+<span class="code-line"><span class="line-num">121</span>			<span class="kw">return</span>;</code></span>
+<span class="code-line"><span class="line-num">122</span>		}</code></span>
+<span class="code-line"><span class="line-num">123</span></code></span>
+<span class="code-line line-new"><span class="line-num">124</span>		isAnimating = <span class="kw">true</span>;</code></span>
+<span class="code-line"><span class="line-num">125</span></code></span>
+<span class="code-line line-new"><span class="line-num">126</span>		<span class="cmt">// Recuperer la premiere ligne (row 0) et son slot ennemi (2e enfant)</span></code></span>
+<span class="code-line line-new"><span class="line-num">127</span>		<span class="kw">var</span> firstRow = rowsContainer.<span class="fn">GetChildOrNull</span>&lt;<span class="type">HBoxContainer</span>&gt;(<span class="num">0</span>);</code></span>
+<span class="code-line line-new"><span class="line-num">128</span>		<span class="kw">if</span> (firstRow == <span class="kw">null</span> || firstRow.<span class="fn">GetChildCount</span>() &lt; <span class="num">2</span>)</code></span>
+<span class="code-line"><span class="line-num">129</span>		{</code></span>
+<span class="code-line line-new"><span class="line-num">130</span>			<span class="fn">PerformRotation</span>();</code></span>
+<span class="code-line line-new"><span class="line-num">131</span>			<span class="fn">BuildUI</span>();</code></span>
+<span class="code-line line-new"><span class="line-num">132</span>			isAnimating = <span class="kw">false</span>;</code></span>
+<span class="code-line"><span class="line-num">133</span>			<span class="kw">return</span>;</code></span>
+<span class="code-line"><span class="line-num">134</span>		}</code></span>
+<span class="code-line"><span class="line-num">135</span></code></span>
+<span class="code-line line-new"><span class="line-num">136</span>		<span class="kw">var</span> enemySlot = firstRow.<span class="fn">GetChild</span>&lt;<span class="type">Control</span>&gt;(<span class="num">1</span>); <span class="annotation-marker" onclick="toggleAnnotation('ann-tl-14')">?</span></code></span>
+<span class="code-line"><span class="line-num">137</span></code></span>
+<span class="code-line line-new"><span class="line-num">138</span>		<span class="cmt">// Phase 1 : seul le slot ennemi monte + fade out</span></code></span>
+<span class="code-line line-new"><span class="line-num">139</span>		<span class="kw">var</span> tween = <span class="fn">CreateTween</span>(); <span class="annotation-marker" onclick="toggleAnnotation('ann-tl-15')">?</span></code></span>
+<span class="code-line line-new"><span class="line-num">140</span>		tween.<span class="fn">SetParallel</span>(<span class="kw">true</span>);</code></span>
+<span class="code-line line-new"><span class="line-num">141</span>		tween.<span class="fn">TweenProperty</span>(enemySlot, <span class="str">"position:y"</span>, enemySlot.Position.Y - <span class="num">40f</span>, ANIM_DURATION)</code></span>
+<span class="code-line line-new"><span class="line-num">142</span>			.<span class="fn">SetEase</span>(<span class="type">Tween</span>.<span class="type">EaseType</span>.In)</code></span>
+<span class="code-line line-new"><span class="line-num">143</span>			.<span class="fn">SetTrans</span>(<span class="type">Tween</span>.<span class="type">TransitionType</span>.Cubic);</code></span>
+<span class="code-line line-new"><span class="line-num">144</span>		tween.<span class="fn">TweenProperty</span>(enemySlot, <span class="str">"modulate:a"</span>, <span class="num">0f</span>, ANIM_DURATION)</code></span>
+<span class="code-line line-new"><span class="line-num">145</span>			.<span class="fn">SetEase</span>(<span class="type">Tween</span>.<span class="type">EaseType</span>.In)</code></span>
+<span class="code-line line-new"><span class="line-num">146</span>			.<span class="fn">SetTrans</span>(<span class="type">Tween</span>.<span class="type">TransitionType</span>.Cubic);</code></span>
+<span class="code-line"><span class="line-num">147</span></code></span>
+<span class="code-line line-new"><span class="line-num">148</span>		<span class="kw">await</span> <span class="fn">ToSignal</span>(tween, <span class="type">Tween</span>.<span class="type">SignalName</span>.Finished); <span class="annotation-marker" onclick="toggleAnnotation('ann-tl-16')">?</span></code></span>
+<span class="code-line"><span class="line-num">149</span></code></span>
+<span class="code-line line-new"><span class="line-num">150</span>		<span class="cmt">// Rotation des donnees + rebuild</span></code></span>
+<span class="code-line line-new"><span class="line-num">151</span>		<span class="fn">PerformRotation</span>();</code></span>
+<span class="code-line line-new"><span class="line-num">152</span>		<span class="fn">BuildUI</span>();</code></span>
+<span class="code-line"><span class="line-num">153</span></code></span>
+<span class="code-line line-new"><span class="line-num">154</span>		<span class="cmt">// Phase 2 : la derniere ligne (nouveau slot en bas) apparait en fade in</span> <span class="annotation-marker" onclick="toggleAnnotation('ann-tl-17')">?</span></code></span>
+<span class="code-line line-new"><span class="line-num">155</span>		<span class="kw">if</span> (enemyQueue.Count &gt; <span class="num">0</span>)</code></span>
+<span class="code-line"><span class="line-num">156</span>		{</code></span>
+<span class="code-line line-new"><span class="line-num">157</span>			<span class="kw">var</span> lastRow = rowsContainer.<span class="fn">GetChildOrNull</span>&lt;<span class="type">HBoxContainer</span>&gt;(rowsContainer.<span class="fn">GetChildCount</span>() - <span class="num">1</span>);</code></span>
+<span class="code-line line-new"><span class="line-num">158</span>			<span class="kw">if</span> (lastRow != <span class="kw">null</span>)</code></span>
+<span class="code-line"><span class="line-num">159</span>			{</code></span>
+<span class="code-line line-new"><span class="line-num">160</span>				lastRow.Modulate = <span class="kw">new</span> <span class="type">Color</span>(<span class="num">1f</span>, <span class="num">1f</span>, <span class="num">1f</span>, <span class="num">0f</span>);</code></span>
+<span class="code-line line-new"><span class="line-num">161</span>				<span class="kw">var</span> fadeIn = <span class="fn">CreateTween</span>();</code></span>
+<span class="code-line line-new"><span class="line-num">162</span>				fadeIn.<span class="fn">TweenProperty</span>(lastRow, <span class="str">"modulate:a"</span>, <span class="num">1f</span>, ANIM_DURATION)</code></span>
+<span class="code-line line-new"><span class="line-num">163</span>					.<span class="fn">SetEase</span>(<span class="type">Tween</span>.<span class="type">EaseType</span>.Out)</code></span>
+<span class="code-line line-new"><span class="line-num">164</span>					.<span class="fn">SetTrans</span>(<span class="type">Tween</span>.<span class="type">TransitionType</span>.Cubic);</code></span>
+<span class="code-line"><span class="line-num">165</span>			}</code></span>
+<span class="code-line"><span class="line-num">166</span>		}</code></span>
+<span class="code-line"><span class="line-num">167</span></code></span>
+<span class="code-line line-new"><span class="line-num">168</span>		isAnimating = <span class="kw">false</span>;</code></span>
+<span class="code-line"><span class="line-num">169</span>	}</code></span>
+<span class="code-line"><span class="line-num">170</span></code></span>
+<span class="code-line line-new"><span class="line-num">171</span>	<span class="kw">void</span> <span class="fn">PerformRotation</span>() <span class="annotation-marker" onclick="toggleAnnotation('ann-tl-18')">?</span></code></span>
+<span class="code-line"><span class="line-num">172</span>	{</code></span>
+<span class="code-line line-new"><span class="line-num">173</span>		<span class="kw">if</span> (enemyQueue.Count &gt; <span class="num">0</span>)</code></span>
+<span class="code-line"><span class="line-num">174</span>		{</code></span>
+<span class="code-line line-new"><span class="line-num">175</span>			<span class="kw">var</span> played = enemyQueue[<span class="num">0</span>];</code></span>
+<span class="code-line line-new"><span class="line-num">176</span>			enemyQueue.<span class="fn">RemoveAt</span>(<span class="num">0</span>);</code></span>
+<span class="code-line line-new"><span class="line-num">177</span>			enemyQueue.<span class="fn">Add</span>(played);</code></span>
+<span class="code-line"><span class="line-num">178</span>		}</code></span>
+<span class="code-line"><span class="line-num">179</span>	}</code></span>
+<span class="code-line"><span class="line-num">180</span></code></span>
+<span class="code-line"><span class="line-num">181</span>	<span class="kw">void</span> <span class="fn">OnPawnDied</span>(<span class="type">BattlePawn</span> pawn) <span class="annotation-marker" onclick="toggleAnnotation('ann-tl-19')">?</span></code></span>
+<span class="code-line"><span class="line-num">182</span>	{</code></span>
+<span class="code-line"><span class="line-num">183</span>		<span class="kw">if</span> (!Visible) <span class="kw">return</span>;</code></span>
+<span class="code-line line-new"><span class="line-num">184</span>		<span class="kw">if</span> (pawn.currentOwnership != <span class="type">BattlePawn</span>.<span class="type">Ownership</span>.ENEMY) <span class="kw">return</span>;</code></span>
+<span class="code-line"><span class="line-num">185</span></code></span>
+<span class="code-line"><span class="line-num">186</span>		enemyQueue.<span class="fn">Remove</span>(pawn);</code></span>
+<span class="code-line"><span class="line-num">187</span>		<span class="fn">BuildUI</span>();</code></span>
+<span class="code-line"><span class="line-num">188</span>	}</code></span>
+<span class="code-line"><span class="line-num">189</span>}</code></span></code></pre>
+  </div>
+
+  <!-- ANNOTATIONS -->
+  <div class="annotation-box annotation-box--concept collapsed" id="ann-tl-1">
+    <h4>Concept C# : partial class et heritage Control</h4>
+    <p><code>partial class</code> permet de repartir une classe sur plusieurs fichiers. Godot l'utilise pour generer automatiquement du code « cache » (les exports, les signaux...) dans un fichier separe. <code>Control</code> est la classe de base Godot pour tous les elements d'interface utilisateur (UI). C'est comme dire : « Cette classe est un element visuel de l'ecran ».</p>
+  </div>
+
+  <div class="annotation-box annotation-box--godot collapsed" id="ann-tl-2">
+    <h4>Godot : VBoxContainer vs HBoxContainer</h4>
+    <p>L'ancien code utilisait un <code>HBoxContainer</code> (disposition horizontale, comme des cartes posees en ligne sur une table). Le nouveau code utilise un <code>VBoxContainer</code> (disposition verticale, comme une pile de cartes). Chaque ligne de cette pile contient a son tour un <code>HBoxContainer</code> pour placer le slot joueur a gauche et le slot ennemi a droite.</p>
+  </div>
+
+  <div class="annotation-box annotation-box--logic collapsed" id="ann-tl-3">
+    <h4>Logique : La file d'attente circulaire</h4>
+    <p>Imaginez une file d'attente au supermarche : quand le premier client est servi, il quitte la tete de la file. Ici c'est pareil mais <strong>circulaire</strong> — l'ennemi qui vient de jouer ne « part » pas, il retourne a la fin de la file. <code>enemyQueue[0]</code> est toujours le prochain ennemi a jouer. Les flags <code>isFirstPlayerTurn</code>, <code>isPlayerTurnActive</code> et <code>isAnimating</code> controlent l'etat de la machine.</p>
+  </div>
+
+  <div class="annotation-box annotation-box--concept collapsed" id="ann-tl-4">
+    <h4>Concept C# : const</h4>
+    <p><code>const</code> declare une valeur qui ne changera jamais, fixee a la compilation. C'est comme graver un nombre dans la pierre. Ici, la duree de l'animation (0.3 secondes) est constante. Avantage : si on veut ajuster la vitesse, on n'a qu'un seul endroit a modifier.</p>
+  </div>
+
+  <div class="annotation-box annotation-box--godot collapsed" id="ann-tl-5">
+    <h4>Godot : GetNodeOrNull et QueueFree — nettoyage securise</h4>
+    <p><code>GetNodeOrNull</code> cherche un noeud enfant par son nom mais retourne <code>null</code> au lieu de crasher s'il n'existe pas. L'operateur <code>?.</code> (null-conditional) appelle <code>QueueFree()</code> seulement si le noeud existe. <code>QueueFree()</code> ne detruit pas le noeud immediatement — il le marque pour destruction a la fin de la frame actuelle, evitant les crashs si d'autres references existent encore.</p>
+  </div>
+
+  <div class="annotation-box annotation-box--godot collapsed" id="ann-tl-6">
+    <h4>Godot : Construction dynamique d'un layout</h4>
+    <p>Plutot que de definir le layout dans le fichier <code>.tscn</code> (l'editeur visuel), on cree le <code>VBoxContainer</code> entierement en code. C'est comme construire une etagere a la main plutot que d'acheter un meuble en kit. Les proprietes d'ancrage (<code>AnchorLeft/Right = 1.0</code>) le collent au bord droit de l'ecran. <code>GrowHorizontal = Begin</code> fait que le container s'etend vers la gauche quand son contenu grandit.</p>
+  </div>
+
+  <div class="annotation-box annotation-box--pattern collapsed" id="ann-tl-7">
+    <h4>Pattern : Rebuild complet vs mise a jour partielle</h4>
+    <p><code>BuildUI()</code> detruit tous les enfants puis reconstruit tout de zero. C'est le pattern le plus simple et robuste : pas besoin de tracker quel slot a change, on repart de zero. Le cout en performance est negligeable pour quelques slots. C'est comme effacer un tableau blanc et reecrire plutot que de gommer mot par mot.</p>
+  </div>
+
+  <div class="annotation-box annotation-box--logic collapsed" id="ann-tl-8">
+    <h4>Logique : Construction des lignes</h4>
+    <p>La boucle parcourt chaque ennemi de la file. Pour chaque ennemi, elle cree une ligne horizontale (<code>HBoxContainer</code>). La premiere ligne est speciale (index 0) : elle contient le slot joueur + le slot ennemi. Les lignes suivantes ont un spacer invisible de 50px a gauche pour aligner visuellement la colonne des ennemis.</p>
+  </div>
+
+  <div class="annotation-box annotation-box--logic collapsed" id="ann-tl-9">
+    <h4>Logique : Alternance du highlight</h4>
+    <p>La ligne 0 contient le « face a face » : joueur vs ennemi. Le highlight alterne selon <code>isPlayerTurnActive</code> :</p>
+    <p>• <strong>Tour du joueur</strong> : <code>playerSlot.SetHighlighted(true)</code>, <code>enemySlot.SetHighlighted(false)</code><br>
+    • <strong>Tour de l'ennemi</strong> : <code>playerSlot.SetHighlighted(false)</code>, <code>enemySlot.SetHighlighted(true)</code></p>
+    <p>Le slot non-highlight est automatiquement attenue (60% d'opacite) grace au code dans <code>TimelineSlotUI</code>.</p>
+  </div>
+
+  <div class="annotation-box annotation-box--godot collapsed" id="ann-tl-10">
+    <h4>Godot : Spacer avec CustomMinimumSize</h4>
+    <p>Un <code>Control</code> avec <code>CustomMinimumSize</code> de 50px de large agit comme un spacer invisible. Il « pousse » le slot ennemi vers la droite pour l'aligner avec les ennemis de la ligne 0, creant l'effet de 2 colonnes. C'est l'equivalent d'une cellule vide dans un tableau HTML.</p>
+  </div>
+
+  <div class="annotation-box annotation-box--logic collapsed" id="ann-tl-11">
+    <h4>Logique : Machine a etats des tours</h4>
+    <p><code>OnTurnChanged</code> est appele par <code>BattleInstance</code> a chaque changement de tour. C'est le point d'entree principal. Les etats non-combat (Positioning, EndOfBattle, None) cachent la timeline. Les etats de combat (PlayerTurn, EnemyTurn) l'affichent avec le bon highlight.</p>
+  </div>
+
+  <div class="annotation-box annotation-box--logic collapsed" id="ann-tl-12">
+    <h4>Logique : Premier tour vs tours suivants</h4>
+    <p>Le premier <code>PlayerTurn</code> est special : il construit la queue initiale en recuperant tous les ennemis vivants via LINQ (<code>Where</code> + <code>ToList</code>). Les tours suivants declenchent l'animation de rotation. L'astuce : le signal <code>PlayerTurn</code> arrive <em>apres</em> le tour ennemi, donc c'est le bon moment pour faire la rotation (l'ennemi qui vient de jouer passe en bas).</p>
+  </div>
+
+  <div class="annotation-box annotation-box--concept collapsed" id="ann-tl-13">
+    <h4>Concept C# : async void — le piege classique</h4>
+    <p><code>async void</code> permet d'utiliser <code>await</code> dans une methode qui ne retourne rien. C'est comme lancer une tache en arriere-plan sans moyen de savoir quand elle finit (sauf via le flag <code>isAnimating</code>). Normalement on prefere <code>async Task</code>, mais ici c'est un callback d'evenement, donc <code>void</code> est acceptable. Le guard <code>isAnimating</code> empeche de lancer 2 animations en parallele.</p>
+  </div>
+
+  <div class="annotation-box annotation-box--godot collapsed" id="ann-tl-14">
+    <h4>Godot : GetChild&lt;Control&gt; — cast type</h4>
+    <p><code>GetChild(index)</code> retourne un <code>Node</code> generique. Or, pour acceder a <code>Position</code> ou <code>Modulate</code>, il faut un <code>Control</code> (ou un type derive). Le generic <code>GetChild&lt;Control&gt;(1)</code> fait le cast automatiquement. L'index 1 = le 2e enfant de la ligne = le slot ennemi (le 1er etant le slot joueur ou le spacer).</p>
+  </div>
+
+  <div class="annotation-box annotation-box--godot collapsed" id="ann-tl-15">
+    <h4>Godot : Tween — animations procedurales</h4>
+    <p>Un <code>Tween</code> interpole une propriete d'un objet entre 2 valeurs sur une duree donnee. <code>SetParallel(true)</code> fait que les 2 tweens (position Y et opacite) s'executent <strong>en meme temps</strong> plutot que l'un apres l'autre. L'easing <code>Cubic In</code> accelere progressivement — le slot part doucement puis accelere vers le haut, comme un objet qui tombe a l'envers.</p>
+  </div>
+
+  <div class="annotation-box annotation-box--concept collapsed" id="ann-tl-16">
+    <h4>Concept C# + Godot : await ToSignal</h4>
+    <p><code>await ToSignal(tween, "finished")</code> est le pont entre le systeme de signaux Godot et le <code>async/await</code> de C#. C'est comme dire : « Mets ce code en pause et reviens quand l'animation est terminee ». Pendant l'attente, le reste du jeu continue normalement (pas de freeze). C'est la raison d'etre du <code>async</code> sur la methode.</p>
+  </div>
+
+  <div class="annotation-box annotation-box--logic collapsed" id="ann-tl-17">
+    <h4>Logique : Fade in du nouveau slot en bas</h4>
+    <p>Apres le rebuild, l'ennemi qui vient de jouer se retrouve en derniere position de <code>enemyQueue</code>, donc en derniere ligne du <code>VBoxContainer</code>. On le rend invisible (<code>Modulate alpha = 0</code>) puis on anime son apparition avec un <code>Cubic Out</code> (commence vite, ralentit a la fin). L'effet global : le slot sort par le haut, reapparait par le bas.</p>
+  </div>
+
+  <div class="annotation-box annotation-box--pattern collapsed" id="ann-tl-18">
+    <h4>Pattern : Rotation circulaire de liste</h4>
+    <p><code>PerformRotation</code> prend le premier element, le retire du debut et l'ajoute a la fin. C'est l'implementation la plus simple d'une file circulaire (circular buffer). Complexite : O(n) a cause du <code>RemoveAt(0)</code> qui decale tous les elements. Pour 3-5 ennemis, c'est parfaitement acceptable. On pourrait optimiser avec une <code>LinkedList</code> si necessaire, mais ce serait du sur-engineering.</p>
+  </div>
+
+  <div class="annotation-box annotation-box--logic collapsed" id="ann-tl-19">
+    <h4>Logique : Gestion de la mort d'un pawn</h4>
+    <p>Quand un pawn meurt, <code>BattleInstance</code> emet <code>OnPawnDied</code>. Ce handler ne s'interesse qu'aux ennemis (<code>Ownership.ENEMY</code>) — la mort d'un joueur n'affecte pas la timeline. L'ennemi est retire de la queue et l'UI est reconstruite, ce qui fait « remonter » les ennemis restants pour combler le trou. Simple et sans bug de decalage !</p>
+  </div>
+
+  <!-- CONCEPTS BOX -->
+  <div class="concepts-box">
+    <h3>Concepts cles de ce fichier</h3>
+    <div class="concept-item">
+      <strong>File d'attente circulaire (Circular Queue)</strong>
+      <p>Analogie : C'est comme un manege — quand un ennemi finit de tourner, il retourne a la fin de la file pour attendre son prochain tour. La liste <code>enemyQueue</code> tourne en boucle grace a <code>PerformRotation()</code>.</p>
+    </div>
+    <div class="concept-item">
+      <strong>async/await avec Godot Signals</strong>
+      <p>Analogie : C'est comme envoyer un SMS et attendre la reponse — votre vie continue en attendant. <code>await ToSignal()</code> met la methode en pause sans bloquer le jeu, puis reprend quand le signal est emis.</p>
+    </div>
+    <div class="concept-item">
+      <strong>Rebuild pattern (Immediate Mode UI)</strong>
+      <p>Analogie : Plutot que de deplacer les meubles dans une piece, on vide la piece et on la remeuble. <code>BuildUI()</code> detruit tout et reconstruit — simple, robuste, et sans bug d'etat desynchronise.</p>
+    </div>
+    <div class="concept-item">
+      <strong>Guard clauses (isAnimating)</strong>
+      <p>Analogie : Comme un videur a l'entree d'une boite — si une animation est deja en cours, la nouvelle demande est refusee et on fait un fallback sans animation. Empeche les bugs de double animation.</p>
+    </div>
+  </div>
+
+  <!-- GODOT BOX -->
+  <div class="godot-box">
+    <h3>Specificites Godot</h3>
+    <div class="concept-item">
+      <strong>QueueFree()</strong>
+      <p>Detruit un noeud a la fin de la frame, pas immediatement. Evite les crashs si d'autres scripts referent encore a ce noeud pendant cette frame.</p>
+    </div>
+    <div class="concept-item">
+      <strong>CreateTween()</strong>
+      <p>Cree un objet Tween attache au noeud appelant. Si le noeud est detruit, le tween est automatiquement annule. <code>SetParallel(true)</code> permet d'enchainer plusieurs proprietes animees simultanement.</p>
+    </div>
+    <div class="concept-item">
+      <strong>PackedScene.Instantiate&lt;T&gt;()</strong>
+      <p>Charge une scene pre-fabriquee (.tscn) et la materialise comme un noeud reel. Le generic <code>&lt;T&gt;</code> caste directement vers le type de script souhaite.</p>
+    </div>
+    <div class="concept-item">
+      <strong>GetNodeOrNull&lt;T&gt;()</strong>
+      <p>Version securisee de <code>GetNode()</code> qui retourne <code>null</code> au lieu de crasher. Indispensable quand on n'est pas sur qu'un noeud existe (par ex. apres migration de scene).</p>
+    </div>
+  </div>
+
+  <!-- MINI SVG -->
+  <div class="svg-container">
+    <svg viewBox="0 0 500 260" width="100%" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arr2" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+          <polygon points="0 0, 10 3.5, 0 7" fill="#c9944a"/>
+        </marker>
+      </defs>
+      <!-- Centre -->
+      <rect x="120" y="90" width="250" height="50" rx="6" fill="#231d16" stroke="#c9a84c" stroke-width="3"/>
+      <text x="245" y="120" fill="#f0d78c" font-family="Cinzel,serif" font-size="14" text-anchor="middle" font-weight="bold">InitiativeTimelineUI</text>
+      <!-- BattleInstance -->
+      <rect x="10" y="10" width="160" height="35" rx="4" fill="#231d16" stroke="#8b7335" stroke-width="1"/>
+      <text x="90" y="33" fill="#f0d78c" font-size="11" text-anchor="middle" font-family="JetBrains Mono,monospace">BattleInstance</text>
+      <line x1="90" y1="45" x2="200" y2="90" stroke="#c9944a" stroke-width="1" stroke-dasharray="5,3" marker-end="url(#arr2)"/>
+      <!-- TimelineSlotUI -->
+      <rect x="310" y="10" width="160" height="35" rx="4" fill="#231d16" stroke="#8b7335" stroke-width="1"/>
+      <text x="390" y="33" fill="#f0d78c" font-size="11" text-anchor="middle" font-family="JetBrains Mono,monospace">TimelineSlotUI</text>
+      <line x1="320" y1="90" x2="370" y2="45" stroke="#c9944a" stroke-width="1.5" marker-end="url(#arr2)"/>
+      <!-- BattlePawn -->
+      <rect x="170" y="200" width="150" height="35" rx="4" fill="#231d16" stroke="#8b7335" stroke-width="1"/>
+      <text x="245" y="223" fill="#f0d78c" font-size="11" text-anchor="middle" font-family="JetBrains Mono,monospace">BattlePawn</text>
+      <line x1="245" y1="140" x2="245" y2="200" stroke="#c9944a" stroke-width="1" stroke-dasharray="5,3" marker-end="url(#arr2)"/>
+      <!-- Legende -->
+      <line x1="10" y1="240" x2="40" y2="240" stroke="#c9944a" stroke-width="1.5"/>
+      <text x="48" y="244" fill="#8a7e6b" font-size="10" font-family="JetBrains Mono,monospace">instancie</text>
+      <line x1="130" y1="240" x2="160" y2="240" stroke="#c9944a" stroke-width="1" stroke-dasharray="5,3"/>
+      <text x="168" y="244" fill="#8a7e6b" font-size="10" font-family="JetBrains Mono,monospace">utilise / ecoute</text>
+    </svg>
+  </div>
+</section>
+
+<!-- ==================== FILE: TimelineSlotUI.cs ==================== -->
+<section class="file-section fade-in" id="file-TimelineSlotUI">
+  <div class="file-purpose-card">
+    <h2>TimelineSlotUI.cs <span class="badge badge-modified">MODIFIE</span></h2>
+    <p class="file-role">Represente un slot individuel dans la timeline d'initiative. Affiche le portrait colore (vert pour le joueur, rouge pour les ennemis) et gere son etat de mise en surbrillance avec un style dore dynamique.</p>
+  </div>
+
+  <div class="code-container">
+    <div class="code-toolbar">
+      <span class="file-path">src/ui/battle/TimelineSlotUI.cs</span>
+      <button class="toggle-all-btn" onclick="toggleAllAnnotations(this)">Tout deplier</button>
+    </div>
+    <pre class="code-block"><code><span class="code-line"><span class="line-num"> 1</span><span class="kw">using</span> <span class="type">Godot</span>;</code></span>
+<span class="code-line"><span class="line-num"> 2</span></code></span>
+<span class="code-line"><span class="line-num"> 3</span><span class="kw">public partial class</span> <span class="type">TimelineSlotUI</span> : <span class="type">PanelContainer</span> <span class="annotation-marker" onclick="toggleAnnotation('ann-sl-1')">?</span></code></span>
+<span class="code-line"><span class="line-num"> 4</span>{</code></span>
+<span class="code-line"><span class="line-num"> 5</span>	<span class="type">ColorRect</span> portraitRect;</code></span>
+<span class="code-line"><span class="line-num"> 6</span>	<span class="type">Label</span> nameLabel;</code></span>
+<span class="code-line"><span class="line-num"> 7</span>	<span class="type">Panel</span> highlightPanel;</code></span>
+<span class="code-line"><span class="line-num"> 8</span></code></span>
+<span class="code-line"><span class="line-num"> 9</span>	<span class="kw">public override void</span> <span class="fn">_Ready</span>() <span class="annotation-marker" onclick="toggleAnnotation('ann-sl-2')">?</span></code></span>
+<span class="code-line"><span class="line-num">10</span>	{</code></span>
+<span class="code-line"><span class="line-num">11</span>		<span class="kw">var</span> margin = <span class="fn">GetNode</span>&lt;<span class="type">MarginContainer</span>&gt;(<span class="str">"MarginContainer"</span>);</code></span>
+<span class="code-line"><span class="line-num">12</span>		<span class="kw">var</span> vbox = margin.<span class="fn">GetNode</span>&lt;<span class="type">VBoxContainer</span>&gt;(<span class="str">"VBoxContainer"</span>);</code></span>
+<span class="code-line"><span class="line-num">13</span>		portraitRect = vbox.<span class="fn">GetNode</span>&lt;<span class="type">ColorRect</span>&gt;(<span class="str">"ColorRect_Portrait"</span>);</code></span>
+<span class="code-line"><span class="line-num">14</span>		nameLabel = vbox.<span class="fn">GetNode</span>&lt;<span class="type">Label</span>&gt;(<span class="str">"Label_Name"</span>);</code></span>
+<span class="code-line"><span class="line-num">15</span>		highlightPanel = <span class="fn">GetNode</span>&lt;<span class="type">Panel</span>&gt;(<span class="str">"Panel_Highlight"</span>);</code></span>
+<span class="code-line"><span class="line-num">16</span>		highlightPanel.Visible = <span class="kw">false</span>;</code></span>
+<span class="code-line"><span class="line-num">17</span>	}</code></span>
+<span class="code-line"><span class="line-num">18</span></code></span>
+<span class="code-line line-modified"><span class="line-num">19</span>	<span class="kw">public void</span> <span class="fn">Setup</span>(<span class="type">BattlePawn</span> pawn, <span class="kw">bool</span> isPlayer) <span class="annotation-marker" onclick="toggleAnnotation('ann-sl-3')">?</span></code></span>
+<span class="code-line"><span class="line-num">20</span>	{</code></span>
+<span class="code-line"><span class="line-num">21</span>		<span class="kw">if</span> (isPlayer)</code></span>
+<span class="code-line"><span class="line-num">22</span>		{</code></span>
+<span class="code-line line-new"><span class="line-num">23</span>			portraitRect.Color = <span class="kw">new</span> <span class="type">Color</span>(<span class="num">0.2f</span>, <span class="num">0.8f</span>, <span class="num">0.2f</span>, <span class="num">1f</span>);</code></span>
+<span class="code-line line-new"><span class="line-num">24</span>			nameLabel.Text = <span class="str">"Joueur"</span>;</code></span>
+<span class="code-line"><span class="line-num">25</span>		}</code></span>
+<span class="code-line"><span class="line-num">26</span>		<span class="kw">else</span></code></span>
+<span class="code-line"><span class="line-num">27</span>		{</code></span>
+<span class="code-line"><span class="line-num">28</span>			portraitRect.Color = <span class="kw">new</span> <span class="type">Color</span>(<span class="num">0.7f</span>, <span class="num">0.15f</span>, <span class="num">0.15f</span>, <span class="num">1f</span>);</code></span>
+<span class="code-line"><span class="line-num">29</span>			nameLabel.Text = pawn?.Name ?? <span class="str">"???"</span>;</code></span>
+<span class="code-line"><span class="line-num">30</span>		}</code></span>
+<span class="code-line"><span class="line-num">31</span>	}</code></span>
+<span class="code-line"><span class="line-num">32</span></code></span>
+<span class="code-line line-new"><span class="line-num">33</span>	<span class="kw">public void</span> <span class="fn">SetHighlighted</span>(<span class="kw">bool</span> highlighted) <span class="annotation-marker" onclick="toggleAnnotation('ann-sl-4')">?</span></code></span>
+<span class="code-line"><span class="line-num">34</span>	{</code></span>
+<span class="code-line line-new"><span class="line-num">35</span>		highlightPanel.Visible = highlighted;</code></span>
+<span class="code-line"><span class="line-num">36</span></code></span>
+<span class="code-line line-new"><span class="line-num">37</span>		<span class="kw">if</span> (highlighted)</code></span>
+<span class="code-line"><span class="line-num">38</span>		{</code></span>
+<span class="code-line line-new"><span class="line-num">39</span>			<span class="cmt">// Bordure plus epaisse + legere surbrillance sur tout le slot</span></code></span>
+<span class="code-line line-new"><span class="line-num">40</span>			<span class="kw">var</span> style = <span class="kw">new</span> <span class="type">StyleBoxFlat</span>(); <span class="annotation-marker" onclick="toggleAnnotation('ann-sl-5')">?</span></code></span>
+<span class="code-line line-new"><span class="line-num">41</span>			style.DrawCenter = <span class="kw">false</span>;</code></span>
+<span class="code-line line-new"><span class="line-num">42</span>			style.BorderWidthLeft = <span class="num">3</span>;</code></span>
+<span class="code-line line-new"><span class="line-num">43</span>			style.BorderWidthTop = <span class="num">3</span>;</code></span>
+<span class="code-line line-new"><span class="line-num">44</span>			style.BorderWidthRight = <span class="num">3</span>;</code></span>
+<span class="code-line line-new"><span class="line-num">45</span>			style.BorderWidthBottom = <span class="num">3</span>;</code></span>
+<span class="code-line line-new"><span class="line-num">46</span>			style.BorderColor = <span class="kw">new</span> <span class="type">Color</span>(<span class="num">0.95f</span>, <span class="num">0.85f</span>, <span class="num">0.2f</span>, <span class="num">1f</span>);</code></span>
+<span class="code-line line-new"><span class="line-num">47</span>			style.CornerRadiusTopLeft = <span class="num">4</span>;</code></span>
+<span class="code-line line-new"><span class="line-num">48</span>			style.CornerRadiusTopRight = <span class="num">4</span>;</code></span>
+<span class="code-line line-new"><span class="line-num">49</span>			style.CornerRadiusBottomLeft = <span class="num">4</span>;</code></span>
+<span class="code-line line-new"><span class="line-num">50</span>			style.CornerRadiusBottomRight = <span class="num">4</span>;</code></span>
+<span class="code-line line-new"><span class="line-num">51</span>			highlightPanel.<span class="fn">AddThemeStyleboxOverride</span>(<span class="str">"panel"</span>, style);</code></span>
+<span class="code-line"><span class="line-num">52</span></code></span>
+<span class="code-line line-new"><span class="line-num">53</span>			Modulate = <span class="kw">new</span> <span class="type">Color</span>(<span class="num">1f</span>, <span class="num">1f</span>, <span class="num">1f</span>, <span class="num">1f</span>);</code></span>
+<span class="code-line"><span class="line-num">54</span>		}</code></span>
+<span class="code-line"><span class="line-num">55</span>		<span class="kw">else</span></code></span>
+<span class="code-line"><span class="line-num">56</span>		{</code></span>
+<span class="code-line line-new"><span class="line-num">57</span>			Modulate = <span class="kw">new</span> <span class="type">Color</span>(<span class="num">1f</span>, <span class="num">1f</span>, <span class="num">1f</span>, <span class="num">0.6f</span>);</code></span>
+<span class="code-line"><span class="line-num">58</span>		}</code></span>
+<span class="code-line"><span class="line-num">59</span>	}</code></span>
+<span class="code-line"><span class="line-num">60</span>}</code></span></code></pre>
+  </div>
+
+  <!-- ANNOTATIONS -->
+  <div class="annotation-box annotation-box--godot collapsed" id="ann-sl-1">
+    <h4>Godot : PanelContainer</h4>
+    <p><code>PanelContainer</code> est un conteneur qui dessine un fond (un panel) derriere ses enfants. C'est comme un cadre photo — il fournit un fond stylise et contient le portrait + le nom. Le style du fond est defini dans la scene <code>.tscn</code> via un <code>StyleBoxFlat</code> sombre avec coins arrondis.</p>
+  </div>
+
+  <div class="annotation-box annotation-box--godot collapsed" id="ann-sl-2">
+    <h4>Godot : _Ready() — l'initialisation Godot</h4>
+    <p><code>_Ready()</code> est appele automatiquement par Godot quand le noeud et tous ses enfants sont prets dans l'arbre de scene. C'est LE moment pour chercher les noeuds enfants avec <code>GetNode</code>. Si on le faisait dans le constructeur, les enfants n'existeraient pas encore. C'est comme attendre que tous les invites soient arrives avant de commencer la reunion.</p>
+  </div>
+
+  <div class="annotation-box annotation-box--logic collapsed" id="ann-sl-3">
+    <h4>Logique : Setup — joueur vert vs ennemi rouge</h4>
+    <p>Avant la refacto, le joueur etait affiche en gris avec « ? » — anonyme et discret. Maintenant il est <strong>vert vif</strong> avec le texte « Joueur ». Les ennemis restent en rouge avec leur vrai nom. L'operateur <code>??</code> (null-coalescing) affiche « ??? » si le pawn n'a pas de nom, ce qui ne devrait jamais arriver mais protege contre les crashs.</p>
+  </div>
+
+  <div class="annotation-box annotation-box--logic collapsed" id="ann-sl-4">
+    <h4>Logique : SetHighlighted — le remplacant de SetState</h4>
+    <p>L'ancien code avait 3 etats (Passed, Active, Future) via un <code>enum</code>. Le nouveau code simplifie tout en un booleen : highlight ou pas. Le slot highlight a une opacite de 100%, le slot non-highlight est attenue a 60%. C'est plus simple et plus lisible — on n'a plus besoin de gerer les transitions entre 3 etats.</p>
+  </div>
+
+  <div class="annotation-box annotation-box--godot collapsed" id="ann-sl-5">
+    <h4>Godot : StyleBoxFlat dynamique</h4>
+    <p>Un <code>StyleBoxFlat</code> definit l'apparence d'un panneau (couleur, bordure, coins arrondis). Ici on en cree un <strong>programmatiquement</strong> plutot que dans l'editeur. <code>DrawCenter = false</code> signifie « ne dessine que la bordure, pas le fond » — on veut juste un contour dore de 3px autour du slot actif. <code>AddThemeStyleboxOverride</code> ecrase le style de la scene pour ce noeud uniquement.</p>
+  </div>
+
+  <!-- CONCEPTS BOX -->
+  <div class="concepts-box">
+    <h3>Concepts cles de ce fichier</h3>
+    <div class="concept-item">
+      <strong>Null-coalescing operator (??)</strong>
+      <p>Analogie : « Si le plat principal est vide, sers le plat de secours ». <code>pawn?.Name ?? "???"</code> retourne le nom du pawn s'il existe, sinon la chaine "???".</p>
+    </div>
+    <div class="concept-item">
+      <strong>Modulate — teinte globale d'un noeud</strong>
+      <p>Analogie : C'est comme mettre un filtre Instagram sur un element. <code>Modulate</code> multiplie toutes les couleurs du noeud et ses enfants. Alpha a 0.6 = 60% d'opacite, rendant le slot translucide quand il n'est pas actif.</p>
+    </div>
+    <div class="concept-item">
+      <strong>Simplification d'enum vers bool</strong>
+      <p>L'ancien <code>TimelineSlotState</code> (3 valeurs) a ete remplace par un simple <code>bool highlighted</code>. Quand 2 des 3 etats produisent le meme resultat visuel, un booleen suffit. Moins de code = moins de bugs.</p>
+    </div>
+  </div>
+
+  <!-- GODOT BOX -->
+  <div class="godot-box">
+    <h3>Specificites Godot</h3>
+    <div class="concept-item">
+      <strong>PanelContainer</strong>
+      <p>Conteneur qui fournit un fond dessine derriere ses enfants. Le style du fond est controle par le theme ou par un override via <code>AddThemeStyleboxOverride</code>.</p>
+    </div>
+    <div class="concept-item">
+      <strong>_Ready()</strong>
+      <p>Callback appele une seule fois quand le noeud entre dans l'arbre de scene et que tous ses enfants sont prets. C'est l'equivalent d'un constructeur post-initialisation.</p>
+    </div>
+    <div class="concept-item">
+      <strong>AddThemeStyleboxOverride()</strong>
+      <p>Ecrase le style d'un panneau pour cette instance uniquement, sans modifier le theme global. Les autres Panel du jeu ne sont pas affectes.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== GLOSSARY ==================== -->
+<section id="glossary" class="fade-in">
+  <h2>Glossaire</h2>
+  <dl>
+    <dt>File d'attente circulaire (Circular Queue)</dt>
+    <dd>Structure de donnees ou le dernier element est suivi du premier, formant une boucle. Ici, les ennemis tournent dans la file apres avoir joue leur tour.</dd>
+
+    <dt>Tween</dt>
+    <dd>Objet Godot qui interpole (« tweene ») une propriete entre deux valeurs sur une duree donnee. Utilise pour les animations procedurales (mouvement, opacite, echelle...).</dd>
+
+    <dt>async / await</dt>
+    <dd>Mecanisme C# pour ecrire du code asynchrone (qui attend un resultat futur) sans bloquer le thread principal. L'execution est suspendue au <code>await</code> et reprend quand la tache est terminee.</dd>
+
+    <dt>QueueFree()</dt>
+    <dd>Methode Godot qui planifie la destruction d'un noeud a la fin de la frame actuelle. Plus sur que la destruction immediate car d'autres scripts peuvent encore referencer le noeud.</dd>
+
+    <dt>PackedScene</dt>
+    <dd>Fichier <code>.tscn</code> charge en memoire, pret a etre instancie (materialise) en noeud reel. C'est le « moule » a partir duquel on cree des copies.</dd>
+
+    <dt>Signal</dt>
+    <dd>Systeme d'evenements Godot : un noeud emet un signal, d'autres noeuds le recoivent et reagissent. Equivalent du pattern Observer. Ici : <code>OnTurnChanged</code> et <code>OnPawnDied</code>.</dd>
+
+    <dt>StyleBoxFlat</dt>
+    <dd>Ressource Godot definissant l'apparence d'un panneau : couleur de fond, bordure, coins arrondis. Peut etre creee en code ou dans l'editeur.</dd>
+
+    <dt>Modulate</dt>
+    <dd>Propriete <code>Color</code> de tout <code>CanvasItem</code> Godot. Multiplie les couleurs du noeud et de ses enfants. Utile pour teinter, assombrir ou rendre transparent un element.</dd>
+
+    <dt>LINQ (Where, ToList)</dt>
+    <dd>Language Integrated Query — syntaxe C# pour filtrer et transformer des collections. <code>Where(p => ...)</code> filtre, <code>ToList()</code> materialise le resultat en liste concrete.</dd>
+
+    <dt>Null-conditional (?.) et Null-coalescing (??)</dt>
+    <dd><code>?.</code> : n'appelle la methode que si l'objet n'est pas null. <code>??</code> : fournit une valeur par defaut si le resultat est null. Deux operateurs pour ecrire du code defensif en une ligne.</dd>
+
+    <dt>partial class</dt>
+    <dd>Mot-cle C# permettant de definir une classe sur plusieurs fichiers. Godot l'utilise pour generer automatiquement du code (exports, signaux) dans un fichier cache.</dd>
+
+    <dt>Guard clause</dt>
+    <dd>Pattern de code ou les conditions d'erreur/cas speciaux sont verifiees en debut de methode avec un <code>return</code> precoce. Reduit l'imbrication et clarifie le flux principal.</dd>
+
+    <dt>Easing (Cubic In/Out)</dt>
+    <dd>Courbes d'acceleration pour les animations. <code>In</code> = demarre lentement et accelere. <code>Out</code> = demarre vite et decelere. <code>Cubic</code> = courbe douce et naturelle.</dd>
+  </dl>
+</section>
+
+</main>
+
+<script>
+// Toggle d'une annotation individuelle
+function toggleAnnotation(id) {
+  const el = document.getElementById(id);
+  if (el) el.classList.toggle('collapsed');
+}
+
+// Tout deplier / replier pour une section
+function toggleAllAnnotations(btn) {
+  const section = btn.closest('.file-section');
+  const boxes = section.querySelectorAll('.annotation-box');
+  const allCollapsed = [...boxes].every(b => b.classList.contains('collapsed'));
+  boxes.forEach(b => {
+    if (allCollapsed) b.classList.remove('collapsed');
+    else b.classList.add('collapsed');
+  });
+  btn.textContent = allCollapsed ? 'Tout replier' : 'Tout deplier';
+}
+
+// Bouton global tout deplier / replier
+function toggleAllGlobal(btn) {
+  const boxes = document.querySelectorAll('.annotation-box');
+  const allCollapsed = [...boxes].every(b => b.classList.contains('collapsed'));
+  boxes.forEach(b => {
+    if (allCollapsed) b.classList.remove('collapsed');
+    else b.classList.add('collapsed');
+  });
+  btn.textContent = allCollapsed ? 'Tout replier' : 'Tout deplier';
+  document.querySelectorAll('.toggle-all-btn').forEach(b => {
+    b.textContent = allCollapsed ? 'Tout replier' : 'Tout deplier';
+  });
+}
+
+// Scroll spy pour sidebar
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      document.querySelectorAll('.sidebar a').forEach(a => a.classList.remove('active'));
+      const link = document.querySelector('.sidebar a[href="#' + entry.target.id + '"]');
+      if (link) link.classList.add('active');
+    }
+  });
+}, { threshold: 0.3 });
+document.querySelectorAll('section[id]').forEach(s => observer.observe(s));
+
+// Fade-in au scroll
+const fadeObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      fadeObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.1 });
+document.querySelectorAll('.fade-in').forEach(el => fadeObserver.observe(el));
+</script>
+
+</body>
+</html>
