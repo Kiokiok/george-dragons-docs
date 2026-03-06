@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GroundCoverMeshGenerator - Technical Documentation</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: #1a1a2e;
+        color: #e0e0e0;
+        line-height: 1.6;
+    }
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+    h1 {
+        font-size: 2em;
+        color: #e6b86a;
+        border-bottom: 2px solid #e6b86a;
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+    }
+    h2 {
+        font-size: 1.4em;
+        color: #c8a45a;
+        margin-top: 30px;
+        margin-bottom: 12px;
+    }
+    h3 {
+        font-size: 1.1em;
+        color: #a8884a;
+        margin-top: 20px;
+        margin-bottom: 8px;
+    }
+    p, li { margin-bottom: 8px; }
+    ul { padding-left: 24px; }
+    code {
+        background: #16213e;
+        color: #7ec8e3;
+        padding: 2px 6px;
+        border-radius: 3px;
+        font-family: 'Consolas', 'Courier New', monospace;
+        font-size: 0.9em;
+    }
+    pre {
+        background: #16213e;
+        border: 1px solid #2a3a5e;
+        border-radius: 6px;
+        padding: 16px;
+        overflow-x: auto;
+        margin: 12px 0;
+        font-family: 'Consolas', 'Courier New', monospace;
+        font-size: 0.85em;
+        line-height: 1.5;
+        color: #c8d8e8;
+    }
+    pre .comment { color: #6a8a5a; }
+    pre .keyword { color: #c586c0; }
+    pre .type { color: #4ec9b0; }
+    pre .number { color: #b5cea8; }
+    pre .string { color: #ce9178; }
+
+    .viewer-container {
+        background: #0f0f23;
+        border: 2px solid #2a3a5e;
+        border-radius: 8px;
+        margin: 20px 0;
+        overflow: hidden;
+    }
+    .viewer-toolbar {
+        background: #16213e;
+        padding: 10px 16px;
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: center;
+        border-bottom: 1px solid #2a3a5e;
+    }
+    .viewer-toolbar label {
+        color: #a0b0c0;
+        font-size: 0.85em;
+    }
+    .viewer-toolbar select, .viewer-toolbar input[type="range"] {
+        background: #1a1a2e;
+        color: #e0e0e0;
+        border: 1px solid #3a4a6e;
+        border-radius: 4px;
+        padding: 4px 8px;
+        font-size: 0.85em;
+    }
+    .viewer-toolbar input[type="range"] {
+        width: 100px;
+    }
+    .viewer-toolbar button {
+        background: #e6b86a;
+        color: #1a1a2e;
+        border: none;
+        border-radius: 4px;
+        padding: 5px 12px;
+        cursor: pointer;
+        font-weight: bold;
+        font-size: 0.85em;
+    }
+    .viewer-toolbar button:hover { background: #f0c87a; }
+    .viewer-toolbar .cb-group {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+    .viewer-toolbar input[type="checkbox"] {
+        accent-color: #e6b86a;
+    }
+    #viewer-canvas {
+        width: 100%;
+        height: 500px;
+        display: block;
+    }
+    .viewer-info {
+        background: #16213e;
+        padding: 8px 16px;
+        font-size: 0.8em;
+        color: #607080;
+        border-top: 1px solid #2a3a5e;
+    }
+
+    .step-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin: 16px 0;
+    }
+    .step-card {
+        background: #16213e;
+        border: 1px solid #2a3a5e;
+        border-radius: 6px;
+        padding: 16px;
+    }
+    .step-card h3 {
+        margin-top: 0;
+        color: #e6b86a;
+    }
+    .step-number {
+        display: inline-block;
+        background: #e6b86a;
+        color: #1a1a2e;
+        width: 24px;
+        height: 24px;
+        text-align: center;
+        border-radius: 50%;
+        font-weight: bold;
+        font-size: 0.85em;
+        line-height: 24px;
+        margin-right: 6px;
+    }
+
+    .uv-diagram {
+        display: inline-block;
+        margin: 12px 0;
+    }
+    .uv-diagram canvas {
+        border: 1px solid #3a4a6e;
+        border-radius: 4px;
+    }
+
+    .note {
+        background: #1e2a40;
+        border-left: 3px solid #e6b86a;
+        padding: 10px 14px;
+        margin: 12px 0;
+        font-size: 0.9em;
+    }
+
+    @media (max-width: 768px) {
+        .step-grid { grid-template-columns: 1fr; }
+        #viewer-canvas { height: 350px; }
+        .viewer-toolbar { flex-direction: column; align-items: flex-start; }
+    }
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>GroundCoverMeshGenerator</h1>
+<p>A procedural mesh generator for ground cover surfaces in a tile-based tactics game (Godot 4 / C#). It produces a single <code>ArrayMesh</code> covering arbitrary tile positions, complete with skirts (horizontal extensions on exposed edges) and corner patches to fill gaps.</p>
+
+<h2>Interactive 3D Viewer</h2>
+<div class="viewer-container">
+    <div class="viewer-toolbar">
+        <label>Preset:</label>
+        <select id="preset-select">
+            <option value="l-shape">L-Shape</option>
+            <option value="line">Straight Line</option>
+            <option value="platform">3x3 Platform</option>
+            <option value="heights">Height Variation</option>
+            <option value="u-shape">U-Shape</option>
+            <option value="cross">Cross</option>
+        </select>
+
+        <label>Skirt Depth:</label>
+        <input type="range" id="skirt-depth" min="0.1" max="1.0" step="0.05" value="0.5">
+        <span id="skirt-depth-val">0.50</span>
+
+        <div class="cb-group">
+            <input type="checkbox" id="show-wireframe" checked>
+            <label for="show-wireframe">Wireframe</label>
+        </div>
+        <div class="cb-group">
+            <input type="checkbox" id="show-uvs" checked>
+            <label for="show-uvs">UV Colors</label>
+        </div>
+        <div class="cb-group">
+            <input type="checkbox" id="show-labels">
+            <label for="show-labels">Tile Labels</label>
+        </div>
+
+        <button id="regenerate-btn">Regenerate</button>
+    </div>
+    <canvas id="viewer-canvas"></canvas>
+    <div class="viewer-info" id="viewer-info">Vertices: 0 | Triangles: 0 | Tiles: 0 | Orbit: click & drag | Zoom: scroll</div>
+</div>
+
+<h2>Algorithm Overview</h2>
+<p>The generator takes a list of <code>Vector3</code> tile positions (X, Y, Z = grid X, height, grid Z) and produces a mesh in several stages:</p>
+
+<div class="step-grid">
+    <div class="step-card">
+        <h3><span class="step-number">1</span> Build Lookup Structures</h3>
+        <p>Create a <code>HashSet&lt;Vector2I&gt;</code> for O(1) neighbor existence checks, and a <code>Dictionary&lt;Vector2I, float&gt;</code> mapping each tile to its height.</p>
+        <pre><span class="type">HashSet</span>&lt;<span class="type">Vector2I</span>&gt; tileSet;
+<span class="type">Dictionary</span>&lt;<span class="type">Vector2I</span>, <span class="keyword">float</span>&gt; heightMap;
+
+<span class="keyword">foreach</span> (pos <span class="keyword">in</span> tilePositions) {
+    key = <span class="keyword">new</span> <span class="type">Vector2I</span>(pos.X, pos.Z);
+    tileSet.Add(key);
+    heightMap[key] = pos.Y;
+}</pre>
+    </div>
+
+    <div class="step-card">
+        <h3><span class="step-number">2</span> Neighbor Detection</h3>
+        <p>For each tile, check all 8 neighbors (4 cardinal + 4 diagonal). Cardinal neighbors determine skirt needs. Diagonal neighbors (height-aware) determine inner corner clipping.</p>
+        <pre><span class="comment">// Cardinal: N, S, E, W</span>
+hasNorth = tileSet.Contains(northKey);
+...
+<span class="comment">// Diagonal: NE, NW, SE, SW</span>
+hasNE = tileSet.Contains(neKey);
+...
+<span class="comment">// Height-aware diagonals</span>
+hasNE_level = hasNE &&
+    heightMap[neKey] >= h - <span class="number">0.001f</span>;</pre>
+    </div>
+
+    <div class="step-card">
+        <h3><span class="step-number">3</span> Skirt Decision Logic</h3>
+        <p>An edge needs a skirt if: neighbor is absent, OR neighbor is lower. No skirt if neighbor is at the same height or above (the neighbor's cover mesh handles the transition).</p>
+        <pre>northNeedsSkirt =
+    !hasNorth ||
+    heightMap[northKey] &lt; h - <span class="number">0.001f</span>;
+
+<span class="comment">// Override: no skirt if neighbor above</span>
+<span class="keyword">if</span> (northAbove)
+    northNeedsSkirt = <span class="keyword">false</span>;</pre>
+    </div>
+
+    <div class="step-card">
+        <h3><span class="step-number">4</span> Tile Surface (Center-Fan)</h3>
+        <p>Each 1x1m tile gets 5 vertices (4 corners + center) and 4 triangles in a center-fan layout. This ensures clean triangulation without diagonal bias.</p>
+        <pre>topLeft ---- topRight
+|  \   N   /  |
+|   W  *  E   |
+|  /   S   \  |
+bottomLeft - bottomRight
+
+<span class="comment">// 4 triangles, all sharing center</span></pre>
+    </div>
+
+    <div class="step-card">
+        <h3><span class="step-number">5</span> Skirt Generation</h3>
+        <p>For each edge needing a skirt, a quad extends outward by <code>skirtDepth</code>. Skirts are clipped at inner corners (where an adjacent cardinal has no skirt and the height-aware diagonal exists) to prevent overlap.</p>
+        <pre><span class="comment">// North skirt, clipped at corners</span>
+nA = topLeft; nB = topRight;
+<span class="keyword">if</span> (!westNeedsSkirt && hasNW_level)
+    nA.X += skirtDepth; <span class="comment">// clip left</span>
+<span class="keyword">if</span> (!eastNeedsSkirt && hasNE_level)
+    nB.X -= skirtDepth; <span class="comment">// clip right</span>
+<span class="keyword">if</span> (nB.X - nA.X > <span class="number">0.001f</span>)
+    AddSkirtQuad(nA, nB, northDir);</pre>
+    </div>
+
+    <div class="step-card">
+        <h3><span class="step-number">6</span> Corner Patches</h3>
+        <p><strong>Outer corners:</strong> where two adjacent skirts meet (both cardinals need skirts). <strong>Inner corners:</strong> "elbow" tiles where both cardinals don't need skirts but the diagonal is absent or lower. Inner corners use randomized tile UVs.</p>
+        <pre><span class="comment">// Outer corner</span>
+<span class="keyword">if</span> (northNeedsSkirt && eastNeedsSkirt)
+    AddSkirtCorner(topRight, N, E);
+
+<span class="comment">// Inner corner (elbow)</span>
+<span class="keyword">if</span> (!northNeedsSkirt && !eastNeedsSkirt
+    && !hasNE_level)
+    AddInnerCorner(topRight, N, E);</pre>
+    </div>
+</div>
+
+<h2>UV Atlas Layout</h2>
+<p>All geometry maps into a single texture atlas divided by <code>UV_SPLIT = 0.875</code>:</p>
+
+<div class="uv-diagram">
+    <canvas id="uv-canvas" width="300" height="300"></canvas>
+</div>
+
+<div class="note">
+    <strong>UV_SPLIT = 0.875</strong> | <strong>UV_SKIRT = 0.125</strong><br>
+    The skirt strip is only 12.5% of texture height, keeping the tile region large for detail.
+</div>
+
+<ul>
+    <li><strong>Tile surface</strong> (blue): <code>(0, 0.125)</code> to <code>(0.875, 1.0)</code> -- the large square region</li>
+    <li><strong>Skirt strip</strong> (yellow): <code>(0, 0)</code> to <code>(0.875, 0.125)</code> -- thin strip at top. The purple/outer edge maps to <code>V=0</code></li>
+    <li><strong>Corner patch</strong> (red): <code>(0.875, 0)</code> to <code>(1.0, 0.125)</code> -- small square at top-right</li>
+    <li><strong>Inner corners</strong> reuse a random sub-region of the tile UVs for seamless blending</li>
+</ul>
+
+<h2>Height-Aware Diagonal Fix</h2>
+<p>A critical subtlety: diagonal neighbor checks for skirt clipping and inner corners must account for height. A diagonal tile that exists but is <em>lower</em> doesn't actually cover the gap at the current tile's height.</p>
+<pre><span class="comment">// Existence-only check (used for other logic)</span>
+<span class="keyword">bool</span> hasNE = tileSet.Contains(neKey);
+
+<span class="comment">// Height-aware check (used for clipping + inner corners)</span>
+<span class="keyword">bool</span> hasNE_level = hasNE && heightMap[neKey] >= h - <span class="number">0.001f</span>;</pre>
+<p>Without this, a lower diagonal causes:</p>
+<ul>
+    <li>Skirts get clipped (gap appears) but no inner corner fills the hole</li>
+    <li>Visible seams at height transitions in L-shaped or stepped terrain</li>
+</ul>
+
+<h2>Method Reference</h2>
+
+<h3><code>Generate()</code></h3>
+<pre><span class="keyword">public static</span> <span class="type">ArrayMesh</span> Generate(
+    <span class="type">List</span>&lt;<span class="type">Vector3</span>&gt; tilePositions,
+    <span class="keyword">float</span> extensionAmount = <span class="number">0.15f</span>,
+    <span class="keyword">float</span> skirtDepth = <span class="number">0.5f</span>,
+    <span class="keyword">float</span> heightOffset = <span class="number">0.01f</span>,
+    <span class="keyword">float</span> offsetX = <span class="number">-0.5f</span>,
+    <span class="keyword">float</span> offsetZ = <span class="number">-0.5f</span>
+)</pre>
+<ul>
+    <li><code>tilePositions</code>: List of (gridX, height, gridZ) for each tile</li>
+    <li><code>extensionAmount</code>: How far exterior edges extend (unused in current skirt logic, reserved)</li>
+    <li><code>skirtDepth</code>: Horizontal width of skirt strips</li>
+    <li><code>heightOffset</code>: Small Y offset to prevent Z-fighting with terrain below</li>
+    <li><code>offsetX/offsetZ</code>: Shifts tile origin (default -0.5 centers tiles on grid points)</li>
+</ul>
+
+<h3><code>AddSkirtQuad()</code></h3>
+<p>Generates a 4-vertex quad extending outward from an edge. Vertices 0,1 are inner (tile edge), 2,3 are outer. UV maps the skirt strip with the purple/outer edge at <code>V=0</code>.</p>
+
+<h3><code>AddSkirtCorner()</code></h3>
+<p>Generates a 4-vertex patch filling the gap where two adjacent skirts meet at an outer corner. Uses the corner UV region, rotated 90 degrees CCW.</p>
+
+<h3><code>AddInnerCorner()</code></h3>
+<p>Generates a 4-vertex patch at inner "elbow" corners (both cardinals present, diagonal absent/lower). Uses a deterministic random UV position within the tile region, seeded by grid coordinates.</p>
+
+</div>
+
+<script>
+// ============================================================
+// UV Atlas diagram
+// ============================================================
+(function() {
+    const c = document.getElementById('uv-canvas');
+    const ctx = c.getContext('2d');
+    const W = c.width, H = c.height;
+    const pad = 20;
+    const dw = W - pad * 2, dh = H - pad * 2;
+    const UV_SPLIT = 0.875;
+    const UV_SKIRT = 0.125;
+
+    ctx.fillStyle = '#16213e';
+    ctx.fillRect(0, 0, W, H);
+
+    // Tile region (blue)
+    ctx.fillStyle = 'rgba(60, 120, 200, 0.5)';
+    ctx.fillRect(pad, pad + UV_SKIRT * dh, UV_SPLIT * dw, (1.0 - UV_SKIRT) * dh);
+    ctx.strokeStyle = '#3c78c8';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(pad, pad + UV_SKIRT * dh, UV_SPLIT * dw, (1.0 - UV_SKIRT) * dh);
+
+    // Skirt strip (yellow)
+    ctx.fillStyle = 'rgba(200, 180, 60, 0.5)';
+    ctx.fillRect(pad, pad, UV_SPLIT * dw, UV_SKIRT * dh);
+    ctx.strokeStyle = '#c8b43c';
+    ctx.strokeRect(pad, pad, UV_SPLIT * dw, UV_SKIRT * dh);
+
+    // Corner patch (red)
+    ctx.fillStyle = 'rgba(200, 60, 60, 0.5)';
+    ctx.fillRect(pad + UV_SPLIT * dw, pad, (1 - UV_SPLIT) * dw, UV_SKIRT * dh);
+    ctx.strokeStyle = '#c83c3c';
+    ctx.strokeRect(pad + UV_SPLIT * dw, pad, (1 - UV_SPLIT) * dw, UV_SKIRT * dh);
+
+    // Labels
+    ctx.font = '13px Segoe UI, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#8ab8e8';
+    ctx.fillText('Tile (0.875 x 0.875)', pad + UV_SPLIT * dw / 2, pad + UV_SKIRT * dh + (1 - UV_SKIRT) * dh / 2 + 5);
+
+    ctx.fillStyle = '#e8d888';
+    ctx.fillText('Skirt Strip', pad + UV_SPLIT * dw / 2, pad + UV_SKIRT * dh / 2 + 4);
+
+    ctx.font = '10px Segoe UI, sans-serif';
+    ctx.fillStyle = '#e88888';
+    ctx.fillText('Corner', pad + UV_SPLIT * dw + (1 - UV_SPLIT) * dw / 2, pad + UV_SKIRT * dh / 2 + 4);
+
+    // Purple line indicator at V=0
+    ctx.strokeStyle = '#c040e0';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(pad, pad);
+    ctx.lineTo(pad + UV_SPLIT * dw, pad);
+    ctx.stroke();
+
+    ctx.font = '9px Segoe UI, sans-serif';
+    ctx.fillStyle = '#c040e0';
+    ctx.textAlign = 'left';
+    ctx.fillText('Purple/outer edge (V=0)', pad + 2, pad - 4);
+
+    // Axis labels
+    ctx.fillStyle = '#607080';
+    ctx.font = '11px Consolas, monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText('U=0', pad, H - 2);
+    ctx.fillText('U=0.875', pad + UV_SPLIT * dw, H - 2);
+    ctx.fillText('U=1', W - pad, H - 2);
+
+    ctx.textAlign = 'right';
+    ctx.fillText('V=0', pad - 4, pad + 4);
+    ctx.fillText('V=0.125', pad - 4, pad + UV_SKIRT * dh + 4);
+    ctx.fillText('V=1', pad - 4, H - pad + 4);
+})();
+
+// ============================================================
+// Three.js 3D Viewer - GroundCoverMeshGenerator port
+// ============================================================
+(function() {
+    const canvas = document.getElementById('viewer-canvas');
+    const infoEl = document.getElementById('viewer-info');
+
+    // Constants matching the C# code
+    const UV_SPLIT = 0.875;
+    const UV_SKIRT = 1.0 - UV_SPLIT;
+
+    // --- Presets ---
+    const presets = {
+        'l-shape': [
+            [0,0,0],[1,0,0],[2,0,0],
+            [0,0,1],[1,0,1],[2,0,1],
+            [0,0,2],[1,0,2]
+        ],
+        'line': [
+            [0,0,0],[1,0,0],[2,0,0],[3,0,0],[4,0,0]
+        ],
+        'platform': [
+            [0,0,0],[1,0,0],[2,0,0],
+            [0,0,1],[1,0,1],[2,0,1],
+            [0,0,2],[1,0,2],[2,0,2]
+        ],
+        'heights': [
+            [0,0,0],[1,0,0],[2,0,0],[3,0,0],
+            [0,0,1],[1,1,1],[2,1,1],[3,0,1],
+            [0,0,2],[1,0,2],[2,0,2],[3,0,2]
+        ],
+        'u-shape': [
+            [0,0,0],[1,0,0],[2,0,0],[3,0,0],
+            [0,0,1],                [3,0,1],
+            [0,0,2],[1,0,2],[2,0,2],[3,0,2]
+        ],
+        'cross': [
+                    [1,0,0],
+            [0,0,1],[1,0,1],[2,0,1],
+                    [1,0,2]
+        ]
+    };
+
+    // --- Scene setup ---
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+    renderer.setClearColor(0x0f0f23);
+    renderer.setPixelRatio(window.devicePixelRatio);
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(50, canvas.clientWidth / canvas.clientHeight, 0.1, 100);
+    camera.position.set(4, 5, 6);
+
+    const controls = new THREE.OrbitControls(camera, canvas);
+    controls.target.set(1.5, 0, 1.5);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.1;
+    controls.update();
+
+    // Lights
+    const ambientLight = new THREE.AmbientLight(0x404060, 0.6);
+    scene.add(ambientLight);
+    const dirLight = new THREE.DirectionalLight(0xffe8c0, 0.9);
+    dirLight.position.set(5, 8, 3);
+    scene.add(dirLight);
+
+    // Grid helper
+    const gridHelper = new THREE.GridHelper(10, 10, 0x2a3a5e, 0x1a2a3e);
+    gridHelper.position.set(4.5, -0.01, 4.5);
+    scene.add(gridHelper);
+
+    // Groups for mesh and wireframe
+    let meshGroup = new THREE.Group();
+    let wireGroup = new THREE.Group();
+    let labelGroup = new THREE.Group();
+    scene.add(meshGroup);
+    scene.add(wireGroup);
+    scene.add(labelGroup);
+
+    // --- UV Color texture (procedural) ---
+    function createUVTexture() {
+        const size = 256;
+        const c2d = document.createElement('canvas');
+        c2d.width = size; c2d.height = size;
+        const ctx = c2d.getContext('2d');
+
+        const split = Math.floor(UV_SPLIT * size);
+        const skirt = Math.floor(UV_SKIRT * size);
+
+        // Tile region (blue)
+        ctx.fillStyle = '#3a6aaa';
+        ctx.fillRect(0, skirt, split, size - skirt);
+
+        // Skirt strip (yellow/gold)
+        ctx.fillStyle = '#b8a040';
+        ctx.fillRect(0, 0, split, skirt);
+
+        // Purple line at V=0
+        ctx.fillStyle = '#a030c0';
+        ctx.fillRect(0, 0, split, 3);
+
+        // Corner patch (red)
+        ctx.fillStyle = '#a04040';
+        ctx.fillRect(split, 0, size - split, skirt);
+
+        // Grid lines for tile
+        ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+        ctx.lineWidth = 1;
+        for (let i = 0; i <= 8; i++) {
+            const x = (i / 8) * split;
+            ctx.beginPath(); ctx.moveTo(x, skirt); ctx.lineTo(x, size); ctx.stroke();
+            const y = skirt + (i / 8) * (size - skirt);
+            ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(split, y); ctx.stroke();
+        }
+
+        const tex = new THREE.CanvasTexture(c2d);
+        tex.magFilter = THREE.NearestFilter;
+        tex.minFilter = THREE.NearestFilter;
+        return tex;
+    }
+
+    const uvTexture = createUVTexture();
+
+    // --- Generator (port of C# code) ---
+    function generate(tilePositions, skirtDepth, offsetX, offsetZ, heightOffset) {
+        offsetX = offsetX !== undefined ? offsetX : -0.5;
+        offsetZ = offsetZ !== undefined ? offsetZ : -0.5;
+        heightOffset = heightOffset !== undefined ? heightOffset : 0.01;
+
+        const tileSet = new Set();
+        const heightMap = {};
+        const key = (x, z) => x + ',' + z;
+
+        for (const p of tilePositions) {
+            const k = key(p[0], p[2]);
+            tileSet.add(k);
+            heightMap[k] = p[1];
+        }
+
+        const vertices = [];
+        const uvs = [];
+        const indices = [];
+        const faceTypes = []; // 'tile', 'skirt', 'outer_corner', 'inner_corner' per triangle
+
+        function addVert(x, y, z, u, v) {
+            const idx = vertices.length / 3;
+            vertices.push(x, y, z);
+            uvs.push(u, v);
+            return idx;
+        }
+
+        for (const pos of tilePositions) {
+            const gx = pos[0], gz = pos[2], h = pos[1];
+
+            const northKey = key(gx, gz - 1);
+            const southKey = key(gx, gz + 1);
+            const eastKey  = key(gx + 1, gz);
+            const westKey  = key(gx - 1, gz);
+
+            const hasNorth = tileSet.has(northKey);
+            const hasSouth = tileSet.has(southKey);
+            const hasEast  = tileSet.has(eastKey);
+            const hasWest  = tileSet.has(westKey);
+
+            const neKey = key(gx + 1, gz - 1);
+            const nwKey = key(gx - 1, gz - 1);
+            const seKey = key(gx + 1, gz + 1);
+            const swKey = key(gx - 1, gz + 1);
+            const hasNE = tileSet.has(neKey);
+            const hasNW = tileSet.has(nwKey);
+            const hasSE = tileSet.has(seKey);
+            const hasSW = tileSet.has(swKey);
+
+            // Height-aware diagonals
+            const hasNE_level = hasNE && heightMap[neKey] >= h - 0.001;
+            const hasNW_level = hasNW && heightMap[nwKey] >= h - 0.001;
+            const hasSE_level = hasSE && heightMap[seKey] >= h - 0.001;
+            const hasSW_level = hasSW && heightMap[swKey] >= h - 0.001;
+
+            let northNeedsSkirt = !hasNorth || heightMap[northKey] < h - 0.001;
+            let southNeedsSkirt = !hasSouth || heightMap[southKey] < h - 0.001;
+            let eastNeedsSkirt  = !hasEast  || heightMap[eastKey]  < h - 0.001;
+            let westNeedsSkirt  = !hasWest  || heightMap[westKey]  < h - 0.001;
+
+            const northAbove = hasNorth && heightMap[northKey] > h + 0.001;
+            const southAbove = hasSouth && heightMap[southKey] > h + 0.001;
+            const eastAbove  = hasEast  && heightMap[eastKey]  > h + 0.001;
+            const westAbove  = hasWest  && heightMap[westKey]  > h + 0.001;
+
+            if (northAbove) northNeedsSkirt = false;
+            if (southAbove) southNeedsSkirt = false;
+            if (eastAbove)  eastNeedsSkirt  = false;
+            if (westAbove)  westNeedsSkirt  = false;
+
+            const y = h + heightOffset;
+            const x0 = gx + offsetX;
+            const z0 = gz + offsetZ;
+
+            // Tile surface (center-fan)
+            const tl = addVert(x0,     y, z0,     0, UV_SKIRT);
+            const tr = addVert(x0 + 1, y, z0,     UV_SPLIT, UV_SKIRT);
+            const br = addVert(x0 + 1, y, z0 + 1, UV_SPLIT, 1.0);
+            const bl = addVert(x0,     y, z0 + 1, 0, 1.0);
+            const ce = addVert(x0 + 0.5, y, z0 + 0.5, UV_SPLIT * 0.5, UV_SKIRT + UV_SPLIT * 0.5);
+
+            indices.push(tl, tr, ce); faceTypes.push('tile');
+            indices.push(tr, br, ce); faceTypes.push('tile');
+            indices.push(br, bl, ce); faceTypes.push('tile');
+            indices.push(bl, tl, ce); faceTypes.push('tile');
+
+            // Helper: add skirt quad
+            function addSkirtQuad(ax, ay, az, bx, by, bz, dx, dy, dz) {
+                const i0 = addVert(ax, ay, az, 0, UV_SKIRT);
+                const i1 = addVert(bx, by, bz, UV_SPLIT, UV_SKIRT);
+                const i2 = addVert(bx + dx, by + dy, bz + dz, UV_SPLIT, 0);
+                const i3 = addVert(ax + dx, ay + dy, az + dz, 0, 0);
+                indices.push(i0, i2, i1); faceTypes.push('skirt');
+                indices.push(i0, i3, i2); faceTypes.push('skirt');
+            }
+
+            // Helper: add corner patch
+            function addCornerPatch(cx, cy, cz, dax, day, daz, dbx, dby, dbz, type) {
+                const i0 = addVert(cx, cy, cz, UV_SPLIT, UV_SKIRT);
+                const i1 = addVert(cx + dax, cy + day, cz + daz, UV_SPLIT, 0);
+                const i2 = addVert(cx + dax + dbx, cy + day + dby, cz + daz + dbz, 1.0, 0);
+                const i3 = addVert(cx + dbx, cy + dby, cz + dbz, 1.0, UV_SKIRT);
+                indices.push(i0, i1, i2); faceTypes.push(type);
+                indices.push(i0, i2, i3); faceTypes.push(type);
+            }
+
+            const sd = skirtDepth;
+
+            // North skirt
+            if (northNeedsSkirt) {
+                let nax = x0, naz = z0, nbx = x0 + 1, nbz = z0;
+                if (!westNeedsSkirt && hasNW_level) nax += sd;
+                if (!eastNeedsSkirt && hasNE_level) nbx -= sd;
+                if (nbx - nax > 0.001)
+                    addSkirtQuad(nax, y, naz, nbx, y, nbz, 0, 0, -sd);
+            }
+            // South skirt
+            if (southNeedsSkirt) {
+                let sax = x0 + 1, saz = z0 + 1, sbx = x0, sbz = z0 + 1;
+                if (!eastNeedsSkirt && hasSE_level) sax -= sd;
+                if (!westNeedsSkirt && hasSW_level) sbx += sd;
+                if (sax - sbx > 0.001)
+                    addSkirtQuad(sax, y, saz, sbx, y, sbz, 0, 0, sd);
+            }
+            // East skirt
+            if (eastNeedsSkirt) {
+                let eax = x0 + 1, eaz = z0, ebx = x0 + 1, ebz = z0 + 1;
+                if (!northNeedsSkirt && hasNE_level) eaz += sd;
+                if (!southNeedsSkirt && hasSE_level) ebz -= sd;
+                if (ebz - eaz > 0.001)
+                    addSkirtQuad(eax, y, eaz, ebx, y, ebz, sd, 0, 0);
+            }
+            // West skirt
+            if (westNeedsSkirt) {
+                let wax = x0, waz = z0 + 1, wbx = x0, wbz = z0;
+                if (!southNeedsSkirt && hasSW_level) waz -= sd;
+                if (!northNeedsSkirt && hasNW_level) wbz += sd;
+                if (waz - wbz > 0.001)
+                    addSkirtQuad(wax, y, waz, wbx, y, wbz, -sd, 0, 0);
+            }
+
+            // Outer corners
+            if (northNeedsSkirt && westNeedsSkirt)
+                addCornerPatch(x0, y, z0, -sd, 0, 0, 0, 0, -sd, 'outer_corner');
+            if (northNeedsSkirt && eastNeedsSkirt)
+                addCornerPatch(x0 + 1, y, z0, 0, 0, -sd, sd, 0, 0, 'outer_corner');
+            if (southNeedsSkirt && eastNeedsSkirt)
+                addCornerPatch(x0 + 1, y, z0 + 1, sd, 0, 0, 0, 0, sd, 'outer_corner');
+            if (southNeedsSkirt && westNeedsSkirt)
+                addCornerPatch(x0, y, z0 + 1, 0, 0, sd, -sd, 0, 0, 'outer_corner');
+
+            // Inner corners
+            if (!northNeedsSkirt && !eastNeedsSkirt && !hasNE_level)
+                addCornerPatch(x0 + 1, y, z0, 0, 0, -sd, sd, 0, 0, 'inner_corner');
+            if (!northNeedsSkirt && !westNeedsSkirt && !hasNW_level)
+                addCornerPatch(x0, y, z0, -sd, 0, 0, 0, 0, -sd, 'inner_corner');
+            if (!southNeedsSkirt && !eastNeedsSkirt && !hasSE_level)
+                addCornerPatch(x0 + 1, y, z0 + 1, sd, 0, 0, 0, 0, sd, 'inner_corner');
+            if (!southNeedsSkirt && !westNeedsSkirt && !hasSW_level)
+                addCornerPatch(x0, y, z0 + 1, 0, 0, sd, -sd, 0, 0, 'inner_corner');
+        }
+
+        return { vertices: new Float32Array(vertices), uvs: new Float32Array(uvs), indices, faceTypes };
+    }
+
+    // --- Build Three.js mesh from generated data ---
+    function buildMesh(data, useUVColors) {
+        const geom = new THREE.BufferGeometry();
+        geom.setAttribute('position', new THREE.BufferAttribute(data.vertices, 3));
+        geom.setAttribute('uv', new THREE.BufferAttribute(data.uvs, 2));
+        geom.setIndex(data.indices);
+        geom.computeVertexNormals();
+
+        let mat;
+        if (useUVColors) {
+            mat = new THREE.MeshStandardMaterial({
+                map: uvTexture,
+                side: THREE.DoubleSide,
+                roughness: 0.7,
+                metalness: 0.1
+            });
+        } else {
+            // Color by face type
+            const colors = new Float32Array(data.vertices.length);
+            const typeColors = {
+                'tile':         [0.35, 0.55, 0.80],
+                'skirt':        [0.72, 0.63, 0.25],
+                'outer_corner': [0.75, 0.30, 0.30],
+                'inner_corner': [0.40, 0.70, 0.45]
+            };
+            for (let t = 0; t < data.faceTypes.length; t++) {
+                const c = typeColors[data.faceTypes[t]] || [0.5, 0.5, 0.5];
+                for (let v = 0; v < 3; v++) {
+                    const vi = data.indices[t * 3 + v];
+                    colors[vi * 3] = c[0];
+                    colors[vi * 3 + 1] = c[1];
+                    colors[vi * 3 + 2] = c[2];
+                }
+            }
+            geom.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+            mat = new THREE.MeshStandardMaterial({
+                vertexColors: true,
+                side: THREE.DoubleSide,
+                roughness: 0.7,
+                metalness: 0.1
+            });
+        }
+
+        return new THREE.Mesh(geom, mat);
+    }
+
+    function buildWireframe(data) {
+        const geom = new THREE.BufferGeometry();
+        geom.setAttribute('position', new THREE.BufferAttribute(data.vertices, 3));
+        geom.setIndex(data.indices);
+        const wire = new THREE.WireframeGeometry(geom);
+        return new THREE.LineSegments(wire, new THREE.LineBasicMaterial({ color: 0xffffff, opacity: 0.15, transparent: true }));
+    }
+
+    // --- Regenerate ---
+    function regenerate() {
+        // Clear
+        while (meshGroup.children.length) meshGroup.remove(meshGroup.children[0]);
+        while (wireGroup.children.length) wireGroup.remove(wireGroup.children[0]);
+        while (labelGroup.children.length) labelGroup.remove(labelGroup.children[0]);
+
+        const presetName = document.getElementById('preset-select').value;
+        const skirtDepth = parseFloat(document.getElementById('skirt-depth').value);
+        const showWire = document.getElementById('show-wireframe').checked;
+        const showUVs = document.getElementById('show-uvs').checked;
+        const tiles = presets[presetName];
+
+        const data = generate(tiles, skirtDepth);
+
+        const mesh = buildMesh(data, showUVs);
+        meshGroup.add(mesh);
+
+        if (showWire) {
+            const wire = buildWireframe(data);
+            wireGroup.add(wire);
+        }
+
+        const numVerts = data.vertices.length / 3;
+        const numTris = data.faceTypes.length;
+        infoEl.textContent = `Vertices: ${numVerts} | Triangles: ${numTris} | Tiles: ${tiles.length} | Orbit: click & drag | Zoom: scroll`;
+
+        // Center camera target
+        let cx = 0, cz = 0;
+        for (const t of tiles) { cx += t[0]; cz += t[2]; }
+        cx /= tiles.length; cz /= tiles.length;
+        controls.target.set(cx, 0, cz);
+        controls.update();
+    }
+
+    // --- Events ---
+    document.getElementById('preset-select').addEventListener('change', regenerate);
+    document.getElementById('regenerate-btn').addEventListener('click', regenerate);
+    document.getElementById('show-wireframe').addEventListener('change', regenerate);
+    document.getElementById('show-uvs').addEventListener('change', regenerate);
+
+    const skirtSlider = document.getElementById('skirt-depth');
+    const skirtVal = document.getElementById('skirt-depth-val');
+    skirtSlider.addEventListener('input', () => {
+        skirtVal.textContent = parseFloat(skirtSlider.value).toFixed(2);
+        regenerate();
+    });
+
+    // --- Resize ---
+    function onResize() {
+        const w = canvas.clientWidth;
+        const h = canvas.clientHeight;
+        if (canvas.width !== w || canvas.height !== h) {
+            renderer.setSize(w, h, false);
+            camera.aspect = w / h;
+            camera.updateProjectionMatrix();
+        }
+    }
+    window.addEventListener('resize', onResize);
+
+    // --- Animate ---
+    function animate() {
+        requestAnimationFrame(animate);
+        controls.update();
+        onResize();
+        renderer.render(scene, camera);
+    }
+
+    regenerate();
+    animate();
+})();
+</script>
+</body>
+</html>
